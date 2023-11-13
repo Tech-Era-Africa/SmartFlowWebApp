@@ -1,7 +1,7 @@
 <template>
     <section class="w-screen h-screen overflow-hidden m-0 p-0 flex ">
       <SideBar></SideBar>
-      <section class="flex-1 overflow-y-auto">
+      <section class="flex-1 overflow-y-auto relative">
         <slot></slot>
       </section>
     </section>

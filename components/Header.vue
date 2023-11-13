@@ -2,7 +2,7 @@
    <section class="h-1/3 bg-cover bg-center bg-no-repeat bg-blue-50 bg-headerBg">
     <header>
         <div class="flex justify-between h-16 px-8">
-            <div class="flex items-center -m-2 ">
+            <div class="flex items-center ">
                <h1 class="text-white text-2xl">Overview</h1>
             </div>
 
