@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
-    "pinia": "^2.1.7"
+    "apexcharts": "^3.44.0",
+    "pinia": "^2.1.7",
+    "vue3-apexcharts": "^1.4.4"
   }
 }

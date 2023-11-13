@@ -15,11 +15,11 @@
                 </div>
 
             </div>
-            <div class="w-full h-96 flex bg-blue-50 p-2 gap-4">
-                <div class="bg-gray-100 w-3/5 h-full">
-                    <p>Water Consumed</p>
+            <div class="w-full h-96 flex  p-2 gap-4">
+                <div class=" w-3/5 h-full">
+                    <WaterConsumptionChart></WaterConsumptionChart>
                 </div>
-                <div class="bg-gray-100 flex-1 h-full">
+                <div class="flex-1 h-full">
                     <DevicesSummary></DevicesSummary>
                 </div>
 
