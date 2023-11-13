@@ -4,7 +4,7 @@
         <section class="flex flex-col gap-4 absolute top-16 z-10  mx-8 left-0 right-0">
             <div class="w-full h-96 flex bg-blue-50 p-2 gap-4">
                 <div class="bg-gray-100 w-3/5 h-full">
-                    <p>Device Monitoring</p>
+                    <DeviceMonitoring></DeviceMonitoring>
                 </div>
                 <div class="bg-gray-100 flex-1 h-full">
                     <p>Monthly Consumption</p>
