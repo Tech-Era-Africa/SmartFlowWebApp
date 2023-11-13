@@ -1,3 +1,7 @@
+
+import { useRouter } from 'vue-router';
+
+import { useRouter } from 'vue-router';
 <template>
    <section class="py-12 bg-white sm:py-16 lg:py-20">
     <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
@@ -60,7 +64,7 @@
 
                     <div>
                         <button
-                            type="submit"
+                            type="button"
                             class="inline-flex items-center justify-center w-full px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-indigo-600 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 hover:bg-indigo-500"
                         >
                             Sign in
@@ -77,3 +81,7 @@
 </section>
 
 </template>
+
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
+</script>

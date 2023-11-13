@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 
   },
   routeRules:{
-    '/': { redirect: '/login' },
+    '/': { redirect: '/overview' },
     '/api/**': { cors: true },
   },
 })
