@@ -1,6 +1,9 @@
 <template>
-    <section class="w-screen h-screen overflow-hidden m-0 p-0">
+    <section class="w-screen h-screen overflow-hidden m-0 p-0 flex ">
       <SideBar></SideBar>
+      <section class="flex-1 overflow-y-auto">
+        <slot></slot>
+      </section>
     </section>
     
 </template>

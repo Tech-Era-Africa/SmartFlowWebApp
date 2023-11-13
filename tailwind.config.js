@@ -15,8 +15,11 @@ module.exports = {
         secondary : "#00A499"
       },
       backgroundImage: {
-        '404': "url('/img/black-kid-enjoying-his-painting.jpg')",
-      }
+        'headerBg': "url('/bg/header_bg.png')",
+      },
+      fontFamily: {
+        sans: ['Manrope', 'sans-serif'],
+      },
     },
   },
   plugins: [require('daisyui')],
