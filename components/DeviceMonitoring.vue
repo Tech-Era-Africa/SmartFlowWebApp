@@ -29,7 +29,7 @@
                 </div>
 
                 <div>
-                    <p class="text-sm text-gray-500">Total Device</p>
+                    <p class="text-sm text-gray-500">Installed</p>
                     <h1 class="font-bold text-xl">25 Devices</h1>
                 </div>
             </div>

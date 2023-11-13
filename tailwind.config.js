@@ -12,7 +12,8 @@ module.exports = {
     extend: {
       colors:{
         primary : "#38B6FF",
-        secondary : "#00A499"
+        secondary : "#00A499",
+        pageBg : "#F8F9FC"
       },
       backgroundImage: {
         'headerBg': "url('/bg/header_bg.png')",

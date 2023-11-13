@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center justify-between w-full bg-blue-50 rounded-xl p-5">
+    <div class="flex items-center justify-between w-full  rounded-xl p-5" :class="option.clearBg ? 'bg-white' : 'bg-blue-50'">
         <div>
             <p class="text-sm text-gray-500">{{ option.title }}</p>
             <h1 class="font-bold text-xl">{{ option.value }}</h1>

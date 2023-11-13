@@ -1,5 +1,5 @@
 <template>
-    <div class="hidden bg-gray-50 md:flex md:w-64 md:flex-col h-full">
+    <div class="hidden bg-white md:flex md:w-64 md:flex-col h-full">
         <div class="flex flex-col pt-5 overflow-y-auto h-full">
             <div class="flex items-center flex-shrink-0 px-4">
                 <NuxtImg class="hidden w-auto h-8 lg:block" src="/logo.png" alt="" />
