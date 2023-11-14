@@ -22,7 +22,9 @@
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
     "apexcharts": "^3.44.0",
+    "axios": "^1.6.1",
     "pinia": "^2.1.7",
+    "ts-luxon": "^4.4.0",
     "vue3-apexcharts": "^1.4.4"
   }
 }

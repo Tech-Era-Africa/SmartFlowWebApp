@@ -3,7 +3,7 @@
     <header>
         <div class="flex justify-between h-16 px-8">
             <div class="flex items-center ">
-               <h1 class="text-white text-2xl">Overview</h1>
+               <h1 class="text-white text-2xl">{{ name }}</h1>
             </div>
 
             <div class="flex items-center justify-end">
@@ -30,3 +30,11 @@
 
    </section>
 </template>
+<script setup lang="ts">
+    const props = defineProps({
+    name: {
+        type: String,
+        required: true
+    }
+})
+</script>

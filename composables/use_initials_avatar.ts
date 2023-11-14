@@ -1,0 +1,1 @@
+export const useInitialsAvatar = (firstName:string, lastname:string)=> `https://api.dicebear.com/6.x/initials/svg?seed=${firstName} ${lastname}`
