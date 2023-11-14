@@ -13,6 +13,8 @@
 import {type UserTableOptionDTO} from '~/utils/dto/userTable.option.dto';
 import { UserModel } from '~/server/api/user/model/user.model';
 
+useHead({title : "Users"})
+
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Users',
             users : [

@@ -30,3 +30,8 @@
         </section>
     </NuxtLayout>
 </template>
+
+<script setup lang="ts">
+useHead({title : "Overview"})
+
+</script>
