@@ -7,7 +7,7 @@ import { useRouter } from 'vue-router';
     <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
         <div class="max-w-sm mx-auto">
             <div class="text-center">
-                <NuxtImg class="w-36 mx-auto" src="/logo.png" alt="" />
+                <img class="w-36 mx-auto" src="/logo.png" alt="" />
                 <h1 class="mt-12 text-3xl font-bold text-gray-900">Login to WataFlow</h1>
                 <p class="mt-4 text-sm font-medium text-gray-500">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Turpis morbi pulvinar venenatis non.</p>
             </div>

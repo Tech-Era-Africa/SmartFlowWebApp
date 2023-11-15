@@ -25,7 +25,7 @@
             </div>
             <div class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between">
                 <div class="w-40 mx-auto ">
-                    <NuxtImg class="w-full h-full object-cover" src="/img/lorawan.png"></NuxtImg>
+                    <img class="w-full h-full object-cover" src="/img/lorawan.png"/>
                 </div>
 
                 <div>
