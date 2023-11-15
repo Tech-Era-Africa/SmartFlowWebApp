@@ -12,10 +12,10 @@
         <button class="btn btn-outline mt-5">Add New Device</button>
 
         <div class="text-right">
-            <button class="btn btn-ghost">
+            <NuxtLink to="/devices" class="btn btn-ghost">
                 View All
                 <Icon name="material-symbols:arrow-forward-rounded"></Icon>
-            </button>
+            </NuxtLink>
 
         </div>
     </div>

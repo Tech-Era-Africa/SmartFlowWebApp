@@ -10,6 +10,9 @@
                    <MonthlyConsumptionStats></MonthlyConsumptionStats>
                    <div class="flex gap-2">
                     <Stat :option="{ title: 'Total Payable Bill', value: 'GHC570', clearBg : true }">
+                        <div class="text-right">
+                            <button class="btn btn-sm btn-outline flex gap-2 items-center">Send Bill <Icon name="material-symbols:arrow-forward-rounded"></Icon></button>
+                        </div>
                     </Stat>
                 </div>
                 </div>
