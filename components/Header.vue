@@ -21,7 +21,7 @@
                     </div>
 
                     <button type="button" class="flex items-center max-w-xs rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
-                        <img class="object-cover bg-gray-300 rounded-full w-9 h-9" src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/horizontal-menu/3/avatar-male.png" alt="" />
+                        <img class="object-cover bg-gray-300 rounded-full w-9 h-9" src="https://api.dicebear.com/7.x/thumbs/svg?seed=Ashesi&backgroundColor=b6e3f4,c0aede,d1d4f9" alt="" />
                     </button>
                 </div>
             </div>

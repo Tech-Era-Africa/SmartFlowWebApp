@@ -3,7 +3,7 @@
         <div class="flex  justify-between items-center">
             <h1 class="font-bold text-lg">Devices</h1>
         </div>
-        <div class="flex-1 flex-grow flex gap-2">
+        <div class="flex-1 flex-grow w-full whitespace- flex gap-2 overflow-x-auto">
             <DeviceCard v-for="i in 3"></DeviceCard>
             <div class="bg-gray-100 flex justify-center items-center px-5 rounded-xl">
                 <p class="font-bold text-xl">+3</p>

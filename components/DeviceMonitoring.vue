@@ -1,13 +1,13 @@
 <template>
     <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
-        <div class="flex justify-between items-center">
+        <div class="flex  justify-between items-center">
             <h1 class="font-bold text-lg">Device Monitoring</h1>
             <!-- <button class="btn">
                 Device A
                 <Icon name="ion:caret-down-outline" />
             </button> -->
         </div>
-        <div class="flex-1 flex gap-2">
+        <div class="flex-1 flex flex-col lg:flex-row gap-2">
             <div class="w-full flex flex-col gap-2">
                 <div class="flex gap-2">
                     <Stat :option="{ title: 'Active', value: '0' }"></Stat>

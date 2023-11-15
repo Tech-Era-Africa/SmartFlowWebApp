@@ -1,10 +1,10 @@
 <template>
     <NuxtLayout name="dashboard">
         <Header name="Devices"></Header>
-        <section class="flex flex-col gap-4 absolute top-16 z-10  mx-8 left-0 right-0">
+        <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0">
             <div class="w-full flex  p-2 gap-4">
                 <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
-                    <div class="flex  justify-between items-center">
+                    <div class="flex flex-col lg:flex-row justify-between gap-2 lg:items-center">
                         <h1 class="font-bold text-lg">Devices</h1>
                         <div class="flex items-center gap-4">
                             <form class="w-full">
@@ -36,8 +36,8 @@
                         </div>
 
                     </div>
-                    <div class="flex-1 flex-grow flex gap-2">
-                        <DeviceCard v-for="i in 3"></DeviceCard>
+                    <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
+                        <DeviceCard v-for="i in 4"></DeviceCard>
                     </div>
 
 
