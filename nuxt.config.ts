@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 
   },
   routeRules:{
-    '/': { redirect: '/overview' },
+    '/': { redirect: '/billing' },
     '/api/**': { cors: true },
   },
 })
