@@ -1,6 +1,6 @@
 <template>
     <NuxtLayout  name="dashboard">
-        <Header name="Overview"></Header>
+        <Header name="Overview" @click="openDeviceDrawer"></Header>
         <section class="flex flex-col gap-4 absolute top-16 z-10 mx-2  lg:mx-8 left-0 right-0">
             <div class="w-full flex flex-col lg:flex-row  p-2 gap-4">
                 <div class="w-full  lg:w-3/5 h-full">
@@ -31,10 +31,16 @@
 
             </div>
         </section>
+        <Drawer drawerId = "deviceDrawer"></Drawer>
     </NuxtLayout>
 </template>
 
 <script setup lang="ts">
 useHead({title : "Overview"})
+
+const openDeviceDrawer = ()=>{
+    const drawer = document.getElementById("deviceDrawer");
+    drawer?.click()
+}
 
 </script>

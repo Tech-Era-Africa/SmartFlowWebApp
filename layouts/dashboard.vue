@@ -1,5 +1,5 @@
 <template>
-  <section class="w-screen h-screen overflow-hidden m-0 p-0 flex ">
+  <section class="w-screen h-screen relative overflow-hidden m-0 p-0 flex ">
     <SideBar></SideBar>
     <section class="absolute z-40 md:hidden">
       <BottomNav></BottomNav>
