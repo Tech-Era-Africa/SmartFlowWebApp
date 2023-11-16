@@ -1,6 +1,6 @@
 <template>
     <NuxtLayout  name="dashboard">
-        <Header name="Overview" @click="openDeviceDrawer"></Header>
+        <Header name="Overview" ></Header>
         <section class="flex flex-col gap-4 absolute top-16 z-10 mx-2  lg:mx-8 left-0 right-0">
             <div class="w-full flex flex-col lg:flex-row  p-2 gap-4">
                 <div class="w-full  lg:w-3/5 h-full">
@@ -31,16 +31,31 @@
 
             </div>
         </section>
-        <Drawer drawerId = "deviceDrawer"></Drawer>
+        <Drawer drawerId = "deviceDrawer">
+           <SingleDeviceMonitoring></SingleDeviceMonitoring>
+           <WaterConsumptionChart></WaterConsumptionChart>
+           <MonthlyConsumptionStats></MonthlyConsumptionStats>
+           <TotalPayableBillWidget></TotalPayableBillWidget>
+           <UsersTable :option="usersDataTableOption"></UsersTable>
+
+        </Drawer>
     </NuxtLayout>
 </template>
 
 <script setup lang="ts">
+import { UserModel } from '~/server/api/user/model/user.model';
+import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
+
 useHead({title : "Overview"})
 
-const openDeviceDrawer = ()=>{
-    const drawer = document.getElementById("deviceDrawer");
-    drawer?.click()
-}
+const usersDataTableOption = ref<UserTableOptionDTO>({
+    title: 'Users',
+            users : [
+                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"})
+            ] as UserModel[],
+            columns: ["Id", "Name", "Email", "Phone Number", "Role", "Devices"]
+} as UserTableOptionDTO);
+
+
 
 </script>
