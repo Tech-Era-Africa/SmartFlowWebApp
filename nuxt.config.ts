@@ -11,6 +11,16 @@ export default defineNuxtConfig({
     },
 
   },
+  runtimeConfig: {
+    B4A_APP_ID: process.env.NUXT_B4A_APP_ID,
+    B4A_API_KEY: process.env.NUXT_B4A_API_KEY,
+    MG_API_KEY: process.env.NUXT_MG_API_KEY,
+    public: {
+      API_BASE_URL: process.env.NUXT_PUBLIC_API_BASE_URL,
+
+    }
+
+  },
   routeRules:{
     '/': { redirect: '/overview' },
     '/api/**': { cors: true },

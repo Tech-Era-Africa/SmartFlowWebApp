@@ -37,7 +37,7 @@
 
                     </div>
                     <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
-                        <DeviceCard v-for="i in 4"></DeviceCard>
+                        <DeviceCard @click="openDeviceDrawer" v-for="i in 4"></DeviceCard>
                     </div>
 
 
@@ -54,9 +54,36 @@
             </div>
 
         </section>
+
+        <Drawer drawerId = "deviceDrawer">
+           <SingleDeviceMonitoring></SingleDeviceMonitoring>
+           <WaterConsumptionChart></WaterConsumptionChart>
+           <MonthlyConsumptionStats></MonthlyConsumptionStats>
+           <TotalPayableBillWidget></TotalPayableBillWidget>
+           <UsersTable :option="usersDataTableOption"></UsersTable>
+
+        </Drawer>
     </NuxtLayout>
 </template>
-<script setup>
+<script setup lang="ts">
+import { UserModel } from '~/server/api/user/model/user.model';
+import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
+
 useHead({ title: "Devices" })
+
+const openDeviceDrawer = ()=>{
+    const drawer = document.getElementById("deviceDrawer");
+    drawer?.click()
+}
+
+const usersDataTableOption = ref<UserTableOptionDTO>({
+    title: 'Users',
+            users : [
+                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"})
+            ] as UserModel[],
+            columns: ["Id", "Name", "Email", "Phone Number", "Role", "Devices"]
+} as UserTableOptionDTO);
+
+
 
 </script>
