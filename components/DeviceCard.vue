@@ -5,8 +5,8 @@
                 </div>
 
                 <div>
-                    <p class="text-sm text-gray-500">{{ option.name }}</p>
-                    <h1 class="font-bold text-xl">{{option.volume}}L</h1>
+                    <p class="text-sm text-gray-500">{{ option.device.name }}</p>
+                    <h1 class="font-bold text-xl">{{option.device.consumption}}L</h1>
                 </div>
             </div>
 </template>
@@ -16,11 +16,6 @@ import type { DeviceCardOptionDTO } from '~/utils/dto/deviceCard.option.dto';
 const props = defineProps({
     option: {
         type: Object as () => DeviceCardOptionDTO,
-        default: {
-            name: 'Device A',
-            volume: 0,
-
-        } as DeviceCardOptionDTO,
         required: true
     }
 })

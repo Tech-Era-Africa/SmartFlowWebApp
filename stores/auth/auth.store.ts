@@ -1,7 +1,10 @@
 import { defineStore } from 'pinia';
+import { UserModel } from '~/server/api/user/model/user.model';
 
-export const useMyAuthStore = defineStore({
+export const useAuthStore = defineStore({
   id: 'authStore',
-  state: () => ({ }),
+  state: () => ({
+    currentUser : {objectId: "95lmGWfP9C"}
+   }),
   actions: {}
 })

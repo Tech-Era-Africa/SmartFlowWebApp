@@ -10,15 +10,15 @@
         <div class="flex-1 flex flex-col lg:flex-row gap-2">
             <div class="w-full flex flex-col gap-2">
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Status', value: 'Active' }"></Stat>
+                    <Stat :option="{ title: 'Status', value: `${useUseStatusName(option.device.status)}` }"></Stat>
                     <Stat :option="{ title: 'Users', value: '0' }"></Stat>
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Battery', value: '24%' }"></Stat>
-                    <Stat :option="{ title: 'Valve', value: 'Open' }"></Stat>
+                    <Stat :option="{ title: 'Battery', value: `${option.device.battery}` }"></Stat>
+                    <Stat :option="{ title: 'Valve', value: option.device.valveIsOpen ? 'Open' : 'Closed' }"></Stat>
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Consumption', value: '234L' }">
+                    <Stat :option="{ title: 'Total Consumption', value: `${option.device.consumption}L` }">
                     </Stat>
                 </div>
 
@@ -30,9 +30,20 @@
 
                 <div>
                     <p class="text-sm text-gray-500">Name</p>
-                    <h1 class="font-bold text-xl">Device Name</h1>
+                    <h1 class="font-bold text-xl">{{ option.device.name }}</h1>
                 </div>
             </div>
         </div>
     </div>
 </template>
+<script setup lang="ts">
+import type { DeviceCardOptionDTO } from '~/utils/dto/deviceCard.option.dto';
+
+defineProps({
+    option: {
+        type: Object as () => DeviceCardOptionDTO,
+        required: true
+    }
+})
+
+</script>

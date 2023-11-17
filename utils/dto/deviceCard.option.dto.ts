@@ -1,4 +1,5 @@
+import type { IDevice } from "~/server/api/device/model/device.model";
+
 export interface DeviceCardOptionDTO {
-    name:string;
-    volume:number;
+    device:IDevice
 }

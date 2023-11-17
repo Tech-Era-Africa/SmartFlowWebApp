@@ -7,10 +7,10 @@
                     <div class="flex flex-col lg:flex-row justify-between gap-2 lg:items-center">
                         <h1 class="font-bold text-lg">Devices</h1>
                         <div class="flex items-center gap-4">
-                            <form class="w-full">
+                            <form class="w-full" v-if="!deviceStore.isGettingDevices">
                                 <label for="default-search"
                                     class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                                <div class="relative">
+                                <div v-if="deviceStore.hasDevices" class="relative">
                                     <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                                         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
                                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -36,52 +36,92 @@
                         </div>
 
                     </div>
-                    <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
-                        <DeviceCard @click="openDeviceDrawer" v-for="i in 4"></DeviceCard>
-                    </div>
 
-
-                    <div class="text-center mt-10">
-                        <div class="join">
-                            <button class="join-item btn btn-sm">1</button>
-                            <button class="join-item btn btn-sm btn-active">2</button>
-                            <button class="join-item btn btn-sm">3</button>
-                            <button class="join-item btn btn-sm">4</button>
+                    <!-- DEVICES -->
+                    <template v-if="deviceStore.hasDevices">
+                        <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
+                            <DeviceCard :option="{ device }" @click="openDeviceDrawer(device)"
+                                v-for="device in deviceStore.devices"></DeviceCard>
                         </div>
 
-                    </div>
+
+                        <div v-if="false" class="text-center mt-10">
+                            <div class="join">
+                                <button class="join-item btn btn-sm">1</button>
+                                <button class="join-item btn btn-sm btn-active">2</button>
+                                <button class="join-item btn btn-sm">3</button>
+                                <button class="join-item btn btn-sm">4</button>
+                            </div>
+
+                        </div>
+
+                    </template>
+                    <!-- end of DEVICES -->
+
+                    <!-- LOADING -->
+                    <template v-if="deviceStore.isGettingDevices">
+                        <div class="w-full h-[50vh] flex flex-col justify-center items-center gap-36">
+                            <div class="flex justify-between gap-10">
+                                <div class="flex flex-col gap-4 w-52" v-for="i in 4">
+                                    <div class="skeleton h-32 w-full"></div>
+                                    <div class="skeleton h-4 w-28"></div>
+
+                                </div>
+                            </div>
+
+                            <p class="text-gray-600">Getting devices</p>
+                        </div>
+                    </template>
+                    <!-- end of LOADING -->
+
+
+
+
                 </div>
             </div>
 
         </section>
 
-        <Drawer drawerId = "deviceDrawer">
-           <SingleDeviceMonitoring></SingleDeviceMonitoring>
-           <WaterConsumptionChart></WaterConsumptionChart>
-           <MonthlyConsumptionStats></MonthlyConsumptionStats>
-           <TotalPayableBillWidget></TotalPayableBillWidget>
-           <UsersTable :option="usersDataTableOption"></UsersTable>
+        <Drawer drawerId="deviceDrawer">
+
+            <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }"></SingleDeviceMonitoring>
+            <WaterConsumptionChart></WaterConsumptionChart>
+            <MonthlyConsumptionStats></MonthlyConsumptionStats>
+            <TotalPayableBillWidget></TotalPayableBillWidget>
+            <!-- <UsersTable :option="usersDataTableOption"></UsersTable> -->
 
         </Drawer>
     </NuxtLayout>
 </template>
+
 <script setup lang="ts">
+import type { IDevice } from '~/server/api/device/model/device.model';
 import { UserModel } from '~/server/api/user/model/user.model';
+import { useAuthStore } from '~/stores/auth/auth.store';
+import { useDeviceStore } from '~/stores/device/device.store';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
 
 useHead({ title: "Devices" })
 
-const openDeviceDrawer = ()=>{
+const deviceStore = useDeviceStore()
+const authStore = useAuthStore()
+
+await deviceStore.getDevicesByUser(authStore.currentUser.objectId);
+const selectedDevice = ref<IDevice>()
+
+const openDeviceDrawer = (device: IDevice) => {
+    // Update the device store
+    deviceStore.selectDevice(device)
     const drawer = document.getElementById("deviceDrawer");
     drawer?.click()
 }
 
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Users',
-            users : [
-                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"})
-            ] as UserModel[],
-            columns: ["Id", "Name", "Email", "Phone Number", "Role", "Devices"]
+    users: [
+        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" })
+    ] as UserModel[],
+    columns: ["Id", "Name", "Email", "Phone Number", "Role", "Devices"]
 } as UserTableOptionDTO);
 
 
