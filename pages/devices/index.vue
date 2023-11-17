@@ -88,7 +88,8 @@
             <WaterConsumptionChart></WaterConsumptionChart>
             <MonthlyConsumptionStats></MonthlyConsumptionStats>
             <TotalPayableBillWidget></TotalPayableBillWidget>
-            <!-- <UsersTable :option="usersDataTableOption"></UsersTable> -->
+            <UsersTable :option="usersDataTableOption"></UsersTable>
+            <BillingTable :option="billingDataTableOption"></BillingTable>
 
         </Drawer>
     </NuxtLayout>
@@ -122,6 +123,14 @@ const usersDataTableOption = ref<UserTableOptionDTO>({
         new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" })
     ] as UserModel[],
     columns: ["Id", "Name", "Email", "Phone Number", "Role", "Devices"]
+} as UserTableOptionDTO);
+
+const billingDataTableOption = ref<UserTableOptionDTO>({
+    title: 'Billing History',
+            users : [
+                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"})
+            ] as UserModel[],
+            columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
 } as UserTableOptionDTO);
 
 
