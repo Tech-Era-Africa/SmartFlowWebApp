@@ -87,7 +87,7 @@
             <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }"></SingleDeviceMonitoring>
             <WaterConsumptionChart></WaterConsumptionChart>
             <MonthlyConsumptionStats></MonthlyConsumptionStats>
-            <TotalPayableBillWidget></TotalPayableBillWidget>
+            <TotalPayableBillWidget :option="{amount : getBill(), currency : 'GHC'}"></TotalPayableBillWidget>
             <UsersTable :option="usersDataTableOption"></UsersTable>
             <BillingTable :option="billingDataTableOption"></BillingTable>
 
@@ -116,6 +116,8 @@ const openDeviceDrawer = (device: IDevice) => {
     const drawer = document.getElementById("deviceDrawer");
     drawer?.click()
 }
+
+const getBill = ()=>  useWaterBillAlgo({consumption : 20})
 
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Users',

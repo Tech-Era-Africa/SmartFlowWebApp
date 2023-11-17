@@ -8,11 +8,24 @@
             </button> -->
         </div>
         <div class="flex-1 flex flex-col lg:flex-row gap-2">
-            <Stat :option="{ title: 'Month', value: 'GHC570', clearBg : true }">
-            <p>Rise</p>
+            <Stat :option="{ title: 'Month', value: `${formatAmount(option.amount)}`, clearBg : true }">
+            <slot/>
         </Stat>
         
         </div>
         <button class="btn bg-black text-white  mt-5">Send Bill</button>
     </div>
 </template>
+<script setup lang="ts">
+const props = defineProps({
+    option: {
+        type: Object as () => {currency?: string, amount:number},
+        required: true
+    },
+})
+
+const formatAmount = (number:number)=> new Intl.NumberFormat('en-GH', {
+  style: 'currency',
+  currency: props.option.currency ??  'GHS'
+}).format(number)
+</script>

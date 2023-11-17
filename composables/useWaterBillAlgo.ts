@@ -10,7 +10,9 @@ export const useWaterBillAlgo = (options: IWaterBillAlgoOptions) => {
     ruralWater: 0.02,
   };
 
-  // CONSUMPTION IN CUBIC METRES (1000L)
+  if(!options.type) options.type = 'DOMESTIC'; //defaults to DOMESTIC
+
+  // CONSUMPTION IN CUBIC METRES (1000L) 
   const calculateWaterCharge = (rate: number, consumption: number) => {
     return consumption * rate;
   };
@@ -27,10 +29,10 @@ export const useWaterBillAlgo = (options: IWaterBillAlgoOptions) => {
     return waterCharge + (waterCharge * surcharge.fireFighting) + (waterCharge * surcharge.ruralWater);
   }
 
-  throw new Error('Invalid water bill type');
+  return 0;
 };
 
 export interface IWaterBillAlgoOptions {
-  type: 'DOMESTIC' | 'INDUSTRIAL' | 'COMMERCIAL';
+  type?: 'DOMESTIC' | 'INDUSTRIAL' | 'COMMERCIAL';
   consumption: number;
 }
