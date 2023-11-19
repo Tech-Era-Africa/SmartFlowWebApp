@@ -9,15 +9,15 @@
         <div class="mt-5 flex flex-col flex-1 justify-between">
             <div class="flex justify-between items-center">
                 <p class="text-gray-500 font-medium">Maximal Used</p>
-                <p class="text-xl font-bold">234L</p>
+                <p class="text-xl font-bold">0L</p>
             </div>
             <div class="flex justify-between items-center">
                 <p class="text-gray-500 font-medium">Minimal Used</p>
-                <p class="text-xl font-bold">234L</p>
+                <p class="text-xl font-bold">0L</p>
             </div>
             <div class="flex justify-between items-center">
-                <p class="text-gray-500 font-medium">Total Used <span class="text-xs">This Month</span></p>
-                <p class="text-xl font-bold">234L</p>
+                <p class="text-gray-500 font-medium">Total Used  <span class="text-xs"> (This Month)</span></p>
+                <p class="text-xl font-bold">0L</p>
             </div>
         </div>
      </div>

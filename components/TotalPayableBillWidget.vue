@@ -13,7 +13,7 @@
         </Stat>
         
         </div>
-        <button class="btn bg-black text-white  mt-5">Send Bill</button>
+        <button :disabled="option.amount == 0" class="btn bg-black text-white  mt-5">Send Bill</button>
     </div>
 </template>
 <script setup lang="ts">
