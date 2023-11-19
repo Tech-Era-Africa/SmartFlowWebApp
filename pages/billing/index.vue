@@ -36,15 +36,15 @@
 </template>
 <script setup lang="ts">
 import {type UserTableOptionDTO} from '~/utils/dto/userTable.option.dto';
-import { UserModel } from '~/server/api/user/model/user.model';
+import { UserModel, type User } from '~/server/api/user/model/user.model';
 
 useHead({title : "Water Billing"})
 
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Billing History',
             users : [
-                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"})
-            ] as UserModel[],
+                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"}).user
+            ] as User[],
             columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
 } as UserTableOptionDTO);
 

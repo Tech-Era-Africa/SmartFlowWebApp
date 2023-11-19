@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { useStoreFetchRequest } from '~/composables/use_store_fetch_request';
 import { DeviceModel, type IDevice } from '~/server/api/device/model/device.model';
+import { UserModel, type User } from '~/server/api/user/model/user.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 
 export const useDeviceStore = defineStore({
@@ -9,8 +10,12 @@ export const useDeviceStore = defineStore({
     // ALL DEVICE STATE
     devices: [] as IDevice[],
     selectedDevice: {} as IDevice,
+    deviceUsers : [] as User[],
     getDevicesApiState: ApiResponseState.NULL,
     getDevicesApiFailure: { message: "" },
+
+    deviceUsersApiState: ApiResponseState.NULL,
+    deviceUsersApiFailure: { message: "" },
 
     // CONSUMPTION TREND STATE
     deviceConsumptionTrend: [],
@@ -21,6 +26,7 @@ export const useDeviceStore = defineStore({
     consumption : 0,
     consumptionApiState : ApiResponseState.NULL,
     consumptionApiFailure : {message : ""},
+
   }),
   actions: {
 
@@ -36,6 +42,21 @@ export const useDeviceStore = defineStore({
         this.devices = [] //Default to empty
         this.getDevicesApiFailure.message = error.message;
         this.getDevicesApiState = ApiResponseState.FAILED;
+      }
+    },
+
+    async getDeviceUsers(deviceId: string) {
+      try {
+        this.deviceUsersApiState = ApiResponseState.LOADING;
+        const queryString = new URLSearchParams({ deviceId }).toString();
+        const data = await useStoreFetchRequest(`/api/device/users?${queryString}`, 'GET');
+        this.deviceUsers = (data as any).users.map((data: { user: any; }) => UserModel.default().user)
+        this.deviceUsersApiState = ApiResponseState.SUCCESS;
+
+      } catch (error: any) {
+        this.deviceUsers = [] //Default to empty
+        this.deviceUsersApiFailure.message = error.message;
+        this.deviceUsersApiState = ApiResponseState.FAILED;
       }
     },
 
@@ -79,6 +100,9 @@ export const useDeviceStore = defineStore({
 
       // Get the current consumption
       this.getCurrentDeviceConsumption(device.objectId)
+
+      // Get device users
+      this.getDeviceUsers(device.objectId)
     }
 
   },
@@ -96,6 +120,10 @@ export const useDeviceStore = defineStore({
     isGettingDeviceConsumption: (state) => state.consumptionApiState === ApiResponseState.LOADING,
     failed_DeviceConsumption: (state) => state.consumptionApiState === ApiResponseState.FAILED,
     success_DeviceConsumption: (state) => state.consumptionApiState === ApiResponseState.SUCCESS,
+
+    isGettingDeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.LOADING,
+    failed_DeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.FAILED,
+    success_DeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.SUCCESS,
 
   },
 })

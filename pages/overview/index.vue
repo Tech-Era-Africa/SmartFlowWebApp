@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { UserModel } from '~/server/api/user/model/user.model';
+import { UserModel, type User } from '~/server/api/user/model/user.model';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
 
 useHead({title : "Overview"})
@@ -51,8 +51,8 @@ useHead({title : "Overview"})
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Users',
             users : [
-                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"})
-            ] as UserModel[],
+                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"}).user
+            ] as User[],
             columns: ["Id", "Name", "Email", "Phone Number", "Role", "Devices"]
 } as UserTableOptionDTO);
 

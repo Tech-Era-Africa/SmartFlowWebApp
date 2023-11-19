@@ -93,6 +93,7 @@
                 <p class="font-bold flex justify-end items-center gap-2"><span v-if="deviceStore.isGettingDeviceConsumption" class="loading loading-spinner loading-xs text-gray-400"></span><span>{{deviceStore.consumption}}L</span></p>
             </div>
             </TotalPayableBillWidget>
+            <p>{{ deviceStore.deviceUsers }}</p>
             <UsersTable :option="usersDataTableOption"></UsersTable>
             <BillingTable :option="billingDataTableOption"></BillingTable>
 
@@ -102,11 +103,11 @@
 
 <script setup lang="ts">
 import type { IDevice } from '~/server/api/device/model/device.model';
-import { UserModel } from '~/server/api/user/model/user.model';
+import { UserModel, type User } from '~/server/api/user/model/user.model';
 import { useAuthStore } from '~/stores/auth/auth.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
-import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
+
 
 useHead({ title: "Devices" })
 
@@ -128,16 +129,16 @@ const getBill = () => useWaterBillAlgo({ consumption: deviceStore.consumption })
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Users',
     users: [
-        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" })
-    ] as UserModel[],
+        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" }).user
+    ] as User[],
     columns: ["Id", "Name", "Email", "Phone Number", "Role", "Devices"]
 } as UserTableOptionDTO);
 
 const billingDataTableOption = ref<UserTableOptionDTO>({
     title: 'Billing History',
     users: [
-        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" })
-    ] as UserModel[],
+        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" }).user
+    ] as User[],
     columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
 } as UserTableOptionDTO);
 
@@ -161,8 +162,9 @@ const waterConsumptionChartOptions = reactive(
 
 watch(deviceStore, state => {
    
-    if(state.isGettingConsumptionTrend) return waterConsumptionChartOptions.isLoading = true;
-    if(state.success_ConsumptionTrend) return waterConsumptionChartOptions.series[0].data = state.deviceConsumptionTrend;
+    if(state.isGettingConsumptionTrend) waterConsumptionChartOptions.isLoading = true;
+    if(state.success_ConsumptionTrend) waterConsumptionChartOptions.series[0].data = state.deviceConsumptionTrend;
+    if(state.success_DeviceUsers) usersDataTableOption.value.users = state.deviceUsers
 
 })
 
