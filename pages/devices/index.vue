@@ -87,7 +87,12 @@
             <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }"></SingleDeviceMonitoring>
             <WaterConsumptionChart :option="waterConsumptionChartOptions"></WaterConsumptionChart>
             <MonthlyConsumptionStats></MonthlyConsumptionStats>
-            <TotalPayableBillWidget :option="{ amount: getBill(), currency: 'GHC' }"></TotalPayableBillWidget>
+            <TotalPayableBillWidget :option="{ amount: getBill(), currency: 'GHC' }">
+            <div class="text-right">
+                <p class="text-xs text-gray-500">Consumption</p>
+                <p class="font-bold flex justify-end items-center gap-2"><span v-if="deviceStore.isGettingDeviceConsumption" class="loading loading-spinner loading-xs text-gray-400"></span><span>{{deviceStore.consumption}}L</span></p>
+            </div>
+            </TotalPayableBillWidget>
             <UsersTable :option="usersDataTableOption"></UsersTable>
             <BillingTable :option="billingDataTableOption"></BillingTable>
 
@@ -118,7 +123,7 @@ const openDeviceDrawer = async (device: IDevice) => {
 
 }
 
-const getBill = () => useWaterBillAlgo({ consumption: deviceStore.selectedDevice.consumption })
+const getBill = () => useWaterBillAlgo({ consumption: deviceStore.consumption })
 
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Users',

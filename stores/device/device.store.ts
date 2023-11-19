@@ -16,6 +16,11 @@ export const useDeviceStore = defineStore({
     deviceConsumptionTrend: [],
     consumptionTrendsApiState: ApiResponseState.NULL,
     consumptionTrendsApiFailure: { message: "" },
+
+    // Current consumption
+    consumption : 0,
+    consumptionApiState : ApiResponseState.NULL,
+    consumptionApiFailure : {message : ""},
   }),
   actions: {
 
@@ -31,6 +36,21 @@ export const useDeviceStore = defineStore({
         this.devices = [] //Default to empty
         this.getDevicesApiFailure.message = error.message;
         this.getDevicesApiState = ApiResponseState.FAILED;
+      }
+    },
+
+    async getCurrentDeviceConsumption(deviceId: string) {
+      try {
+        this.consumptionApiState = ApiResponseState.LOADING;
+        const queryString = new URLSearchParams({ deviceId }).toString();
+        const data = await useStoreFetchRequest(`/api/device/consumption/current?${queryString}`, 'GET');
+        this.consumption = (data as any).latestDeviceConsumption.consumption ?? 0
+        this.consumptionApiState = ApiResponseState.SUCCESS;
+
+      } catch (error: any) {
+        this.consumption = 0
+        this.consumptionApiFailure.message = error.message;
+        this.consumptionApiState = ApiResponseState.FAILED;
       }
     },
 
@@ -55,7 +75,10 @@ export const useDeviceStore = defineStore({
       this.selectedDevice = device
 
       // Get the consumption trend data
-      await this.getDeviceConsumptionTrend(device.objectId)
+       this.getDeviceConsumptionTrend(device.objectId)
+
+      // Get the current consumption
+      this.getCurrentDeviceConsumption(device.objectId)
     }
 
   },
@@ -69,6 +92,10 @@ export const useDeviceStore = defineStore({
     isGettingConsumptionTrend: (state) => state.consumptionTrendsApiState === ApiResponseState.LOADING,
     failed_ConsumptionTrend: (state) => state.consumptionTrendsApiState === ApiResponseState.FAILED,
     success_ConsumptionTrend: (state) => state.consumptionTrendsApiState === ApiResponseState.SUCCESS,
+
+    isGettingDeviceConsumption: (state) => state.consumptionApiState === ApiResponseState.LOADING,
+    failed_DeviceConsumption: (state) => state.consumptionApiState === ApiResponseState.FAILED,
+    success_DeviceConsumption: (state) => state.consumptionApiState === ApiResponseState.SUCCESS,
 
   },
 })

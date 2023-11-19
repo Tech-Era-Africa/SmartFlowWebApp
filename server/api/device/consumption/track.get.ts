@@ -1,0 +1,26 @@
+import {useApiFetch} from "~/composables/use_api_fetch";
+
+
+export default defineEventHandler((event) => new Promise(async (resolve, reject) => {
+    const queryParams = getQuery(event);
+        const {deviceId} = queryParams;
+
+        
+    try {
+        // Check for the availability of a user id
+        if(!deviceId) throw Error("User id required")
+
+        const res= await useApiFetch('functions/trackDeviceConsumption', {
+            method : "POST",
+            data:{
+                deviceId
+            }
+          });
+
+       return resolve(res.data)
+
+    } catch (error:any) {
+        console.log(error.response.data)
+        return reject(error)
+    }
+}))
