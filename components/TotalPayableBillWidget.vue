@@ -16,12 +16,12 @@
 
         </div>
         <div class="flex-1 flex flex-col lg:flex-row gap-2">
-            <Stat :option="{ title: 'Month', value: `${formatAmount(option.amount)}`, clearBg: true }">
+            <Stat :option="{ title: 'Amount', value: `${formatAmount(option.amount)}`, clearBg: true }">
                 <slot />
             </Stat>
 
         </div>
-        <button :disabled="option.amount == 0" class="btn bg-black text-white  mt-5">Generate Bill</button>
+        <button @click="generateBill" :disabled="option.amount == 0" class="btn bg-black text-white  mt-5">Generate Bill</button>
     </div>
 </template>
 <script setup lang="ts">
@@ -36,4 +36,10 @@ const formatAmount = (number: number) => new Intl.NumberFormat('en-GH', {
     style: 'currency',
     currency: props.option.currency ?? 'GHS'
 }).format(number)
+
+const generateBill = ()=>{
+    const billModal = document.getElementById("billModal");
+     // Trigger  modal
+     (billModal as any).showModal();
+}
 </script>

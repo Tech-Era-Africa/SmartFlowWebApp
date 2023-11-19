@@ -93,11 +93,16 @@
                 <p class="font-bold flex justify-end items-center gap-2"><span v-if="deviceStore.isGettingDeviceConsumption" class="loading loading-spinner loading-xs text-gray-400"></span><span>{{deviceStore.consumption}}L</span></p>
             </div>
             </TotalPayableBillWidget>
-            <p>{{ deviceStore.deviceUsers }}</p>
-            <UsersTable :option="usersDataTableOption"></UsersTable>
-            <BillingTable :option="billingDataTableOption"></BillingTable>
+            <!-- <UsersTable :option="usersDataTableOption"></UsersTable>
+            <BillingTable :option="billingDataTableOption"></BillingTable> -->
+
+        
 
         </Drawer>
+
+        <!-- MODALS -->
+        <ModalBill></ModalBill>
+        <!-- end of MODALS -->
     </NuxtLayout>
 </template>
 
