@@ -20,7 +20,7 @@
             </div>
             <div class="w-full h-96 flex flex-col lg:flex-row   p-2 gap-4">
                 <div class="w-full lg:w-3/5 h-full">
-                    <WaterConsumptionChart></WaterConsumptionChart>
+                    <!-- <WaterConsumptionChart></WaterConsumptionChart> -->
                 </div>
                 <div class="flex-1 h-full">
                     <DevicesSummary></DevicesSummary>
@@ -32,10 +32,10 @@
             </div>
         </section>
         <Drawer drawerId = "deviceDrawer">
-           <SingleDeviceMonitoring></SingleDeviceMonitoring>
-           <WaterConsumptionChart></WaterConsumptionChart>
+           <!-- <SingleDeviceMonitoring></SingleDeviceMonitoring> -->
+           <!-- <WaterConsumptionChart></WaterConsumptionChart> -->
            <MonthlyConsumptionStats></MonthlyConsumptionStats>
-           <TotalPayableBillWidget></TotalPayableBillWidget>
+           <!-- <TotalPayableBillWidget></TotalPayableBillWidget> -->
            <UsersTable :option="usersDataTableOption"></UsersTable>
 
         </Drawer>

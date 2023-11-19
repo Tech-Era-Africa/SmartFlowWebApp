@@ -16,6 +16,15 @@
 </template>
 
 <script setup lang="ts">
+import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
+
+
+const props = defineProps({
+    option: {
+        type: Object as () => IWaterConsumptionChart,
+        required: true
+    },
+})
 
 // CHART SETTTINGS
 const chart4Options = ref({
@@ -29,16 +38,7 @@ const chart4Options = ref({
             enabled: false,
         },
     },
-    series: [
-        {
-            name: 'Water Consumption',
-            data: [12, 2, 5 ,6,8],
-        },
-        {
-            name: 'Water Bill',
-            data: [0, 5 , 20 ,10, 5],
-        },
-    ],
+    series: props.option.series,
     dataLabels: {
         enabled: false,
     },
@@ -55,7 +55,7 @@ const chart4Options = ref({
         },
     },
     xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        categories: props.option.xAxisCategories,
     },
     yaxis: {
         show: true,
@@ -79,5 +79,6 @@ const chart4Options = ref({
 })
 
 // end of CHART SETTING
+
 
 </script>

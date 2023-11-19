@@ -85,9 +85,9 @@
         <Drawer drawerId="deviceDrawer">
 
             <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }"></SingleDeviceMonitoring>
-            <WaterConsumptionChart></WaterConsumptionChart>
+            <WaterConsumptionChart :option="waterConsumptionChartOptions"></WaterConsumptionChart>
             <MonthlyConsumptionStats></MonthlyConsumptionStats>
-            <TotalPayableBillWidget :option="{amount : getBill(), currency : 'GHC'}"></TotalPayableBillWidget>
+            <TotalPayableBillWidget :option="{ amount: getBill(), currency: 'GHC' }"></TotalPayableBillWidget>
             <UsersTable :option="usersDataTableOption"></UsersTable>
             <BillingTable :option="billingDataTableOption"></BillingTable>
 
@@ -101,6 +101,7 @@ import { UserModel } from '~/server/api/user/model/user.model';
 import { useAuthStore } from '~/stores/auth/auth.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
+import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
 useHead({ title: "Devices" })
 
@@ -108,16 +109,16 @@ const deviceStore = useDeviceStore()
 const authStore = useAuthStore()
 
 await deviceStore.getDevicesByUser(authStore.currentUser.objectId);
-const selectedDevice = ref<IDevice>()
 
-const openDeviceDrawer = (device: IDevice) => {
+const openDeviceDrawer = async (device: IDevice) => {
     // Update the device store
     deviceStore.selectDevice(device)
     const drawer = document.getElementById("deviceDrawer");
     drawer?.click()
+
 }
 
-const getBill = ()=>  useWaterBillAlgo({consumption : 20})
+const getBill = () => useWaterBillAlgo({ consumption: deviceStore.selectedDevice.consumption })
 
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Users',
@@ -129,11 +130,38 @@ const usersDataTableOption = ref<UserTableOptionDTO>({
 
 const billingDataTableOption = ref<UserTableOptionDTO>({
     title: 'Billing History',
-            users : [
-                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"})
-            ] as UserModel[],
-            columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
+    users: [
+        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" })
+    ] as UserModel[],
+    columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
 } as UserTableOptionDTO);
+
+const waterConsumptionChartOptions = reactive(
+    {
+        series: [
+            {
+                name: 'Water Consumption',
+                data: deviceStore.deviceConsumptionTrend,
+            },
+            {
+                name: 'Water Bill',
+                data: [],
+            },
+        ],
+        xAxisCategories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        isLoading: deviceStore.isGettingConsumptionTrend,
+        success: deviceStore.success_ConsumptionTrend
+    }
+)
+
+watch(deviceStore, state => {
+   
+    if(state.isGettingConsumptionTrend) return waterConsumptionChartOptions.isLoading = true;
+    if(state.success_ConsumptionTrend) return waterConsumptionChartOptions.series[0].data = state.deviceConsumptionTrend;
+
+})
+
+
 
 
 
