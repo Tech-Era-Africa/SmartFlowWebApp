@@ -10,7 +10,9 @@ export const useWaterBillAlgo = (options: IWaterBillAlgoOptions) => {
     ruralWater: 0.02,
   };
 
-  if(!options.type) options.type = 'DOMESTIC'; //defaults to DOMESTIC
+  const serviceCharge = 25
+
+  if (!options.type) options.type = 'DOMESTIC'; //defaults to DOMESTIC
 
   // CONSUMPTION IN CUBIC METRES (1000L) 
   const calculateWaterCharge = (rate: number, consumption: number) => {
@@ -20,16 +22,31 @@ export const useWaterBillAlgo = (options: IWaterBillAlgoOptions) => {
   if (options.type === 'DOMESTIC') {
     const rate = options.consumption <= 5 ? rates[options.type][0] : rates[options.type][1];
     const waterCharge = calculateWaterCharge(rate, options.consumption);
-    return waterCharge + (waterCharge * surcharge.fireFighting) + (waterCharge * surcharge.ruralWater);
+    return {
+      waterCharge: waterCharge + (waterCharge * surcharge.fireFighting) + (waterCharge * surcharge.ruralWater),
+      firefighting: waterCharge * surcharge.fireFighting,
+      ruralWater : waterCharge * surcharge.ruralWater,
+      serviceCharge
+    };
   }
 
   if (options.type === 'COMMERCIAL' || options.type === 'INDUSTRIAL') {
     const rate = rates[options.type][0];
     const waterCharge = calculateWaterCharge(rate, options.consumption);
-    return waterCharge + (waterCharge * surcharge.fireFighting) + (waterCharge * surcharge.ruralWater);
+    return {
+      waterCharge: waterCharge + (waterCharge * surcharge.fireFighting) + (waterCharge * surcharge.ruralWater),
+      firefighting: waterCharge * surcharge.fireFighting,
+      ruralWater : waterCharge * surcharge.ruralWater,
+      serviceCharge,
+    }
   }
 
-  return 0;
+  return {
+    waterCharge: 0,
+    firefighting: 0,
+    ruralWater : 0,
+    serviceCharge
+  };
 };
 
 export interface IWaterBillAlgoOptions {

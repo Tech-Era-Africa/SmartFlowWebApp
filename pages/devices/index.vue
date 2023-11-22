@@ -87,7 +87,7 @@
             <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }"></SingleDeviceMonitoring>
             <WaterConsumptionChart :option="waterConsumptionChartOptions"></WaterConsumptionChart>
             <MonthlyConsumptionStats></MonthlyConsumptionStats>
-            <TotalPayableBillWidget :option="{ amount: getBill(), currency: 'GHC' }">
+            <TotalPayableBillWidget :option="{ amount: getBill().waterCharge, currency: 'GHC',device: deviceStore.selectedDevice }">
             <div class="text-right">
                 <p class="text-xs text-gray-500">Consumption</p>
                 <p class="font-bold flex justify-end items-center gap-2"><span v-if="deviceStore.isGettingDeviceConsumption" class="loading loading-spinner loading-xs text-gray-400"></span><span>{{deviceStore.consumption}}L</span></p>
@@ -101,7 +101,8 @@
         </Drawer>
 
         <!-- MODALS -->
-        <ModalBill></ModalBill>
+            <ModalBill :option="{ device: deviceStore.selectedDevice }"></ModalBill>
+       
         <!-- end of MODALS -->
     </NuxtLayout>
 </template>

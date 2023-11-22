@@ -8,13 +8,13 @@
       </div>
       <div class="drawer-side drawer-open">
         <label :for="drawerId" aria-label="close sidebar" class="drawer-overlay"></label>
-        <div class="max-w-xl w-full h-full bg-pageBg overflow-y-auto">
+        <div class="max-w-xl w-full h-full  overflow-y-auto">
           <div class="flex flex-col gap-4 py-5 sm:p-6 ">
               <div class="flex items-center justify-between">
                 <p class="text-sm font-bold tracking-widest text-gray-500 uppercase"></p>
 
                 <button type="button" @click="closeDrawer"
-                  class="p-1 -m-1 text-gray-400 transition-all duration-200 rounded-md hover:text-gray-900 hover:bg-gray-100">
+                  class="p-1 -m-1transition-all duration-200 rounded-md text-gray-900 bg-gray-100">
                   <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -22,7 +22,7 @@
                 </button>
               </div>
               <slot/>
-            </div>ß
+            </div>
 
         </div>
       </div>

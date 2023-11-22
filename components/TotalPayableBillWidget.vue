@@ -1,15 +1,17 @@
 <template>
     <div class="w-full h-full bg-[#E5FFE4] rounded-xl p-5 flex flex-col gap-2">
         <div class="flex  justify-between items-center">
-            <h1 class="font-bold text-lg">Total Payable Bill</h1>
+            <div>
+                <h1 class="font-bold text-lg">Total Payable Bill</h1>
+                <p class="text-xs text-gray-400">Last Updated: 10mins ago</p>
+            </div>
             <div class="dropdown dropdown-end dropdown-bottom">
-                <label tabindex="0" class="btn btn-ghost m-1">Domestic
+                <label tabindex="0" class="btn btn-ghost m-1">Today
                     <Icon name="ion:caret-down-outline" />
                 </label>
                 <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                    <li><a>Domestic</a></li>
-                    <li><a>Commercial</a></li>
-                    <li><a>Industrial</a></li>
+                    <li><a>This Month</a></li>
+                    <li><a>This Year</a></li>
                 </ul>
             </div>
 
@@ -25,12 +27,17 @@
     </div>
 </template>
 <script setup lang="ts">
+import type { IDevice } from '~/server/api/device/model/device.model';
+import { useDeviceStore } from '~/stores/device/device.store';
+
 const props = defineProps({
     option: {
-        type: Object as () => { currency?: string, amount: number },
+        type: Object as () => { currency?: string, amount: number, device:IDevice },
         required: true
     },
 })
+
+const deviceStore = useDeviceStore()
 
 const formatAmount = (number: number) => new Intl.NumberFormat('en-GH', {
     style: 'currency',
@@ -41,5 +48,8 @@ const generateBill = ()=>{
     const billModal = document.getElementById("billModal");
      // Trigger  modal
      (billModal as any).showModal();
+
+    //  Get the current water consumption
+    deviceStore.getCurrentDeviceConsumption(props.option.device.objectId)
 }
 </script>
