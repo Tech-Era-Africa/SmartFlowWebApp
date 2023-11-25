@@ -28,6 +28,7 @@
 </template>
 <script setup lang="ts">
 import type { IDevice } from '~/server/api/device/model/device.model';
+import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 
 const props = defineProps({
@@ -38,6 +39,7 @@ const props = defineProps({
 })
 
 const deviceStore = useDeviceStore()
+const controlStore = useControlStore()
 
 const formatAmount = (number: number) => new Intl.NumberFormat('en-GH', {
     style: 'currency',
@@ -45,9 +47,7 @@ const formatAmount = (number: number) => new Intl.NumberFormat('en-GH', {
 }).format(number)
 
 const generateBill = ()=>{
-    const billModal = document.getElementById("billModal");
-     // Trigger  modal
-     (billModal as any).showModal();
+    controlStore.toggleBillModal()
 
     //  Get the current water consumption
     deviceStore.getCurrentDeviceConsumption(props.option.device.objectId)

@@ -102,6 +102,7 @@
 
         <!-- MODALS -->
             <ModalBill :option="{ device: deviceStore.selectedDevice }"></ModalBill>
+            <ModalBillSuccess></ModalBillSuccess>
        
         <!-- end of MODALS -->
     </NuxtLayout>

@@ -1,4 +1,4 @@
-export const useStoreFetchRequest = async (endpoint:string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', body = null) => {
+export const useStoreFetchRequest = async (endpoint:string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', body?:any) => {
     try {
       const { data, error } = await useFetch(endpoint, {
         method,
