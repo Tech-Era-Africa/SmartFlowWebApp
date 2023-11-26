@@ -1,20 +1,16 @@
 import {useApiFetch} from "~/composables/use_api_fetch";
+import { IBillOption } from "./model/bill.model";
 
 
 export default defineEventHandler((event) => new Promise(async (resolve, reject) => {
-    const queryParams = getQuery(event);
-        const {deviceId} = queryParams;
 
-        // const school: ISchool = await readBody(event)
+       const billOption: IBillOption = await readBody(event)
         
     try {
-        // Check for the availability of a user id
-        if(!deviceId) throw Error("User id required")
-
-        const res= await useApiFetch('functions/getLatestDeviceConsumption', {
+        const res= await useApiFetch('functions/generateBillWithDeviceConsumptions', {
             method : "POST",
             data:{
-                deviceId
+                ...billOption
             }
           });
 

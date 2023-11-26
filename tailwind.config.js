@@ -17,7 +17,8 @@ module.exports = {
       },
       backgroundImage: {
         'headerBg': "url('/bg/header_bg.png')",
-        'invoiceBg' : "url('/img/3d-glassy-bent-gradient-cards-and-spheres.png')"
+        'invoiceBg' : "url('/img/3d-glassy-bent-gradient-cards-and-spheres.png')",
+        'invoiceBg-1' : "url('/img/3d-glassy-slides.png')"
       },
       fontFamily: {
         sans: ['Manrope', 'sans-serif'],

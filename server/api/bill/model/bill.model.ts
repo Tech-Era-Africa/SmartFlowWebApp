@@ -15,7 +15,7 @@ export class BillModel {
         objectId:"",
         currency : "",
         totalBill : 0,
-        device : {} as IDevice,
+        device : [] as IDevice[],
         status : "",
         createdAt : "",
   
@@ -29,7 +29,7 @@ export class BillModel {
         objectId:json.objectId,
         currency : json.currency,
         totalBill : json.totalBill,
-        device : DeviceModel.fromMap(json.device).device,
+        device : json.deviceConsumption,
         status : json.status.objectId,
         createdAt : json.createdAt,
   
@@ -41,11 +41,22 @@ export class BillModel {
   
   export interface IBill {
     objectId:string;
-    device:IDevice;
+    device:IDevice[];
     totalBill:number;
     currency : string;
     status : any;
     createdAt:any;
+  
+  }
+
+  export interface IBillOption {
+    deviceIds : string[]
+    amount: number,
+    waterCharge: number,
+    fireCharge: number,
+    ruralCharge: number,
+    serviceCharge: number,
+    currency: string,
   
   }
 

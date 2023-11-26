@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { IBill, NewBillParam } from '~/server/api/bill/model/bill.model';
+import type { IBill, IBillOption, NewBillParam } from '~/server/api/bill/model/bill.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 
 export const useBillStore = defineStore({
@@ -10,13 +10,15 @@ export const useBillStore = defineStore({
    }),
   actions: {
 
-    async createNewBill(bill:NewBillParam) {
+    async createNewBill(bill:IBillOption) {
       try {
         this.billApiState = ApiResponseState.LOADING;
-        const data = await useStoreFetchRequest(`https://webhook.site/255af350-755a-472a-8fa0-33af65387eab`, 'POST', bill);
+        const data = await useStoreFetchRequest("/api/bill", 'POST', bill);
         this.billApiState = ApiResponseState.SUCCESS;
+        console.log("Success generating bill: ", data)
 
       } catch (error: any) {
+        console.log(error)
         this.billApiFailure.message = error.message;
         this.billApiState = ApiResponseState.FAILED;
       }

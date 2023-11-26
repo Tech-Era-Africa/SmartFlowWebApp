@@ -1,7 +1,5 @@
 <template>
-    <dialog id="billModal" class="modal">
-        <div class="modal-box flex flex-col gap-5">
-            <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center">
                 <div>
                     <h3 class="font-bold text-2xl">Water Bill</h3>
                     <div class="badge badge-accent">Preview</div>
@@ -93,8 +91,6 @@
                     <div class="btn" @click="controlStore.toggleBillModal">Close</div>
                 </form>
             </div>
-        </div>
-    </dialog>
 </template>
 <script setup lang="ts">
 import type { IDevice } from '~/server/api/device/model/device.model';
@@ -119,18 +115,25 @@ const getBill = () => useWaterBillAlgo({ consumption: deviceStore.consumption })
 const totalCurrentCharge = computed(() => billStore.calculateTotalBill(deviceStore.consumption))
 
 const createBill = () => billStore.createNewBill({
+    deviceIds : [deviceStore.selectedDevice.objectId],
     currency: 'GHC',
-    device: deviceStore.selectedDevice,
-    totalBill: totalCurrentCharge.value
+    amount: totalCurrentCharge.value,
+    fireCharge : getBill().firefighting,
+    ruralCharge : getBill().ruralWater,
+    serviceCharge : getBill().serviceCharge,
+    waterCharge : getBill().waterCharge
 })
 
 
 
 watch(billStore, (state) => {
-    if (state.success_CreatingBill) return alert("Successfully created bill")
-    if (state.failed_CreatingBill){
+    if (state.success_CreatingBill){
         controlStore.toggleBillModal() //Closes it if opened
         return controlStore.toggleBillSuccessModal()
+      
+    }
+    if (state.failed_CreatingBill){
+        return alert("Failed to create bill")
     }
 })
 

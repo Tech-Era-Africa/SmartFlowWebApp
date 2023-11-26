@@ -1,7 +1,5 @@
 <template>
-    <dialog id="billSuccessModal" class="modal">
-        <div class="modal-box flex flex-col gap-5 text-center">
-            <div class="flex justify-end">
+    <div class="flex justify-end">
                 <button @click="controlStore.toggleBillSuccessModal()" type="button" class="p-1 -m-1transition-all duration-200 rounded-md text-gray-900 ">
                     <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" stroke-width="2">
@@ -18,8 +16,8 @@
                 month <span class="font-bold text-blue-600">November 2023</span> has been created. You can copy and share
                 the invoice link below or download.</p>
 
-            <div class="p-5 bg-green-50 rounded-2xl  relative cursor-pointer" @click="copyText">
-                <a class="link link-success">http://localhost:3000/bill/#12324</a>
+            <div class="p-5 bg-green-50 rounded-2xl text-center relative cursor-pointer" @click="copyText">
+                <a class="link link-success">http://localhost:3000/billing/invoice/#12324</a>
                 <Icon class="absolute top-5 right-5 text-gray-500" name="material-symbols:content-copy-outline-rounded">
                 </Icon>
             </div>
@@ -27,8 +25,6 @@
             <div class="flex items-center gap-2 w-full">
                 <button class="flex-1 btn btn-outline   mt-5">Download Bill</button>
             </div>
-        </div>
-    </dialog>
 </template>
 
 <script setup lang="ts">
@@ -45,6 +41,7 @@ const copyText = async () => {
         navigator.clipboard.writeText(`https://cfc-admin.netlify.app/account/invite?id=`);
         isCopied.value = true;
 
+        useRouter().push('/billing/invoice/sd')
         setTimeout(() => {
             // RESET
             isCopied.value = false;

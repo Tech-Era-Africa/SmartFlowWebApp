@@ -101,8 +101,13 @@
         </Drawer>
 
         <!-- MODALS -->
-            <ModalBill :option="{ device: deviceStore.selectedDevice }"></ModalBill>
-            <ModalBillSuccess></ModalBillSuccess>
+        <Modal modal-id="billModal">
+            <Bill :option="{ device: deviceStore.selectedDevice }"></Bill>
+        </Modal>
+
+        <Modal modal-id="billSuccessModal">
+            <BillSuccess></BillSuccess>
+        </Modal>
        
         <!-- end of MODALS -->
     </NuxtLayout>
