@@ -10,7 +10,7 @@ export default defineEventHandler((event) => new Promise(async (resolve, reject)
         const res= await useApiFetch('functions/generateBillWithDeviceConsumptions', {
             method : "POST",
             data:{
-                ...billOption
+                ...billOption.bill, deviceIds : billOption.devices.map(device=> device.objectId)
             }
           });
 

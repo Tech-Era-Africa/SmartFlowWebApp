@@ -1,4 +1,5 @@
-import { DeviceModel, IDevice } from "../../device/model/device.model";
+import { IObject } from "~/utils/type/i.object";
+import { IDevice } from "../../device/model/device.model";
 
 
 export class BillModel {
@@ -14,9 +15,13 @@ export class BillModel {
       const bill: IBill = {
         objectId:"",
         currency : "",
-        totalBill : 0,
-        device : [] as IDevice[],
-        status : "",
+        amount : 0,
+        fireCharge : 0,
+        ruralCharge : 0,
+        serviceCharge : 0,
+        updatedAt : "",
+        waterCharge : 0,
+        status : {objectId : ""},
         createdAt : "",
   
       };
@@ -28,10 +33,14 @@ export class BillModel {
       const bill: IBill = {
         objectId:json.objectId,
         currency : json.currency,
-        totalBill : json.totalBill,
-        device : json.deviceConsumption,
-        status : json.status.objectId,
+        amount : json.amount,
+        fireCharge : json.fireCharge,
+        ruralCharge : json.ruralCharge,
+        serviceCharge : json.serviceCharge,
+        waterCharge : json.waterCharge,
+        status : json.status,
         createdAt : json.createdAt,
+        updatedAt : json.updatedAt,
   
       };
   
@@ -40,27 +49,26 @@ export class BillModel {
   }
   
   export interface IBill {
-    objectId:string;
-    device:IDevice[];
-    totalBill:number;
-    currency : string;
-    status : any;
-    createdAt:any;
+    amount: number;
+    waterCharge: number;
+    fireCharge: number;
+    ruralCharge: number;
+    serviceCharge: number;
+    currency: string;
+    status: IObject;
+    createdAt: string;
+    updatedAt: string;
+    objectId: string;
   
   }
 
   export interface IBillOption {
-    deviceIds : string[]
-    amount: number,
-    waterCharge: number,
-    fireCharge: number,
-    ruralCharge: number,
-    serviceCharge: number,
-    currency: string,
+    bill : IBill,
+    devices: IDevice[]
   
   }
 
-  export type NewBillParam = Pick<IBill, 'device' | 'totalBill' | 'currency'>;
+
 
   
   
