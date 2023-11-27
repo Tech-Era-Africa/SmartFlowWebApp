@@ -6,7 +6,13 @@ export const useBillStore = defineStore({
   id: 'billStore',
   state: () => ({
     billApiState : ApiResponseState.NULL,
-    billApiFailure: {message : ""}
+    billApiFailure: {message : ""},
+    createdBill : {objectId: ""},
+
+    // GET BILL
+    fetchBillApiState : ApiResponseState.NULL,
+    fetchBillApiFailure : {message : ""},
+    bill : {}
    }),
   actions: {
 
@@ -15,6 +21,7 @@ export const useBillStore = defineStore({
         this.billApiState = ApiResponseState.LOADING;
         const data = await useStoreFetchRequest("/api/bill", 'POST', bill);
         this.billApiState = ApiResponseState.SUCCESS;
+        this.createdBill = data as any;
         console.log("Success generating bill: ", data)
 
       } catch (error: any) {
@@ -24,6 +31,24 @@ export const useBillStore = defineStore({
       }
     },
 
+    async getBillWithDevice(billId:string) {
+      try {
+        if(!billId) throw Error("Bill id required")
+
+        this.fetchBillApiState = ApiResponseState.LOADING;
+        const data:any = await useStoreFetchRequest(`/api/bill/${billId}`, 'GET');
+
+        // Throw error exception
+        if(!data.success) throw data.error
+
+        this.fetchBillApiState = ApiResponseState.SUCCESS;
+        this.bill = data.data
+
+      } catch (error: any) {
+        this.fetchBillApiFailure.message = error.message;
+        this.fetchBillApiState = ApiResponseState.FAILED;
+      }
+    },
     
     calculateTotalBill(consumption:number){
      const bill =  useWaterBillAlgo({ consumption : consumption ?? 0 })
@@ -36,6 +61,11 @@ export const useBillStore = defineStore({
     isCreatingBill: (state) => state.billApiState === ApiResponseState.LOADING,
     failed_CreatingBill: (state) => state.billApiState === ApiResponseState.FAILED,
     success_CreatingBill: (state) => state.billApiState === ApiResponseState.SUCCESS,
+
+    isFetchingBill: (state) => state.fetchBillApiState === ApiResponseState.LOADING,
+    failed_FetchingBill: (state) => state.fetchBillApiState === ApiResponseState.FAILED,
+    success_FetchingBill: (state) => state.fetchBillApiState === ApiResponseState.SUCCESS,
+
 
   },
 

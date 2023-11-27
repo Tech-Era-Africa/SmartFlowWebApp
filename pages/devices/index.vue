@@ -102,7 +102,7 @@
 
         <!-- MODALS -->
         <Modal modal-id="billModal">
-            <Bill :option="{ device: deviceStore.selectedDevice }"></Bill>
+            <BillPreview :option="{ device: deviceStore.selectedDevice }"></BillPreview>
         </Modal>
 
         <Modal modal-id="billSuccessModal">
@@ -117,6 +117,7 @@
 import type { IDevice } from '~/server/api/device/model/device.model';
 import { UserModel, type User } from '~/server/api/user/model/user.model';
 import { useAuthStore } from '~/stores/auth/auth.store';
+import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
 
@@ -125,14 +126,14 @@ useHead({ title: "Devices" })
 
 const deviceStore = useDeviceStore()
 const authStore = useAuthStore()
+const controlStore = useControlStore()
 
 await deviceStore.getDevicesByUser(authStore.currentUser.objectId);
 
 const openDeviceDrawer = async (device: IDevice) => {
     // Update the device store
     deviceStore.selectDevice(device)
-    const drawer = document.getElementById("deviceDrawer");
-    drawer?.click()
+    controlStore.toggleDeviceDrawer()
 
 }
 

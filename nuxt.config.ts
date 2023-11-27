@@ -17,6 +17,7 @@ export default defineNuxtConfig({
     MG_API_KEY: process.env.NUXT_MG_API_KEY,
     public: {
       API_BASE_URL: process.env.NUXT_PUBLIC_API_BASE_URL,
+      APP_BASE_URL : process.env.NUXT_PUBLIC_APP_BASE_URL,
 
     }
 

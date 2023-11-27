@@ -4,7 +4,8 @@ export const useControlStore = defineStore({
   id: 'controlStore',
   state: () => ({
     isBillModalOpen: false,
-    isBillSuccessModalOpen: false
+    isBillSuccessModalOpen: false,
+    isDeviceDrawerOpen: false
   }),
   actions: {
     toggleBillModal() {
@@ -35,6 +36,21 @@ export const useControlStore = defineStore({
       // Open
       (modal as any).showModal();
       this.isBillModalOpen = true;
+    },
+
+    toggleDeviceDrawer() {
+      const drawer = document.getElementById("deviceDrawer");
+
+      // // Hide
+      // if (this.isDeviceDrawerOpen) {
+      //   (drawer as any).close();
+      //   this.isDeviceDrawerOpen = false;
+      //   return;
+      // }
+
+      // Open
+      (drawer as any).click();
+      this.isDeviceDrawerOpen = true;
     }
   }
 })

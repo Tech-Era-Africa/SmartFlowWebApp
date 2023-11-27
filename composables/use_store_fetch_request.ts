@@ -11,6 +11,7 @@ export const useStoreFetchRequest = async (endpoint:string, method: 'GET' | 'POS
   
       return data.value;
     } catch (error:any) {
+      console.log("SOME ERROR:" ,error)
       throw new Error('Server error! ' + error.message);
     }
   }
