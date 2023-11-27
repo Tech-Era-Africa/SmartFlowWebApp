@@ -115,13 +115,21 @@ const getBill = () => useWaterBillAlgo({ consumption: deviceStore.consumption })
 const totalCurrentCharge = computed(() => billStore.calculateTotalBill(deviceStore.consumption))
 
 const createBill = () => billStore.createNewBill({
-    deviceIds : [deviceStore.selectedDevice.objectId],
-    currency: 'GHC',
+    bill :{
+        currency: 'GHC',
     amount: totalCurrentCharge.value,
     fireCharge : getBill().firefighting,
     ruralCharge : getBill().ruralWater,
     serviceCharge : getBill().serviceCharge,
-    waterCharge : getBill().waterCharge
+    waterCharge : getBill().waterCharge,
+    createdAt : "",
+    objectId : "",
+    status : {} as any,
+    updatedAt : ""
+
+    },
+    devices: [deviceStore.selectedDevice],
+    
 })
 
 
