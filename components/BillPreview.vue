@@ -125,6 +125,7 @@ const createBill = () => billStore.createNewBill({
     createdAt : "",
     objectId : "",
     status : {} as any,
+    billType : {} as any,
     updatedAt : ""
 
     },

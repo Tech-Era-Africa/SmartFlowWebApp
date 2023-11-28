@@ -5,25 +5,25 @@
                 <Logo class="h-7"></Logo>
                 <div>
                     <p class="text-black font-bold text-xs">Bill ID</p>
-                    <p class="text-gray-500 font-bold text-xs">{{ 'qJ8GY3LJE' }}</p>
+                    <p class="text-gray-500 font-bold text-xs">{{option.bill.objectId }}</p>
                 </div>
                 
             </div>
       
             <div class="flex gap-2">
-                <div class="badge badge-default">Status</div>
-                <div class="badge badge-default">Domestic</div>
+                <div class="badge badge-default">{{ option.bill.status.objectId }}</div>
+                <div class="badge badge-default">{{ option.bill.billType.objectId }}</div>
             </div>
         </div>
 
         <div>
             <p class="text-xs text-right">Month</p>
-            <h3 class="font-bold text-gray-600">{{ useFormatDateHuman(new Date(Date.now())) }}</h3>
+            <h3 class="font-bold text-gray-600">{{ useFormatDateHuman(new Date(option.bill.createdAt)) }}</h3>
         </div>
 
     </div>
 
-    <div class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between">
+    <div v-for="device in option.devices" class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between">
         <div class="w-40 mx-auto ">
             <img class="w-full h-full object-cover" src="/img/lorawan.png" />
         </div>
@@ -31,25 +31,29 @@
         <div class="flex justify-between items-center">
             <div>
                 <p class="text-sm text-gray-500">Name</p>
-                <h1 class="font-bold text-xl">{{  }}</h1>
+                <h1 class="font-bold text-xl">{{ device.name }}</h1>
             </div>
             <div>
                 <p class="text-sm text-gray-500">Total Consumption</p>
-                <h1 class="font-bold text-xl text-right"><span>{{ 0
+                <h1 class="font-bold text-xl text-right"><span>{{ device.consumption
                         }}L</span>
                 </h1>
             </div>
         </div>
 
     </div>
-    <div class="flex flex-col gap-4">
+    <template v-if="!option">
+        <span class="loading loading-spinner"></span>
+    </template>
+    <template v-else>
+        <div class="flex flex-col gap-4">
         <div class="flex justify-between items-center text-lg font-bold">
             <h1>Total Bill</h1>
             <h1>{{ useUseFormatCurrency(0) }}</h1>
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>Bill Date</p>
-            <p>{{ useFormatDateHuman(new Date(Date.now())) }}</p>
+            <p>{{ useFormatDateHuman(new Date(option.bill.createdAt)) }}</p>
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>Water Charge</p>
@@ -79,14 +83,17 @@
     </div>
     <div class="btn bg-green-600 text-white hover:bg-green-600 hover:text-white">Pay Bill <span
             v-if="false" class="ml-2 loading loading-spinner"></span></div>
+    </template>
+
 </template>
 <script setup lang="ts">
+import type { IBillOption } from '~/server/api/bill/model/bill.model';
 import { useBillStore } from '~/stores/bill/bill.store';
 
 
 const props = defineProps({
     option: {
-        type: Object as () => any,
+        type: Object as () => IBillOption,
         required: true
     },
 })

@@ -12,7 +12,7 @@ export const useBillStore = defineStore({
     // GET BILL
     fetchBillApiState : ApiResponseState.NULL,
     fetchBillApiFailure : {message : ""},
-    bill : {}
+    bill : {} as IBillOption
    }),
   actions: {
 
@@ -65,7 +65,7 @@ export const useBillStore = defineStore({
     isFetchingBill: (state) => state.fetchBillApiState === ApiResponseState.LOADING,
     failed_FetchingBill: (state) => state.fetchBillApiState === ApiResponseState.FAILED,
     success_FetchingBill: (state) => state.fetchBillApiState === ApiResponseState.SUCCESS,
-
+    hasBill : (state) => state.fetchBillApiState === ApiResponseState.SUCCESS && state.bill,
 
   },
 

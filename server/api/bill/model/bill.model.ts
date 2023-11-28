@@ -23,6 +23,7 @@ export class BillModel {
         waterCharge : 0,
         status : {objectId : ""},
         createdAt : "",
+        billType : {objectId : ""}
   
       };
   
@@ -39,6 +40,7 @@ export class BillModel {
         serviceCharge : json.serviceCharge,
         waterCharge : json.waterCharge,
         status : json.status,
+        billType : json.billType,
         createdAt : json.createdAt,
         updatedAt : json.updatedAt,
   
@@ -58,6 +60,7 @@ export class BillModel {
     status: IObject;
     createdAt: string;
     updatedAt: string;
+    billType:IObject;
     objectId: string;
   
   }

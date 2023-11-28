@@ -17,7 +17,16 @@
 
             </div>
             <div class="lg:w-1/3 mx-auto p-8 flex flex-col gap-5 bg-white absolute left-0 right-0 top-11 rounded-lg">
-                <Bill :option="{ bill : billOption! }"></Bill>
+                <template v-if="billStore.hasBill">
+                    <Bill :option="billStore.bill"></Bill>
+                </template>
+                <template v-else>
+                    <div class="text-center">
+                        <span class="loading loading-infinity text-blue-500 text-center mx-auto"></span>
+                    </div>
+                   
+                </template>
+
             </div>
         </template>
         <template v-if="billStore.failed_FetchingBill">
@@ -51,7 +60,6 @@ useHead({
 })
 
 const billStore = useBillStore()
-const billOption = ref<IBillOption>()
 
 // Get the url paramter
 const { id } = useRoute().params;
@@ -59,10 +67,9 @@ const { id } = useRoute().params;
 // Trigger bill fetching
 await billStore.getBillWithDevice(id as string)
 
-watch(billStore, state=>{
-    if(state.success_FetchingBill) return billOption.value = {
-        
-    }
+watch(billStore.bill, state => {
+
+   console.log("Somtehknere")
 })
 
 
