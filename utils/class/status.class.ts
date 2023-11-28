@@ -8,13 +8,14 @@ export class Status {
 
   };
 
-  static getStatus(id: string): { name: string; color: string } | null {
-    return this.statusMap[id] || null;
+  static getName(id: string) {
+    return this.statusMap[id].name;
   }
 
-  static get Pending(): { name: string; color: string } | null {
-    return this.getStatus('h9Eb9xqyjq');
+  static getColor(id: string) {
+    return this.statusMap[id].color;
   }
+
 
 }
 
