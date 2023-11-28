@@ -96,12 +96,19 @@
     </template>
 
 </template>
+
 <script setup lang="ts">
+
 import type { IBillOption } from '~/server/api/bill/model/bill.model';
 import { useBillStore } from '~/stores/bill/bill.store';
 import { Status } from '~/utils/class/status.class';
 import { BillType } from '~/utils/class/billType.class';
 
+useHead(
+    {
+        script : ["https://js.paystack.co/v1/inline.js"]
+    }
+)
 
 const props = defineProps({
     option: {

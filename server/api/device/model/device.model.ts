@@ -52,8 +52,8 @@ export interface IDevice {
   battery: number;
   eui: string;
   status: string;
-  createdAt: any;
-  updatedAt: any;
+  createdAt: string;
+  updatedAt: string;
 
 }
 
