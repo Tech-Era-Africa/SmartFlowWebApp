@@ -7,11 +7,17 @@
                 <div>
                     <p class="text-sm text-gray-500">{{ option.device.name }}</p>
                     <h1 class="font-bold text-xl">{{option.device.consumption}}L</h1>
+                    <div class="flex gap-2 justify-start items-center mt-2">
+                        <Icon name="ic:baseline-update" class="text-blue-500"></Icon>
+                        <p class="text-xs text-gray-500">{{useRelativeDateHuman(new Date(option.device.updatedAt))}}</p>
+                    </div>
+                    
                 </div>
             </div>
 </template>
 <script setup lang="ts">
 /* __placeholder__ */
+import { useRelativeDateHuman } from '~/composables/use_format_date';
 import type { DeviceCardOptionDTO } from '~/utils/dto/deviceCard.option.dto';
 const props = defineProps({
     option: {
