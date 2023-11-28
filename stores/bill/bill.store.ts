@@ -7,7 +7,7 @@ export const useBillStore = defineStore({
   state: () => ({
     billApiState : ApiResponseState.NULL,
     billApiFailure: {message : ""},
-    createdBill : {objectId: ""},
+    createdBill : {objectId: "", createdAt : ""},
 
     // GET BILL
     fetchBillApiState : ApiResponseState.NULL,

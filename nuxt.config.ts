@@ -25,5 +25,6 @@ export default defineNuxtConfig({
   routeRules:{
     '/': { redirect: '/overview' },
     '/api/**': { cors: true },
+    '/billing/invoice/**' : {ssr : false}
   },
 })

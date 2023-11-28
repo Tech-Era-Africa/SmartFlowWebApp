@@ -12,8 +12,8 @@
             <h1 class="font-bold text-xl text-center">Invoice Successfully Created <Icon class="text-green-500"
                     name="material-symbols:check-circle"></Icon>
             </h1>
-            <p class="text-sm text-gray-500">Your water bill invoice <span class="font-bold text-blue-600">#123</span> for
-                month <span class="font-bold text-blue-600">November 2023</span> has been created. You can copy and share
+            <p class="text-sm text-gray-500">Your water bill invoice <span class="font-bold text-blue-600">{{ billStore.createdBill.objectId }}</span> for
+            <span class="font-bold text-blue-600">{{ useFormatDateHuman(new Date(billStore.createdBill.createdAt)) }}</span> has been created. You can copy and share
                 the invoice link below or download.</p>
 
             <div class="p-5 bg-green-50 rounded-2xl text-center relative cursor-pointer" @click="copyText">
