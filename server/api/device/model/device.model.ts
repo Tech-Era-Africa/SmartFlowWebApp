@@ -29,7 +29,7 @@ export class DeviceModel {
       const device: IDevice = {
         objectId:json.objectId,
         name:json.name,
-        eui :json.EUI,
+        eui :json.eui,
         battery : json.battery,
         valveIsOpen : json.valveIsOpen,
         consumption : json.consumption,

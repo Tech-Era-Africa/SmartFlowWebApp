@@ -67,10 +67,7 @@ const { id } = useRoute().params;
 // Trigger bill fetching
 await billStore.getBillWithDevice(id as string)
 
-watch(billStore.bill, state => {
-
-   console.log("Somtehknere")
-})
+console.log(useRoute().path)
 
 
 </script>
