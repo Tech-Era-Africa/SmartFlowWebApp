@@ -1,5 +1,5 @@
 
-class Status {
+export class Status {
   private static statusMap: { [key: string]: { name: string; color: string } } = {
     h9Eb9xqyjq: { name: 'Unpaid', color: '#FFA500' },
     t0H56JNEHb: { name: 'Inactive', color: '#F0E9DD' },
@@ -17,3 +17,4 @@ class Status {
   }
 
 }
+

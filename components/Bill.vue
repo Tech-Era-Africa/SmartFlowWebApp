@@ -11,7 +11,7 @@
             </div>
       
             <div class="flex gap-2">
-                <div class="badge badge-default">{{ option.bill.status.objectId }}</div>
+                <div class="badge badge-default" :class="`bg-[${Status.getStatus(option.bill.status.objectId)?.color}]`">{{ Status.getStatus(option.bill.status.objectId)?.name  }}</div>
                 <div class="badge badge-default">{{ option.bill.billType.objectId }}</div>
             </div>
         </div>
@@ -89,6 +89,7 @@
 <script setup lang="ts">
 import type { IBillOption } from '~/server/api/bill/model/bill.model';
 import { useBillStore } from '~/stores/bill/bill.store';
+import { Status } from '~/utils/class/status.class';
 
 
 const props = defineProps({
@@ -97,6 +98,9 @@ const props = defineProps({
         required: true
     },
 })
+
+
+
 
 const billStore = useBillStore()
 
