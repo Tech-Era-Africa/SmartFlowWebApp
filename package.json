@@ -21,10 +21,11 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
+    "@types/luxon": "^3.3.5",
     "apexcharts": "^3.44.0",
     "axios": "^1.6.1",
+    "luxon": "^3.4.4",
     "pinia": "^2.1.7",
-    "ts-luxon": "^4.4.0",
     "vue3-apexcharts": "^1.4.4"
   }
 }
