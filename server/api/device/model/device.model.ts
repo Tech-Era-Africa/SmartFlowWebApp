@@ -14,6 +14,7 @@ export class DeviceModel {
       objectId: "",
       name: "",
       eui: "",
+      deviceId: "",
       battery: 0,
       valveIsOpen: false,
       consumption: 0,
@@ -31,6 +32,7 @@ export class DeviceModel {
       objectId: json.objectId,
       name: json.name,
       eui: json.eui,
+      deviceId: json.deviceId,
       battery: json.battery,
       valveIsOpen: json.valveIsOpen,
       consumption: json.consumption,
@@ -51,6 +53,7 @@ export interface IDevice {
   valveIsOpen: boolean;
   battery: number;
   eui: string;
+  deviceId: string;
   status: string;
   createdAt: string;
   updatedAt: string;
