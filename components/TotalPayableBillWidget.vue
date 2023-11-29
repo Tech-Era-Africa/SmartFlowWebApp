@@ -23,7 +23,7 @@
             </Stat>
 
         </div>
-        <button @click="generateBill" :disabled="option.amount == 0" class="btn bg-black text-white  mt-5">Generate Bill</button>
+        <!-- <button @click="generateBill" :disabled="option.amount == 0" class="btn bg-black text-white  mt-5">Generate Bill</button> -->
     </div>
 </template>
 <script setup lang="ts">
