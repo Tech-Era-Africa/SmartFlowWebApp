@@ -5,19 +5,20 @@
                 <Logo class="h-7"></Logo>
                 <div>
                     <p class="text-black font-bold text-xs">Bill ID</p>
-                    <p class="text-gray-500 font-bold text-xs">{{option.bill.objectId }}</p>
+                    <p class="text-gray-500 font-bold text-xs">{{ option.bill.objectId }}</p>
                 </div>
                 <div>
                     <p class="text-black font-bold text-xs">Period</p>
                     <p class="text-gray-500 font-bold text-xs">Oct 2023 - Nov 2023</p>
                 </div>
-                
+
             </div>
 
-            
-      
+
+
             <div class="flex gap-2">
-                <div class="badge" :class="`bg-[${Status.getColor(option.bill.status.objectId)}]`" >{{ Status.getName(option.bill.status.objectId) }}</div>
+                <div class="badge" :class="`bg-[${Status.getColor(option.bill.status.objectId)}]`">{{
+                    Status.getName(option.bill.status.objectId) }}</div>
                 <div class="badge badge-default">{{ BillType.getName(option.bill.billType.objectId) }}</div>
             </div>
         </div>
@@ -42,7 +43,7 @@
             <div>
                 <p class="text-sm text-gray-500">Total Consumption</p>
                 <h1 class="font-bold text-xl text-right"><span>{{ device.consumption
-                        }}L</span>
+                }}L</span>
                 </h1>
             </div>
         </div>
@@ -53,48 +54,49 @@
     </template>
     <template v-else>
         <div class="flex flex-col gap-4">
-        <div class="flex justify-between items-center text-lg font-bold">
+
+            <div class="flex justify-between items-center text-xs">
+                <p>Bill Date</p>
+                <p>{{ useFormatDateHuman(new Date(option.bill.createdAt)) }}</p>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+                <p>Consumption</p>
+                <p>{{ 0 }}L</p>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+                <p>Water Charge</p>
+                <p>{{ useUseFormatCurrency(option.bill.waterCharge ?? 0) }}</p>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+                <p>1% Fire Fighting</p>
+                <p>{{ useUseFormatCurrency(option.bill.fireCharge ?? 0) }}</p>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+                <p>2% Rural Water</p>
+                <p>{{ useUseFormatCurrency(option.bill.ruralCharge ?? 0) }}</p>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+                <p>Service Charge</p>
+                <p>{{ useUseFormatCurrency(option.bill.serviceCharge ?? 0) }}</p>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+                <p>Current Charges</p>
+                <p>{{ useUseFormatCurrency(option.bill.amount ?? 0) }}</p>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+                <p>Previous Balance</p>
+                <p>GHC0</p>
+            </div>
+
+            <div class="flex justify-between items-center text-lg font-bold">
             <h1>Total Bill</h1>
             <h1>{{ useUseFormatCurrency(option.bill.amount ) }}</h1>
         </div>
-        <div class="flex justify-between items-center text-xs">
-            <p>Bill Date</p>
-            <p>{{ useFormatDateHuman(new Date(option.bill.createdAt)) }}</p>
-        </div>
-        <div class="flex justify-between items-center text-xs">
-            <p>Consumption</p>
-            <p>{{ 0 }}L</p>
-        </div>
-        <div class="flex justify-between items-center text-xs">
-            <p>Water Charge</p>
-            <p>{{ useUseFormatCurrency(option.bill.waterCharge ?? 0) }}</p>
-        </div>
-        <div class="flex justify-between items-center text-xs">
-            <p>1% Fire Fighting</p>
-            <p>{{ useUseFormatCurrency(option.bill.fireCharge ?? 0) }}</p>
-        </div>
-        <div class="flex justify-between items-center text-xs">
-            <p>2% Rural Water</p>
-            <p>{{ useUseFormatCurrency(option.bill.ruralCharge ?? 0) }}</p>
-        </div>
-        <div class="flex justify-between items-center text-xs">
-            <p>Service Charge</p>
-            <p>{{ useUseFormatCurrency(option.bill.serviceCharge ?? 0) }}</p>
-        </div>
-        <div class="flex justify-between items-center text-xs">
-            <p>Current Charges</p>
-            <p>{{ useUseFormatCurrency(option.bill.amount ?? 0) }}</p>
-        </div>
-        <div class="flex justify-between items-center text-xs">
-            <p>Previous Balance</p>
-            <p>GHC0</p>
-        </div>
 
-    </div>
-    <div class="btn bg-green-600 text-white hover:bg-green-600 hover:text-white">Pay Bill <span
-            v-if="false" class="ml-2 loading loading-spinner"></span></div>
+        </div>
+        <div class="btn bg-green-600 text-white hover:bg-green-600 hover:text-white">Pay Bill <span v-if="false"
+                class="ml-2 loading loading-spinner"></span></div>
     </template>
-
 </template>
 
 <script setup lang="ts">
@@ -106,7 +108,7 @@ import { BillType } from '~/utils/class/billType.class';
 
 useHead(
     {
-        script : ["https://js.paystack.co/v1/inline.js"]
+        script: ["https://js.paystack.co/v1/inline.js"]
     }
 )
 
@@ -117,8 +119,8 @@ const props = defineProps({
     },
 })
 
-const payBill = ()=>{
-   //Fistt check if another bill has been created latest to this and prompt the user to go for that one instead
+const payBill = () => {
+    //Fistt check if another bill has been created latest to this and prompt the user to go for that one instead
 }
 
 </script>
