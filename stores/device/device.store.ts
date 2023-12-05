@@ -27,8 +27,27 @@ export const useDeviceStore = defineStore({
     consumptionApiState : ApiResponseState.NULL,
     consumptionApiFailure : {message : ""},
 
+    //NEW DEVICE
+    newDeviceApiState:ApiResponseState.NULL,
+    newDeviceApiFailure : {message : ""},
+
   }),
   actions: {
+
+    async addNewDevice(device:IDevice) {
+      try {
+        this.newDeviceApiState = ApiResponseState.LOADING;
+        await useStoreFetchRequest('/api/device', 'POST', {device, ownerId : "95lmGWfP9C"});
+        this.newDeviceApiState = ApiResponseState.SUCCESS;
+        setTimeout(() => {
+          this.newDeviceApiState = ApiResponseState.NULL;//Resets cos the state changes retriggering this. might need to do this better
+        }, 100);
+
+      } catch (error: any) {
+        this.newDeviceApiFailure.message = error.message;
+        this.newDeviceApiState = ApiResponseState.FAILED;
+      }
+    },
 
     async getDevicesByUser(userId: string) {
       try {
@@ -124,6 +143,9 @@ export const useDeviceStore = defineStore({
     isGettingDeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.LOADING,
     failed_DeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.FAILED,
     success_DeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.SUCCESS,
-
+    
+    isAddingNewDevice: (state) => state.newDeviceApiState === ApiResponseState.LOADING,
+    failed_AddingNewDevice: (state) => state.newDeviceApiState === ApiResponseState.FAILED,
+    success_AddingNewDevice: (state) => state.newDeviceApiState === ApiResponseState.SUCCESS,
   },
 })

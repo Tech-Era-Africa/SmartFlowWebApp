@@ -8,6 +8,14 @@ export const useControlStore = defineStore({
     isDeviceDrawerOpen: false
   }),
   actions: {
+    openModal(id:string){
+      const modal = document.getElementById(id);
+      (modal as any).showModal();
+    },
+    closeModal(id:string){
+      const modal = document.getElementById(id);
+      (modal as any).close();
+    },
     toggleBillModal() {
       const billModal = document.getElementById("billModal");
 
