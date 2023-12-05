@@ -3,7 +3,7 @@
         <div class="flex  justify-between items-center">
             <div>
                 <h1 class="font-bold text-lg">Total Payable Bill</h1>
-                <p class="text-xs text-gray-400">Last Updated: 10mins ago</p>
+                <!-- <p class="text-xs text-gray-400">Last Updated: 10mins ago</p> -->
             </div>
             <div class="dropdown dropdown-end dropdown-bottom">
                 <label tabindex="0" class="btn btn-ghost m-1">Today

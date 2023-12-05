@@ -42,7 +42,7 @@
             </div>
             <div>
                 <p class="text-sm text-gray-500">Total Consumption</p>
-                <h1 class="font-bold text-xl text-right"><span>{{ device.consumption
+                <h1 class="font-bold text-xl text-right"><span>{{ useUseCubicToLitre(device.consumption) 
                 }}L</span>
                 </h1>
             </div>
@@ -61,7 +61,7 @@
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Consumption</p>
-                <p>{{ 0 }}L</p>
+                <p>{{  useUseCubicToLitre(0) }}L</p>
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Water Charge</p>
