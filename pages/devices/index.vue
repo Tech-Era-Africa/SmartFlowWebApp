@@ -84,22 +84,28 @@
 
         <Drawer drawerId="deviceDrawer">
 
-            <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }"></SingleDeviceMonitoring>
-            <WaterConsumptionChart :option="waterConsumptionChartOptions"></WaterConsumptionChart>
-            <MonthlyConsumptionStats></MonthlyConsumptionStats>
-            <TotalPayableBillWidget
-                :option="{ amount: getBill().waterCharge, currency: 'GHC', device: deviceStore.selectedDevice }">
-                <div class="text-right">
-                    <p class="text-xs text-gray-500">Consumption</p>
-                    <p class="font-bold flex justify-end items-center gap-2"><span
-                            v-if="deviceStore.isGettingDeviceConsumption"
-                            class="loading loading-spinner loading-xs text-gray-400"></span><span>{{useUseCubicToLitre(deviceStore.consumption)
-                            }}L</span>
-                    </p>
-                </div>
-            </TotalPayableBillWidget>
-            <!-- <UsersTable :option="usersDataTableOption"></UsersTable>
+            <template v-if="deviceStore.selectedDevice.objectId">
+                <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }"></SingleDeviceMonitoring>
+                <WaterConsumptionChart :option="waterConsumptionChartOptions"></WaterConsumptionChart>
+                <MonthlyConsumptionStats
+                    :option="{ consumption: deviceStore.consumption, deviceId: deviceStore.selectedDevice.objectId }">
+                </MonthlyConsumptionStats>
+                <TotalPayableBillWidget
+                    :option="{ consumption:deviceStore.consumption, currency: 'GHC', device: deviceStore.selectedDevice }">
+                    <div class="text-right">
+                        <p class="text-xs text-gray-500">Consumption</p>
+                        <p class="font-bold flex justify-end items-center gap-2"><span
+                                v-if="deviceStore.isGettingDeviceConsumption"
+                                class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
+                                    useUseCubicToLitre(deviceStore.consumption)
+                                }}L</span>
+                        </p>
+                    </div>
+                </TotalPayableBillWidget>
+                <!-- <UsersTable :option="usersDataTableOption"></UsersTable>
             <BillingTable :option="billingDataTableOption"></BillingTable> -->
+            </template>
+
 
 
 
@@ -126,6 +132,7 @@
 import type { IDevice } from '~/server/api/device/model/device.model';
 import { UserModel, type User } from '~/server/api/user/model/user.model';
 import { useAuthStore } from '~/stores/auth/auth.store';
+import { useBillStore } from '~/stores/bill/bill.store';
 import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
@@ -134,17 +141,20 @@ import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
 useHead({ title: "Devices" })
 
 const deviceStore = useDeviceStore()
+const billStore = useBillStore()
 const authStore = useAuthStore()
 const controlStore = useControlStore()
 
 
 await deviceStore.getDevicesByUser(authStore.currentUser.objectId);
 
+
 const openDeviceDrawer = async (device: IDevice) => {
     // Update the device store
     deviceStore.selectDevice(device)
+    deviceStore.getMonthlyMinMaxConsumption(device.objectId)
+    billStore.getCurrentPaidBills(device.objectId)
     controlStore.toggleDeviceDrawer()
-
 }
 
 const openNewDeviceModal = () => controlStore.openModal("addNewDeviceModal")

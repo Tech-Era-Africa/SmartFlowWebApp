@@ -53,6 +53,7 @@
 <script setup lang="ts">
 
 import { useBillStore } from '~/stores/bill/bill.store';
+import { useDeviceStore } from '~/stores/device/device.store';
 
 
 useHead({
@@ -61,12 +62,12 @@ useHead({
 
 const billStore = useBillStore()
 
+
 // Get the url paramter
 const { id } = useRoute().params;
 
 // Trigger bill fetching
 await billStore.getBillWithDevice(id as string)
-
 
 
 

@@ -27,6 +27,11 @@ export const useDeviceStore = defineStore({
     consumptionApiState : ApiResponseState.NULL,
     consumptionApiFailure : {message : ""},
 
+     // Min Max consumption
+     minMaxconsumption : {min : 0, max : 0},
+     minMaxconsumptionApiState : ApiResponseState.NULL,
+     minMaxconsumptionApiFailure : {message : ""},
+
     //NEW DEVICE
     newDeviceApiState:ApiResponseState.NULL,
     newDeviceApiFailure : {message : ""},
@@ -94,6 +99,29 @@ export const useDeviceStore = defineStore({
       }
     },
 
+    async getMonthlyMinMaxConsumption(deviceId: string) {
+      try {
+        this.minMaxconsumptionApiState = ApiResponseState.LOADING;
+        const queryString = new URLSearchParams({ deviceId }).toString();
+        const data = await useStoreFetchRequest(`/api/device/consumption/minMax?${queryString}`, 'GET');
+        console.log(data)
+        this.minMaxconsumption = {
+          max : (data as any).highestConsumption.value,
+          min : (data as any).lowestConsumption.value
+        }
+        this.minMaxconsumptionApiState = ApiResponseState.SUCCESS;
+
+      } catch (error: any) {
+        this.minMaxconsumption = {
+          min : 0,max : 0
+        }
+        this.minMaxconsumptionApiFailure.message = error.message;
+        this.minMaxconsumptionApiState = ApiResponseState.FAILED;
+      }
+    },
+
+    
+
     async getDeviceConsumptionTrend(deviceId: string, year?: number) {
       try {
         
@@ -139,6 +167,10 @@ export const useDeviceStore = defineStore({
     isGettingDeviceConsumption: (state) => state.consumptionApiState === ApiResponseState.LOADING,
     failed_DeviceConsumption: (state) => state.consumptionApiState === ApiResponseState.FAILED,
     success_DeviceConsumption: (state) => state.consumptionApiState === ApiResponseState.SUCCESS,
+
+    isGettingDeviceMinMaxConsumption: (state) => state.minMaxconsumptionApiState === ApiResponseState.LOADING,
+    failed_DeviceMinMaxConsumption: (state) => state.minMaxconsumptionApiState === ApiResponseState.FAILED,
+    success_DeviceMinMaxConsumption: (state) => state.minMaxconsumptionApiState === ApiResponseState.SUCCESS,
 
     isGettingDeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.LOADING,
     failed_DeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.FAILED,

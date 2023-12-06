@@ -10,7 +10,7 @@ export default defineEventHandler((event) => new Promise(async (resolve, reject)
         // Check for the availability of a device id
         if(!deviceId) throw Error("Device id required")
 
-        const res= await useApiFetch('functions/getLatestDeviceConsumption', {
+        const res= await useApiFetch('functions/getMinMaxMonthlyConsumption', {
             method : "POST",
             data:{
                 deviceId

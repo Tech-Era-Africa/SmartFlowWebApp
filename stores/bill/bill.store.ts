@@ -1,22 +1,27 @@
 import { defineStore } from 'pinia'
-import type { IBill, IBillOption} from '~/server/api/bill/model/bill.model';
+import type { IBill, IBillOption } from '~/server/api/bill/model/bill.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 
 export const useBillStore = defineStore({
   id: 'billStore',
   state: () => ({
-    billApiState : ApiResponseState.NULL,
-    billApiFailure: {message : ""},
-    createdBill : {} as IBill,
+    billApiState: ApiResponseState.NULL,
+    billApiFailure: { message: "" },
+    createdBill: {} as IBill,
 
     // GET BILL
-    fetchBillApiState : ApiResponseState.NULL,
-    fetchBillApiFailure : {message : ""},
-    bill : {} as IBillOption
-   }),
+    fetchBillApiState: ApiResponseState.NULL,
+    fetchBillApiFailure: { message: "" },
+    bill: {} as IBillOption,
+
+    // PAID BILL
+    paidBillApiState: ApiResponseState.NULL,
+    paidBillApiFailure: { message: "" },
+    paidBills: []
+  }),
   actions: {
 
-    async createNewBill(bill:IBillOption) {
+    async createNewBill(bill: IBillOption) {
       try {
         this.billApiState = ApiResponseState.LOADING;
         const data = await useStoreFetchRequest("/api/bill", 'POST', bill);
@@ -30,29 +35,53 @@ export const useBillStore = defineStore({
       }
     },
 
-    async getBillWithDevice(billId:string) {
+    async getBillWithDevice(billId: string) {
       try {
-        if(!billId) throw Error("Bill id required")
+        if (!billId) throw Error("Bill id required")
 
         this.fetchBillApiState = ApiResponseState.LOADING;
-        const data:any = await useStoreFetchRequest(`/api/bill/${billId}`, 'GET');
+        const data: any = await useStoreFetchRequest(`/api/bill/${billId}`, 'GET');
 
         // Throw error exception
-        if(!data.success) throw data.error
+        if (!data.success) throw data.error
 
         this.fetchBillApiState = ApiResponseState.SUCCESS;
         this.bill = data.data
+
+        console.log(this.bill)
 
       } catch (error: any) {
         this.fetchBillApiFailure.message = error.message;
         this.fetchBillApiState = ApiResponseState.FAILED;
       }
     },
-    
-    calculateTotalBill(consumption:number){
-     const bill =  useWaterBillAlgo({ consumption : consumption ?? 0 })
 
-     return bill.firefighting + bill.ruralWater + bill.serviceCharge + bill.waterCharge
+    async getCurrentPaidBills(deviceId: string) {
+      try {
+
+        if (!deviceId) throw Error("Device id required")
+
+        this.paidBillApiState = ApiResponseState.LOADING;
+        const queryString = new URLSearchParams({ deviceId }).toString();
+        const data = await useStoreFetchRequest(`/api/bill/paid?${queryString}`, 'GET');
+        console.log(data)
+        this.paidBills = data as any
+
+        this.paidBillApiState = ApiResponseState.SUCCESS;
+
+      } catch (error: any) {
+
+        this.paidBillApiFailure.message = error.message;
+        this.paidBillApiState = ApiResponseState.FAILED;
+      }
+    },
+
+    calculateTotalBill(consumption: number) {
+      if(consumption == 0) return 0;
+
+      const bill = useWaterBillAlgo({ consumption: consumption ?? 0 })
+
+      return bill.firefighting + bill.ruralWater + bill.serviceCharge + bill.waterCharge
     }
   },
 
@@ -64,7 +93,7 @@ export const useBillStore = defineStore({
     isFetchingBill: (state) => state.fetchBillApiState === ApiResponseState.LOADING,
     failed_FetchingBill: (state) => state.fetchBillApiState === ApiResponseState.FAILED,
     success_FetchingBill: (state) => state.fetchBillApiState === ApiResponseState.SUCCESS,
-    hasBill : (state) => state.fetchBillApiState === ApiResponseState.SUCCESS && state.bill,
+    hasBill: (state) => state.fetchBillApiState === ApiResponseState.SUCCESS && state.bill,
 
   },
 

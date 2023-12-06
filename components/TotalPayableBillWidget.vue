@@ -18,33 +18,45 @@
 
         </div>
         <div class="flex-1 flex flex-col lg:flex-row gap-2">
-            <Stat :option="{ title: 'Amount', value: `${formatAmount(option.amount)}`, clearBg: true }">
+            <Stat :option="{ title: 'Amount', value: `${formatAmount(totalCurrentCharge())}`, clearBg: true }">
                 <slot />
             </Stat>
 
         </div>
-        <button @click="generateBill" :disabled="option.amount == 0" class="btn bg-black text-white  mt-5">Generate Bill</button>
+        <button @click="generateBill" :disabled="totalCurrentCharge() == 0" class="btn bg-black text-white  mt-5">Generate Bill</button>
     </div>
 </template>
 <script setup lang="ts">
 import type { IDevice } from '~/server/api/device/model/device.model';
+import { useBillStore } from '~/stores/bill/bill.store';
 import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 
 const props = defineProps({
     option: {
-        type: Object as () => { currency?: string, amount: number, device:IDevice },
+        type: Object as () => { currency?: string, consumption:number, device:IDevice },
         required: true
     },
 })
 
 const deviceStore = useDeviceStore()
 const controlStore = useControlStore()
+const billStore = useBillStore()
 
 const formatAmount = (number: number) => new Intl.NumberFormat('en-GH', {
     style: 'currency',
     currency: props.option.currency ?? 'GHS'
 }).format(number)
+
+const totalCurrentCharge = ()=>{
+   const bill = billStore.calculateTotalBill(props.option.consumption)
+
+   const totalAmountPaid = billStore.paidBills.reduce((accumulator, currentValue:any) => {
+  return accumulator + currentValue.amount;
+}, 0)
+
+   return bill - totalAmountPaid
+}
 
 const generateBill = ()=>{
     controlStore.toggleBillModal()

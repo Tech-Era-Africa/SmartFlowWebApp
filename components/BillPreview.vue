@@ -1,43 +1,44 @@
 <template>
     <div class="flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-2xl">Water Bill</h3>
-                    <div class="badge badge-accent">Preview</div>
-                    <!-- <p class="text-sm text-gray-400">#223dssd</p> -->
-                </div>
+        <div>
+            <h3 class="font-bold text-2xl">Water Bill</h3>
+            <div class="badge badge-accent">Preview</div>
+            <!-- <p class="text-sm text-gray-400">#223dssd</p> -->
+        </div>
 
-                <div>
-                    <p class="text-xs text-right">Month</p>
-                    <h3 class="font-bold text-gray-600">{{ useFormatDateHuman(new Date(Date.now())) }}</h3>
-                </div>
+        <div>
+            <p class="text-xs text-right">Month</p>
+            <h3 class="font-bold text-gray-600">{{ useFormatDateHuman(new Date(Date.now())) }}</h3>
+        </div>
 
+    </div>
+
+    <div class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between">
+        <div class="w-40 mx-auto ">
+            <img class="w-full h-full object-cover" src="/img/lorawan.png" />
+        </div>
+
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-sm text-gray-500">Name</p>
+                <h1 class="font-bold text-xl">{{ option.device.name }}</h1>
             </div>
-
-            <div class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between">
-                <div class="w-40 mx-auto ">
-                    <img class="w-full h-full object-cover" src="/img/lorawan.png" />
-                </div>
-
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-sm text-gray-500">Name</p>
-                        <h1 class="font-bold text-xl">{{ option.device.name }}</h1>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Total Consumption</p>
-                        <h1 class="font-bold text-xl text-right"><span v-if="deviceStore.isGettingDeviceConsumption"
-                                class="loading loading-spinner loading-xs text-gray-400"></span><span>{{ useUseCubicToLitre(deviceStore.consumption)  }}L</span>
-                        </h1>
-                    </div>
-                </div>
-
+            <div>
+                <p class="text-sm text-gray-500">Total Consumption</p>
+                <h1 class="font-bold text-xl text-right"><span v-if="deviceStore.isGettingDeviceConsumption"
+                        class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
+                            useUseCubicToLitre(deviceStore.consumption) }}L</span>
+                </h1>
             </div>
-            <div class="flex flex-col gap-2">
-                
-                <div class="flex justify-between text-xs items-center">
-                    <p>Bill Type</p>
-                    <p>Domestic</p>
-                    <!-- <div class="dropdown dropdown-end dropdown-bottom">
+        </div>
+
+    </div>
+    <div class="flex flex-col gap-2">
+
+        <div class="flex justify-between text-xs items-center">
+            <p>Bill Type</p>
+            <p>Domestic</p>
+            <!-- <div class="dropdown dropdown-end dropdown-bottom">
                         <label tabindex="" class="btn btn-outline">Domestic
                             <Icon name="ion:caret-down-outline" />
                         </label>
@@ -47,56 +48,60 @@
                             <li><a>Industrial</a></li>
                         </ul>
                     </div> -->
-                </div>
-                <div class="flex justify-between items-center text-xs">
-                    <p>Bill Date</p>
-                    <p>{{ useFormatDateHuman(new Date(Date.now())) }}</p>
-                </div>
-                <div class="flex justify-between items-center text-xs">
-                    <p>Consumption</p>
-                    <p>{{ useUseCubicToLitre(0) }}L</p>
-                </div>
-                <div class="flex justify-between items-center text-xs">
-                    <p>Water Charge</p>
-                    <p>{{ useUseFormatCurrency(getBill().waterCharge) }}</p>
-                </div>
-                <div class="flex justify-between items-center text-xs">
-                    <p>1% Fire Fighting</p>
-                    <p>{{ useUseFormatCurrency(getBill().firefighting) }}</p>
-                </div>
-                <div class="flex justify-between items-center text-xs">
-                    <p>2% Rural Water</p>
-                    <p>{{ useUseFormatCurrency(getBill().ruralWater) }}</p>
-                </div>
-                <div class="flex justify-between items-center text-xs">
-                    <p>Service Charge</p>
-                    <p>{{ useUseFormatCurrency(getBill().serviceCharge) }}</p>
-                </div>
-                <div class="flex justify-between items-center text-xs">
-                    <p>Current Charges</p>
-                    <p>{{ useUseFormatCurrency(totalCurrentCharge) }}</p>
-                </div>
-                <div class="flex justify-between items-center text-xs">
-                    <p>Previous Balance</p>
-                    <p>GHC0</p>
-                </div>
-                <div class="flex justify-between items-center text-lg font-bold">
-                    <h1>Total Bill</h1>
-                    <h1>{{ useUseFormatCurrency(totalCurrentCharge) }}</h1>
-                </div>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+            <p>Bill Date</p>
+            <p>{{ useFormatDateHuman(new Date(Date.now())) }}</p>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+            <p>Consumption</p>
+            <p>{{ useUseCubicToLitre(0) }}L</p>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+            <p>Water Charge</p>
+            <p>{{ useUseFormatCurrency(getBill().waterCharge) }}</p>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+            <p>1% Fire Fighting</p>
+            <p>{{ useUseFormatCurrency(getBill().firefighting) }}</p>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+            <p>2% Rural Water</p>
+            <p>{{ useUseFormatCurrency(getBill().ruralWater) }}</p>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+            <p>Service Charge</p>
+            <p>{{ useUseFormatCurrency(getBill().serviceCharge) }}</p>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+            <p>Current Charges</p>
+            <p>{{ useUseFormatCurrency(totalBill) }}</p>
+        </div>
+        <div class="flex justify-between items-center text-xs" v-if="billStore.paidBills.length >= 1">
+            <p>Credit</p>
+            <p>{{ useUseFormatCurrency(credit) }}</p>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+            <p>Previous Balance</p>
+            <p>GHC0</p>
+        </div>
+        <div class="flex justify-between items-center text-lg font-bold">
+            <h1>Total Bill</h1>
+            <h1>{{ useUseFormatCurrency(totalCurrentCharge()) }}</h1>
+        </div>
 
-            </div>
-            <div class="modal-action">
-                <form method="dialog" class="flex gap-4">
-                    <span v-if="deviceStore.isGettingDeviceConsumption" class="loading loading-bars"></span>
-                    <template v-else>
-                        <div class="btn bg-black text-white hover:bg-black hover:text-white" @click="createBill">Create
-                            Invoice <span v-if="billStore.isCreatingBill" class="ml-2 loading loading-spinner"></span></div>
-                    </template>
+    </div>
+    <div class="modal-action">
+        <form method="dialog" class="flex gap-4">
+            <span v-if="deviceStore.isGettingDeviceConsumption" class="loading loading-bars"></span>
+            <template v-else>
+                <div class="btn bg-black text-white hover:bg-black hover:text-white" @click="createBill">Create
+                    Invoice <span v-if="billStore.isCreatingBill" class="ml-2 loading loading-spinner"></span></div>
+            </template>
 
-                    <div class="btn" @click="controlStore.toggleBillModal">Close</div>
-                </form>
-            </div>
+            <div class="btn" @click="controlStore.toggleBillModal">Close</div>
+        </form>
+    </div>
 </template>
 <script setup lang="ts">
 import type { IDevice } from '~/server/api/device/model/device.model';
@@ -114,40 +119,52 @@ const props = defineProps({
 const deviceStore = useDeviceStore()
 const billStore = useBillStore()
 const controlStore = useControlStore()
-
+const credit = ref(0)
+const totalBill = ref(0)
 
 const getBill = () => useWaterBillAlgo({ consumption: deviceStore.consumption })
 
-const totalCurrentCharge = computed(() => billStore.calculateTotalBill(deviceStore.consumption))
+const totalCurrentCharge = () => {
+    const bill = billStore.calculateTotalBill(deviceStore.consumption)
+
+    const totalAmountPaid = billStore.paidBills.reduce((accumulator, currentValue: any) => {
+        return accumulator + currentValue.amount;
+    }, 0)
+
+    credit.value = totalAmountPaid
+    totalBill.value = bill
+
+    return bill - totalAmountPaid
+}
 
 const createBill = () => billStore.createNewBill({
-    bill :{
+    bill: {
         currency: 'GHC',
-    amount: totalCurrentCharge.value,
-    fireCharge : getBill().firefighting,
-    ruralCharge : getBill().ruralWater,
-    serviceCharge : getBill().serviceCharge,
-    waterCharge : getBill().waterCharge,
-    createdAt : "",
-    objectId : "",
-    status : {} as any,
-    billType : {} as any,
-    updatedAt : ""
+        amount: totalCurrentCharge(),
+        fireCharge: getBill().firefighting,
+        ruralCharge: getBill().ruralWater,
+        serviceCharge: getBill().serviceCharge,
+        waterCharge: getBill().waterCharge,
+        createdAt: "",
+        objectId: "",
+        status: {} as any,
+        billType: {} as any,
+        updatedAt: ""
 
     },
     devices: [deviceStore.selectedDevice],
-    
+
 })
 
 
 
 watch(billStore, (state) => {
-    if (state.success_CreatingBill){
+    if (state.success_CreatingBill) {
         controlStore.toggleBillModal() //Closes it if opened
         return controlStore.toggleBillSuccessModal()
-      
+
     }
-    if (state.failed_CreatingBill){
+    if (state.failed_CreatingBill) {
         return alert("Failed to create bill")
     }
 })
