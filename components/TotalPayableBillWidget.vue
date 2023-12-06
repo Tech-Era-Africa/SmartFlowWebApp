@@ -59,7 +59,7 @@ const totalCurrentCharge = ()=>{
 }
 
 const generateBill = ()=>{
-    controlStore.toggleBillModal()
+    controlStore.openModal('billModal')
 
     //  Get the current water consumption
     deviceStore.getCurrentDeviceConsumption(props.option.device.objectId)

@@ -1,4 +1,8 @@
 <template>
+    <div role="alert" class="alert alert-error">
+        <!-- <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> -->
+        <span>Something went wrong!</span>
+    </div>
     <div class="flex justify-between items-center">
         <div>
             <h3 class="font-bold text-2xl">Water Bill</h3>
@@ -13,23 +17,15 @@
 
     </div>
 
-    <div class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between">
-        <div class="w-40 mx-auto ">
-            <img class="w-full h-full object-cover" src="/img/lorawan.png" />
-        </div>
 
-        <div class="flex justify-between items-center">
-            <div>
-                <p class="text-sm text-gray-500">Name</p>
-                <h1 class="font-bold text-xl">{{ option.device.name }}</h1>
+    <div class="w-full  rounded-xl  flex flex-col justify-between">
+
+        <div class="flex-1  flex-grow grid-cols-2 lg:grid-cols-3 grid gap-2">
+            <div v-for="device in deviceStore.devices" class="relative">
+                <input type="checkbox" :checked="true" class="checkbox absolute checkbox-sm right-2 top-2" />
+                <DeviceCard :option="{ device, hideUpdateDate: true }"></DeviceCard>
             </div>
-            <div>
-                <p class="text-sm text-gray-500">Total Consumption</p>
-                <h1 class="font-bold text-xl text-right"><span v-if="deviceStore.isGettingDeviceConsumption"
-                        class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
-                            useUseCubicToLitre(deviceStore.consumption) }}L</span>
-                </h1>
-            </div>
+
         </div>
 
     </div>
@@ -96,7 +92,7 @@
         <form method="dialog" class="flex gap-4">
             <span v-if="deviceStore.isGettingDeviceConsumption" class="loading loading-bars"></span>
             <template v-else>
-                <div class="btn bg-black text-white hover:bg-black hover:text-white" @click="createBill">Create
+                <div disabled class="btn bg-black text-white hover:bg-black hover:text-white" @click="createBill">Create
                     Invoice <span v-if="billStore.isCreatingBill" class="ml-2 loading loading-spinner"></span></div>
             </template>
 
@@ -112,10 +108,10 @@ import { useDeviceStore } from '~/stores/device/device.store';
 
 const props = defineProps({
     option: {
-        type: Object as () => { device: IDevice, modalId:string },
+        type: Object as () => { modalId: string },
         required: true,
-        default : {
-            dynamic : false
+        default: {
+            dynamic: false
         }
     },
 })

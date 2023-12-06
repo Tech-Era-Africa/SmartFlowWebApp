@@ -4,10 +4,10 @@
         <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0">
             <div class="w-full flex  p-2 gap-4">
                 <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
-                    <div class="flex flex-col lg:flex-row justify-between gap-2 lg:items-center">
+                    <div class="flex flex-row justify-between gap-2items-center">
                         <h1 class="font-bold text-lg">Devices</h1>
                         <div class="flex items-center gap-4">
-                            <form class="w-full" v-if="!deviceStore.isGettingDevices">
+                            <!-- <form class="w-full" v-if="!deviceStore.isGettingDevices">
                                 <label for="default-search"
                                     class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                                 <div v-if="deviceStore.hasDevices" class="relative">
@@ -23,16 +23,10 @@
                                         placeholder="Search Device Id, Name..." required>
 
                                 </div>
-                            </form>
+                            </form> -->
 
-                            <button type="button" @click="openNewDeviceModal()"
-                                class="items-center hidden px-3 py-2 text-sm font-medium leading-4 text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm sm:inline-flex hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                                <svg class="w-4 h-4 mr-1 -ml-1" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                                Add New Device
-                            </button>
+                            <button class="btn btn-outline" @click="controlStore.openModal('generateBillModal')">Generate Bill <Icon name="bi:stars"></Icon></button>
+                            <button class="btn btn-outline" @click="openNewDeviceModal()">Add New Device <Icon name="material-symbols-light:add-rounded"></Icon></button>
                         </div>
 
                     </div>
@@ -69,7 +63,7 @@
                                 </div>
                             </div>
 
-                            <p class="text-gray-600">Getting devices</p>
+                            <p class="text-gray-600">...</p>
                         </div>
                     </template>
                     <!-- end of LOADING -->
@@ -113,7 +107,7 @@
 
         <!-- MODALS -->
         <Modal modal-id="billModal">
-            <BillPreview :option="{ device: deviceStore.selectedDevice }"></BillPreview>
+            <BillPreview :option="{ device: deviceStore.selectedDevice, modalId : 'billModal' }"></BillPreview>
         </Modal>
 
         <Modal modal-id="billSuccessModal">
@@ -122,6 +116,10 @@
 
         <Modal modal-id="addNewDeviceModal">
             <NewDevice></NewDevice>
+        </Modal>
+
+        <Modal modal-id="generateBillModal">
+            <DynamicBillPreview :option="{ modalId : 'generateBillModal' }"></DynamicBillPreview>
         </Modal>
 
         <!-- end of MODALS -->

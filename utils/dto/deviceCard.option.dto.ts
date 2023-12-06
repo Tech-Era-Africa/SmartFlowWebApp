@@ -1,5 +1,6 @@
 import type { IDevice } from "~/server/api/device/model/device.model";
 
 export interface DeviceCardOptionDTO {
-    device:IDevice
+    device:IDevice,
+    hideUpdateDate?:boolean
 }
