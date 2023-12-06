@@ -3,7 +3,7 @@
         <div class="flex justify-between items-center">
             <h1 class="font-bold text-lg">Water Consumption</h1>
             <button class="btn">
-                Monthly
+                This Year
                 <Icon name="material-symbols:calendar-month-outline" />
             </button>
         </div>
