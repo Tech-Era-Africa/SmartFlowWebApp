@@ -51,9 +51,9 @@
 </template>
 
 <script setup lang="ts">
-import { type IBillOption } from '~/server/api/bill/model/bill.model';
+
 import { useBillStore } from '~/stores/bill/bill.store';
-import { useDeviceStore } from '~/stores/device/device.store';
+
 
 useHead({
     title: `Bill - ${useRoute().params.id}`
@@ -67,7 +67,7 @@ const { id } = useRoute().params;
 // Trigger bill fetching
 await billStore.getBillWithDevice(id as string)
 
-console.log(useRoute().path)
+
 
 
 </script>

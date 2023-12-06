@@ -25,7 +25,6 @@ export const useBillStore = defineStore({
         console.log("Success generating bill: ", data)
 
       } catch (error: any) {
-        console.log(error)
         this.billApiFailure.message = error.message;
         this.billApiState = ApiResponseState.FAILED;
       }

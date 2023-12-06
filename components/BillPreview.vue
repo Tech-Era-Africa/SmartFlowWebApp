@@ -26,20 +26,18 @@
                     <div>
                         <p class="text-sm text-gray-500">Total Consumption</p>
                         <h1 class="font-bold text-xl text-right"><span v-if="deviceStore.isGettingDeviceConsumption"
-                                class="loading loading-spinner loading-xs text-gray-400"></span><span>{{ deviceStore.consumption }}L</span>
+                                class="loading loading-spinner loading-xs text-gray-400"></span><span>{{ useUseCubicToLitre(deviceStore.consumption)  }}L</span>
                         </h1>
                     </div>
                 </div>
 
             </div>
             <div class="flex flex-col gap-2">
-                <div class="flex justify-between items-center text-lg font-bold">
-                    <h1>Total Bill</h1>
-                    <h1>{{ useUseFormatCurrency(totalCurrentCharge) }}</h1>
-                </div>
-                <div class="flex justify-between items-center mb-2">
+                
+                <div class="flex justify-between text-xs items-center">
                     <p>Bill Type</p>
-                    <div class="dropdown dropdown-end dropdown-bottom">
+                    <p>Domestic</p>
+                    <!-- <div class="dropdown dropdown-end dropdown-bottom">
                         <label tabindex="" class="btn btn-outline">Domestic
                             <Icon name="ion:caret-down-outline" />
                         </label>
@@ -48,11 +46,15 @@
                             <li><a>Commercial</a></li>
                             <li><a>Industrial</a></li>
                         </ul>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="flex justify-between items-center text-xs">
                     <p>Bill Date</p>
                     <p>{{ useFormatDateHuman(new Date(Date.now())) }}</p>
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <p>Consumption</p>
+                    <p>{{ useUseCubicToLitre(0) }}L</p>
                 </div>
                 <div class="flex justify-between items-center text-xs">
                     <p>Water Charge</p>
@@ -77,6 +79,10 @@
                 <div class="flex justify-between items-center text-xs">
                     <p>Previous Balance</p>
                     <p>GHC0</p>
+                </div>
+                <div class="flex justify-between items-center text-lg font-bold">
+                    <h1>Total Bill</h1>
+                    <h1>{{ useUseFormatCurrency(totalCurrentCharge) }}</h1>
                 </div>
 
             </div>

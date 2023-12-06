@@ -94,7 +94,7 @@
         </div>
 
         </div>
-        <div class="btn bg-green-600 text-white hover:bg-green-600 hover:text-white">Pay Bill <span v-if="false"
+        <div @click="payBill" class="btn bg-green-600 text-white hover:bg-green-600 hover:text-white">Pay Bill <span v-if="paymentStore.isInitPayment"
                 class="ml-2 loading loading-spinner"></span></div>
     </template>
 </template>
@@ -102,15 +102,12 @@
 <script setup lang="ts">
 
 import type { IBillOption } from '~/server/api/bill/model/bill.model';
-import { useBillStore } from '~/stores/bill/bill.store';
 import { Status } from '~/utils/class/status.class';
 import { BillType } from '~/utils/class/billType.class';
+import { usePaymentStore } from '~/stores/payment/payment.store';
 
-useHead(
-    {
-        script: ["https://js.paystack.co/v1/inline.js"]
-    }
-)
+
+const paymentStore = usePaymentStore()
 
 const props = defineProps({
     option: {
@@ -119,8 +116,19 @@ const props = defineProps({
     },
 })
 
-const payBill = () => {
+const payBill = async() => {
     //Fistt check if another bill has been created latest to this and prompt the user to go for that one instead
+   const res =  await paymentStore.initPayment({
+        amount : 1 * 100,
+        email : "ronaldnettey360@gmail.com",
+        billId : props.option.bill.objectId
+    })
+
+    // // Open the new page in a new tab/window
+    window.location.href = res.data.authorization_url
+
 }
+
+
 
 </script>
