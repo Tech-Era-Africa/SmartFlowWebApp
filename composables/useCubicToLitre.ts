@@ -1,1 +1,1 @@
-export const useUseCubicToLitre = (cubicValue:number) => cubicValue * 1000
+export const useUseCubicToLitre = (cubicValue:number) => parseFloat((cubicValue * 1000).toFixed(2))

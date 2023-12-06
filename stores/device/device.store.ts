@@ -130,7 +130,7 @@ export const useDeviceStore = defineStore({
         const data = await useStoreFetchRequest(`/api/device/consumption?${queryString}`, 'GET');
 
         this.consumptionTrendsApiState = ApiResponseState.SUCCESS;
-        this.deviceConsumptionTrend = data as []
+        this.deviceConsumptionTrend = (data as []).map(consumption=>parseFloat((consumption * 1000).toFixed(2))) as []
 
       } catch (error: any) {
         this.deviceConsumptionTrend = [] //Default to empty
