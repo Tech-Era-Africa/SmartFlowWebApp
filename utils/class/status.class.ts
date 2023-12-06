@@ -1,10 +1,10 @@
 
 export class Status {
   private static statusMap: { [key: string]: { name: string; color: string } } = {
-    h9Eb9xqyjq: { name: 'Unpaid', color: '#FFA500' },
-    t0H56JNEHb: { name: 'Inactive', color: '#F0E9DD' },
-    heWFtvGqhO: { name: 'Active', color: '#340138' },
-    vcDFmQoFkD: { name: 'Paid', color: '#00FF7B' },
+    h9Eb9xqyjq: { name: 'Unpaid', color: 'bg-yellow-400' },
+    t0H56JNEHb: { name: 'Inactive', color: 'bg-blue-100' },
+    heWFtvGqhO: { name: 'Active', color: 'bg-blue-600' },
+    vcDFmQoFkD: { name: 'Paid', color: 'bg-green-500' },
 
   };
 

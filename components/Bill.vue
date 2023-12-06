@@ -17,7 +17,7 @@
 
 
             <div class="flex gap-2">
-                <div class="badge" :class="`bg-[${Status.getColor(option.bill.status.objectId)}]`">{{
+                <div class="badge" :class="Status.getColor(option.bill.status.objectId)">{{
                     Status.getName(option.bill.status.objectId) }}</div>
                 <div class="badge badge-default">{{ BillType.getName(option.bill.billType.objectId) }}</div>
             </div>
@@ -94,7 +94,7 @@
         </div>
 
         </div>
-        <div @click="payBill" class="btn bg-green-600 text-white hover:bg-green-600 hover:text-white">Pay Bill <span v-if="paymentStore.isInitPayment"
+        <div v-if="!isPaid" @click="payBill" class="btn bg-green-600 text-white hover:bg-green-600 hover:text-white">Pay Bill <span v-if="paymentStore.isInitPayment"
                 class="ml-2 loading loading-spinner"></span></div>
     </template>
 </template>
@@ -128,6 +128,8 @@ const payBill = async() => {
     window.location.href = res.data.authorization_url
 
 }
+
+const isPaid = computed(()=> props.option.bill.status.objectId == 'vcDFmQoFkD')
 
 
 
