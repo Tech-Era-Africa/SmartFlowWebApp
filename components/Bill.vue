@@ -9,7 +9,7 @@
                 </div>
                 <div>
                     <p class="text-black font-bold text-xs">Period</p>
-                    <p class="text-gray-500 font-bold text-xs">Oct 2023 - Nov 2023</p>
+                    <p class="text-gray-500 font-bold text-xs">Nov 2023 - Dec 2023</p>
                 </div>
 
             </div>
