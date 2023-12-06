@@ -43,7 +43,7 @@
                     <label for="" class="text-sm font-bold text-gray-900"> Device Name </label>
                 </div>
                 <div class="mt-2">
-                    <input v-model="newDevice.name" type="text" name="" id="" placeholder="DEV12345678"
+                    <input v-model="newDevice.name" type="text" name="" id="" placeholder="Outdoor Device"
                         class="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-blue-600 focus:border-blue-600 sm:text-sm caret-blue-600" />
                 </div>
             </div>
