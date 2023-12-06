@@ -79,12 +79,12 @@ export const useDeviceStore = defineStore({
       }
     },
 
-    async getCurrentDeviceConsumption(deviceId: string) {
+    async getCurrentDeviceConsumption(deviceId: string, period:string = 'M') {
       try {
         this.consumptionApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ deviceId }).toString();
-        const data = await useStoreFetchRequest(`/api/device/consumption/current?${queryString}`, 'GET');
-        this.consumption = (data as any).latestDeviceConsumption.consumption ?? 0
+        const queryString = new URLSearchParams({ deviceId, period }).toString();
+        const data = await useStoreFetchRequest(`/api/device/consumption/period?${queryString}`, 'GET');
+        this.consumption = (data as any).totalConsumption ?? 0
         this.consumptionApiState = ApiResponseState.SUCCESS;
 
       } catch (error: any) {
@@ -98,7 +98,7 @@ export const useDeviceStore = defineStore({
       try {
         
         this.consumptionTrendsApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ deviceId, year: year?.toString() ?? '2023' }).toString();
+        const queryString = new URLSearchParams({ deviceId, year: year?.toString() ?? new Date(Date.now()).getFullYear().toString() }).toString();
         const data = await useStoreFetchRequest(`/api/device/consumption?${queryString}`, 'GET');
 
         this.consumptionTrendsApiState = ApiResponseState.SUCCESS;
