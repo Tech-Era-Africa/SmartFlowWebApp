@@ -1,7 +1,20 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', "@nuxt/image", "nuxt-icon"],
+  ssr:false,
+  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', "@nuxt/image", "nuxt-icon",'shadcn-nuxt',],
+  spaLoadingTemplate: 'spa-loading-template.html',
+  shadcn: {
+    /**
+     * Prefix for all the imported component
+     */
+    prefix: '',
+    /**
+     * Directory that the component lives in.
+     * @default "./components/ui"
+     */
+    componentDir: './components/ui'
+  },
   css: ['~/assets/css/tailwind.css'],
   postcss: {
     plugins: {
@@ -25,7 +38,11 @@ export default defineNuxtConfig({
   routeRules:{
     '/': { redirect: '/devices' },
     '/api/**': { cors: true },
-    '/billing/invoice/**' : {ssr : false},
-    '/billing/status/**' : {ssr : false}
+  },
+  imports:{
+    dirs:[
+      '@/stores/',
+      '@/components/ui'
+    ]
   },
 })

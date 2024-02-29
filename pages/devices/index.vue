@@ -7,47 +7,49 @@
                     <div class="flex flex-row justify-between gap-2items-center">
                         <h1 class="font-bold text-lg">Devices</h1>
                         <div class="flex items-center gap-4">
-                            <!-- <form class="w-full" v-if="!deviceStore.isGettingDevices">
-                                <label for="default-search"
-                                    class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                                <div v-if="deviceStore.hasDevices" class="relative">
-                                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                        </svg>
-                                    </div>
-                                    <input type="search" id="default-search"
-                                        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500   dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Search Device Id, Name..." required>
-
-                                </div>
-                            </form> -->
-
-                            <button class="btn btn-outline" @click="controlStore.openModal('generateBillModal')">Generate Bill <Icon name="bi:stars"></Icon></button>
-                            <button class="btn btn-outline" @click="openNewDeviceModal()">Add New Device <Icon name="material-symbols-light:add-rounded"></Icon></button>
+                            <button class="btn btn-outline" @click="controlStore.openModal('generateBillModal')">Generate
+                                Bill <Icon name="bi:stars"></Icon></button>
+                            <button class="btn btn-outline" @click="openNewDeviceModal()">Add New Device <Icon
+                                    name="material-symbols-light:add-rounded"></Icon></button>
                         </div>
 
                     </div>
 
                     <!-- DEVICES -->
                     <template v-if="deviceStore.hasDevices">
-                        <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
-                            <DeviceCard :option="{ device }" @click="openDeviceDrawer(device)"
-                                v-for="device in deviceStore.devices"></DeviceCard>
-                        </div>
-
-
-                        <div v-if="false" class="text-center mt-10">
-                            <div class="join">
-                                <button class="join-item btn btn-sm">1</button>
-                                <button class="join-item btn btn-sm btn-active">2</button>
-                                <button class="join-item btn btn-sm">3</button>
-                                <button class="join-item btn btn-sm">4</button>
+                        <Sheet :open="isSheetDialogueOpen" @update:open="handleOnSheetDialogOpen">
+                            <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
+                                <DeviceCard :option="{ device }" @click="openSheetDrawer(device)"
+                                    v-for="device in deviceStore.devices"></DeviceCard>
                             </div>
+                            <SheetContent class=" bg-white overflow-y-auto md:max-w-[600px]">
+                                <template v-if="deviceStore.selectedDevice.objectId">
+                                    <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }">
+                                    </SingleDeviceMonitoring>
+                                    <WaterConsumptionChart :option="waterConsumptionChartOptions"></WaterConsumptionChart>
+                                    <MonthlyConsumptionStats
+                                        :option="{ consumption: deviceStore.consumption, deviceId: deviceStore.selectedDevice.objectId }">
+                                    </MonthlyConsumptionStats>
+                                    <TotalPayableBillWidget
+                                        :option="{ consumption: deviceStore.consumption, currency: 'GHC', device: deviceStore.selectedDevice }">
+                                        <div class="text-right">
+                                            <p class="text-xs text-gray-500">Consumption</p>
+                                            <p class="font-bold flex justify-end items-center gap-2"><span
+                                                    v-if="deviceStore.isGettingDeviceConsumption"
+                                                    class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
+                                                        useUseCubicToLitre(deviceStore.consumption)
+                                                    }}L</span>
+                                            </p>
+                                        </div>
+                                    </TotalPayableBillWidget>
+                                    <!-- <UsersTable :option="usersDataTableOption"></UsersTable>
+            <BillingTable :option="billingDataTableOption"></BillingTable> -->
+                                </template>
 
-                        </div>
+                            </SheetContent>
+
+                        </Sheet>
+
 
                     </template>
                     <!-- end of DEVICES -->
@@ -76,53 +78,7 @@
 
         </section>
 
-        <Drawer drawerId="deviceDrawer">
 
-            <template v-if="deviceStore.selectedDevice.objectId">
-                <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }"></SingleDeviceMonitoring>
-                <WaterConsumptionChart :option="waterConsumptionChartOptions"></WaterConsumptionChart>
-                <MonthlyConsumptionStats
-                    :option="{ consumption: deviceStore.consumption, deviceId: deviceStore.selectedDevice.objectId }">
-                </MonthlyConsumptionStats>
-                <TotalPayableBillWidget
-                    :option="{ consumption:deviceStore.consumption, currency: 'GHC', device: deviceStore.selectedDevice }">
-                    <div class="text-right">
-                        <p class="text-xs text-gray-500">Consumption</p>
-                        <p class="font-bold flex justify-end items-center gap-2"><span
-                                v-if="deviceStore.isGettingDeviceConsumption"
-                                class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
-                                    useUseCubicToLitre(deviceStore.consumption)
-                                }}L</span>
-                        </p>
-                    </div>
-                </TotalPayableBillWidget>
-                <!-- <UsersTable :option="usersDataTableOption"></UsersTable>
-            <BillingTable :option="billingDataTableOption"></BillingTable> -->
-            </template>
-
-
-
-
-        </Drawer>
-
-        <!-- MODALS -->
-        <Modal modal-id="billModal">
-            <BillPreview :option="{ device: deviceStore.selectedDevice, modalId : 'billModal' }"></BillPreview>
-        </Modal>
-
-        <Modal modal-id="billSuccessModal">
-            <BillSuccess></BillSuccess>
-        </Modal>
-
-        <Modal modal-id="addNewDeviceModal">
-            <NewDevice></NewDevice>
-        </Modal>
-
-        <Modal modal-id="generateBillModal">
-            <DynamicBillPreview :option="{ modalId : 'generateBillModal' }"></DynamicBillPreview>
-        </Modal>
-
-        <!-- end of MODALS -->
     </NuxtLayout>
 </template>
 
@@ -144,15 +100,25 @@ const authStore = useAuthStore()
 const controlStore = useControlStore()
 
 
-await deviceStore.getDevicesByUser(authStore.currentUser.objectId);
+onBeforeMount(() => {
+    deviceStore.getDevicesByUser(authStore.currentUser.objectId);
+})
 
 
-const openDeviceDrawer = async (device: IDevice) => {
+// SHEET CONTROL
+const isSheetDialogueOpen = ref(false)
+const handleOnSheetDialogOpen = (isOpen: boolean) => {
+    isSheetDialogueOpen.value = isOpen
+}
+// end of SHEET CONTROL
+
+const openSheetDrawer = async (device: IDevice) => {
+    isSheetDialogueOpen.value = true
     // Update the device store
     deviceStore.selectDevice(device)
     deviceStore.getMonthlyMinMaxConsumption(device.objectId)
     billStore.getCurrentPaidBills(device.objectId)
-    controlStore.toggleDeviceDrawer()
+    // controlStore.toggleDeviceDrawer()
 }
 
 const openNewDeviceModal = () => controlStore.openModal("addNewDeviceModal")

@@ -1,5 +1,5 @@
 <template>
-     <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
+     <div class="w-full min-h-[200px] bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="font-bold text-lg">Monthly Consumption</h1>

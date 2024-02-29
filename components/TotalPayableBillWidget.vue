@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full bg-[#E5FFE4] rounded-xl p-5 flex flex-col gap-2">
+    <div class="w-full min-h-[100px] bg-[#E5FFE4] rounded-xl p-5 flex flex-col gap-2">
         <div class="flex  justify-between items-center">
             <div>
                 <h1 class="font-bold text-lg">Total Payable Bill</h1>
@@ -23,7 +23,7 @@
             </Stat>
 
         </div>
-        <button @click="generateBill" :disabled="totalCurrentCharge() == 0" class="btn bg-black text-white  mt-5">Generate Bill</button>
+        <Button @click="generateBill" :disabled="totalCurrentCharge() == 0" class=" mt-5">Generate Bill</Button>
     </div>
 </template>
 <script setup lang="ts">
