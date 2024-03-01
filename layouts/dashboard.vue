@@ -4,7 +4,7 @@
     <section class="absolute z-40 md:hidden">
       <BottomNav></BottomNav>
     </section>
-    <section class="flex-1 overflow-y-auto relative ">
+    <section class="flex-1 overflow-y-auto relative bg-blue-100 bg-opacity-10">
       <slot></slot>
     </section>
   </section>

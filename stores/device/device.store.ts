@@ -36,6 +36,11 @@ export const useDeviceStore = defineStore({
     newDeviceApiState:ApiResponseState.NULL,
     newDeviceApiFailure : {message : ""},
 
+    //TOTAL CONSUMPTION ALL DEVICE BY USER
+    allTotalConsumptionApiState : ApiResponseState.NULL,
+    allTotalConsumptionApiFailure : {message : ""},
+    allTotalConsumption : 0
+
   }),
   actions: {
 
@@ -55,6 +60,9 @@ export const useDeviceStore = defineStore({
     },
 
     async getDevicesByUser(userId: string) {
+      // Do nothing if the devices have already been fetched
+      if(this.getDevicesApiState != ApiResponseState.NULL) return;
+
       try {
         this.getDevicesApiState = ApiResponseState.LOADING;
         const queryString = new URLSearchParams({ userId }).toString();
@@ -98,6 +106,22 @@ export const useDeviceStore = defineStore({
         this.consumptionApiState = ApiResponseState.FAILED;
       }
     },
+
+    async getAllDeviceTotalConsumption(userId:string) {
+      try {
+        this.allTotalConsumptionApiState = ApiResponseState.LOADING;
+        const queryString = new URLSearchParams({ userId }).toString();
+        const data = await useStoreFetchRequest(`/api/device/consumption/by/user/total?${queryString}`, 'GET');
+        this.allTotalConsumption = (data as any).totalConsumption ?? 0
+        this.allTotalConsumptionApiState = ApiResponseState.SUCCESS;
+
+      } catch (error: any) {
+        this.allTotalConsumption = 0
+        this.allTotalConsumptionApiFailure.message = error.message;
+        this.allTotalConsumptionApiState = ApiResponseState.FAILED;
+      }
+    },
+
 
     async getMonthlyMinMaxConsumption(deviceId: string) {
       try {
@@ -179,5 +203,10 @@ export const useDeviceStore = defineStore({
     isAddingNewDevice: (state) => state.newDeviceApiState === ApiResponseState.LOADING,
     failed_AddingNewDevice: (state) => state.newDeviceApiState === ApiResponseState.FAILED,
     success_AddingNewDevice: (state) => state.newDeviceApiState === ApiResponseState.SUCCESS,
+
+
+    loading_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.LOADING,
+    failed_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.FAILED,
+    success_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.SUCCESS,
   },
 })

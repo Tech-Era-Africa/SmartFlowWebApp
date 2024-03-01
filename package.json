@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
+    "@tanstack/vue-table": "^8.13.2",
     "@types/luxon": "^3.3.5",
     "@vueuse/core": "^10.9.0",
     "apexcharts": "^3.44.0",

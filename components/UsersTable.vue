@@ -207,6 +207,7 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '~/stores/auth/user/user.store';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
 
 
@@ -216,6 +217,7 @@ defineProps({
         required: true
     },
 })
+
 
 
 

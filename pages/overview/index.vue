@@ -7,7 +7,7 @@
                     <DeviceMonitoring></DeviceMonitoring>
                 </div>
                 <div class="flex flex-col gap-2 flex-1 flex-grow">
-                   <MonthlyConsumptionStats :option="monthlyConsumptionStatOption"></MonthlyConsumptionStats>
+                   <MonthlyConsumptionStats :option="monthlyConsumptionStatOption" class="h-full"></MonthlyConsumptionStats>
                    <div class="flex gap-2">
                     <Stat :option="{ title: 'Total Payable Bill', value: 'GHC570', clearBg : true }">
                         <div class="text-right">

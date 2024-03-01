@@ -11,14 +11,14 @@
             <div class="w-full flex flex-col gap-2">
                 <div class="flex gap-2">
                     <Stat :option="{ title: 'Active', value: '0' }"></Stat>
-                    <Stat :option="{ title: 'Users', value: '0' }"></Stat>
+                    <Stat :option="{ title: 'Users', value: '1' }"></Stat>
                 </div>
                 <div class="flex gap-2">
                     <Stat :option="{ title: 'Total Bill Amount', value: 'GHC4540' }"></Stat>
                     <!-- <Stat :option="{ title: 'Valve', value: 'Open' }"></Stat> -->
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Consumption', value: '234L' }">
+                    <Stat :option="{ title: 'Total Consumption', value: '296,800L' }">
                     </Stat>
                 </div>
 
@@ -30,9 +30,23 @@
 
                 <div>
                     <p class="text-sm text-gray-500">Installed</p>
-                    <h1 class="font-bold text-xl">25 Devices</h1>
+                    <h1 class="font-bold text-xl flex items-center gap-2"><span v-if="deviceStore.isGettingDevices"><Loader2 class="animate-spin"></Loader2></span><span v-else>{{ deviceStore.devices.length ?? 0 }}</span> Devices</h1>
                 </div>
             </div>
         </div>
     </div>
 </template>
+<script setup lang="ts">
+import { useUserStore } from '~/stores/auth/user/user.store';
+import { useDeviceStore } from '~/stores/device/device.store';
+import { Loader2 } from 'lucide-vue-next'
+
+
+const deviceStore = useDeviceStore();
+const userStore = useUserStore();
+
+onBeforeMount(() => {
+    deviceStore.getDevicesByUser(userStore.currentUser!.objectId);
+})
+
+</script>

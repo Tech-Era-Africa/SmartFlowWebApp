@@ -37,6 +37,7 @@ export default defineNuxtConfig({
   },
   routeRules:{
     '/api/**': { cors: true },
+    '/' : {redirect : '/overview'}
   },
   imports:{
     dirs:[
