@@ -6,9 +6,9 @@
                 <!-- <p class="text-xs text-gray-400">Updated 10mins ago</p> -->
             </div>
             <div class="dropdown dropdown-end dropdown-bottom">
-                <label tabindex="0" class="btn btn-ghost m-1">This Month
-                    <!-- <Icon name="ion:caret-down-outline" /> -->
-                </label>
+                <!-- <label tabindex="0" class="btn btn-ghost m-1">This Month
+                    <Icon name="ion:caret-down-outline" />
+                </label> -->
                 <!-- <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                     <li><a>This Month</a></li>
                     <li><a>This Year</a></li>
@@ -27,7 +27,7 @@
             </div>
             <div class="flex justify-between items-center">
                 <p class="text-gray-500 font-medium">Total Used</p>
-                <p class="text-xl font-bold">{{useUseCubicToLitre(option.consumption)}}L</p>
+                <p class="text-xl font-bold">{{useUseCubicToLitre(0)}}L</p>
             </div>
         </div>
      </div>

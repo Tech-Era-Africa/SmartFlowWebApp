@@ -7,7 +7,7 @@
                     <div class="flex flex-row justify-between gap-2items-center">
                         <h1 class="font-bold text-lg">Devices</h1>
                         <div class="flex items-center gap-4">
-                            <Dialog>
+                            <!-- <Dialog>
                                 <DialogTrigger>
                                     <Button variant="outline" class="gap-2">Generate
                                         Bill <Star :size="16"></Star> </Button>
@@ -15,7 +15,7 @@
                                 <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
                                     <DynamicBillPreview></DynamicBillPreview>
                                 </DialogContent>
-                            </Dialog>
+                            </Dialog> -->
 
                             <Dialog>
 
@@ -169,6 +169,7 @@ const waterConsumptionChartOptions = reactive(
         ],
         xAxisCategories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         isLoading: deviceStore.isGettingConsumptionTrend,
+        title : "",
         success: deviceStore.success_ConsumptionTrend
     }
 )

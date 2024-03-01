@@ -25,11 +25,11 @@
                             Users
                         </NuxtLink>
 
-                        <NuxtLink to="/billing" :class="{'bg-indigo-50 text-blue-600  mx-5 rounded-lg' : isActive('/billing')}" title="" class="flex items-center px-4 py-3 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200 group">
+                        <!-- <NuxtLink to="/billing" :class="{'bg-indigo-50 text-blue-600  mx-5 rounded-lg' : isActive('/billing')}" title="" class="flex items-center px-4 py-3 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200 group">
                             <Icon name="streamline:money-cash-coins-stack-accounting-billing-payment-stack-cash-coins-currency-money-finance" size="15" class="mr-5"></Icon>
                             Billing
                     
-                        </NuxtLink>
+                        </NuxtLink> -->
                     </nav>
                 </div>
                 <div class="px-5 pb-8 mt-16">
@@ -37,7 +37,7 @@
                         <a href="#" title="" class="text-xs font-medium text-gray-500 hover:text-gray-900"> Privacy Policy </a>
                         <a href="#" title="" class="text-xs font-medium text-gray-500 hover:text-gray-900"> Terms of Service </a>
                     </div>
-                    <p class="mt-4 text-xs font-medium text-gray-500">© 2023 Wata Flow</p>
+                    <p class="mt-4 text-xs font-medium text-gray-500">© {{ new Date(Date.now()).getFullYear() }} Smart Flow</p>
                 </div>
             </div>
         </div>

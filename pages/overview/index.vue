@@ -9,10 +9,10 @@
                 <div class="flex flex-col gap-2 flex-1 flex-grow">
                    <MonthlyConsumptionStats :option="monthlyConsumptionStatOption" class="h-full"></MonthlyConsumptionStats>
                    <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Payable Bill', value: 'GHC570', clearBg : true }">
-                        <div class="text-right">
-                            <button class="btn btn-sm btn-outline flex gap-2 items-center">Send Bill <Icon name="material-symbols:arrow-forward-rounded"></Icon></button>
-                        </div>
+                    <Stat :option="{ title: 'Smart Credits', value: '0', clearBg : true }">
+                        <!-- <div class="text-right">
+                            <Button class="btn btn-sm btn-outline flex gap-2 items-center">Top Up <Icon name="material-symbols:arrow-forward-rounded"></Icon></Button>
+                        </div> -->
                     </Stat>
                 </div>
                 </div>
@@ -43,20 +43,10 @@
 </template>
 
 <script setup lang="ts">
-import { UserModel, type User } from '~/server/api/auth/user/model/user.model';
-import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
 useHead({title : "Overview"})
 definePageMeta({ middleware: 'auth' })
-
-const usersDataTableOption = ref<UserTableOptionDTO>({
-    title: 'Users',
-            users : [
-                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"}).user
-            ] as User[],
-            columns: ["Id", "Name", "Email", "Phone Number", "Role", "Devices"]
-} as UserTableOptionDTO);
 
 const monthlyConsumptionStatOption:{ deviceId:string, consumption:number } = {
     consumption: 4,
@@ -64,6 +54,7 @@ const monthlyConsumptionStatOption:{ deviceId:string, consumption:number } = {
 }
 
 const consumptionChart:IWaterConsumptionChart = {
+    title : "Total Water Consumption",
     isLoading : false,
     series : [],
     success : true,
@@ -72,4 +63,4 @@ const consumptionChart:IWaterConsumptionChart = {
 
 
 
-</script>~/server/api/auth/user/model/user.model
+</script>
