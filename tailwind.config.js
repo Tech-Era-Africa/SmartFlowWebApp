@@ -4,7 +4,6 @@ const animate = require("tailwindcss-animate")
 module.exports = {
   darkMode: ["class"],
   safelist: ["dark"],
-  
   theme: {
     container: {
       center: true,
@@ -54,6 +53,9 @@ module.exports = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      backgroundImage:{
+        'headerBg' : "url(/bg/header_bg.png)"
       },
       keyframes: {
         "accordion-down": {

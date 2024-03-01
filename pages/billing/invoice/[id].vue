@@ -53,12 +53,12 @@
 <script setup lang="ts">
 
 import { useBillStore } from '~/stores/bill/bill.store';
-import { useDeviceStore } from '~/stores/device/device.store';
 
-
+definePageMeta({ middleware: 'auth' })
 useHead({
     title: `Bill - ${useRoute().params.id}`
 })
+
 
 const billStore = useBillStore()
 

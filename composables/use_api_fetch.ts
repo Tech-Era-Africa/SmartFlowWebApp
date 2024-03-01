@@ -8,6 +8,7 @@ const runtimeConfig = useRuntimeConfig()
         "X-Parse-Application-Id": `${runtimeConfig.B4A_APP_ID}`,
         "X-Parse-REST-API-Key": `${runtimeConfig.B4A_API_KEY}`,
         "Content-Type": "application/json",
+        ...options?.headers
     }
 
     const B4AHeader_Auth = { ...header, "X-Parse-Revocable-Session": "1" }

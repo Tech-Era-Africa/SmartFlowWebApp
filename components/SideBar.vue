@@ -20,7 +20,7 @@
                             Devices
                         </NuxtLink>
 
-                        <!-- <NuxtLink to="/users" title="" :class="{'bg-indigo-50 text-blue-600  mx-5 rounded-lg' : isActive('/users')}" class="flex items-center px-4 py-3 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200 group">
+                        <NuxtLink to="/users" title="" :class="{'bg-indigo-50 text-blue-600  mx-5 rounded-lg' : isActive('/users')}" class="flex items-center px-4 py-3 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200 group">
                             <Icon name="fluent:people-12-regular" size="20" class="mr-5"></Icon>
                             Users
                         </NuxtLink>
@@ -29,7 +29,7 @@
                             <Icon name="streamline:money-cash-coins-stack-accounting-billing-payment-stack-cash-coins-currency-money-finance" size="15" class="mr-5"></Icon>
                             Billing
                     
-                        </NuxtLink> -->
+                        </NuxtLink>
                     </nav>
                 </div>
                 <div class="px-5 pb-8 mt-16">

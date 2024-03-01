@@ -21,6 +21,8 @@
     </div>
 </template>
 <script setup lang="ts">
+import type { DeviceCardOptionDTO } from '~/utils/dto/deviceCard.option.dto';
+
 
 const openDeviceDrawer = ()=>{
     const drawer = document.getElementById("deviceDrawer");

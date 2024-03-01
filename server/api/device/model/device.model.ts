@@ -1,4 +1,4 @@
-import { User, UserModel } from "../../user/model/user.model";
+import { User, UserModel } from "../../auth/user/user.model";
 
 
 export class DeviceModel {

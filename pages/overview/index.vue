@@ -7,7 +7,7 @@
                     <DeviceMonitoring></DeviceMonitoring>
                 </div>
                 <div class="flex flex-col gap-2 flex-1 flex-grow">
-                   <MonthlyConsumptionStats></MonthlyConsumptionStats>
+                   <MonthlyConsumptionStats :option="monthlyConsumptionStatOption"></MonthlyConsumptionStats>
                    <div class="flex gap-2">
                     <Stat :option="{ title: 'Total Payable Bill', value: 'GHC570', clearBg : true }">
                         <div class="text-right">
@@ -20,7 +20,7 @@
             </div>
             <div class="w-full h-96 flex flex-col lg:flex-row   p-2 gap-4">
                 <div class="w-full lg:w-3/5 h-full">
-                    <!-- <WaterConsumptionChart></WaterConsumptionChart> -->
+                    <WaterConsumptionChart :option="consumptionChart"></WaterConsumptionChart>
                 </div>
                 <div class="flex-1 h-full">
                     <DevicesSummary></DevicesSummary>
@@ -31,22 +31,24 @@
 
             </div>
         </section>
-        <Drawer drawerId = "deviceDrawer">
-           <!-- <SingleDeviceMonitoring></SingleDeviceMonitoring> -->
-           <!-- <WaterConsumptionChart></WaterConsumptionChart> -->
+        <!-- <Drawer drawerId = "deviceDrawer">
+           <SingleDeviceMonitoring></SingleDeviceMonitoring>
+           <WaterConsumptionChart></WaterConsumptionChart>
            <MonthlyConsumptionStats></MonthlyConsumptionStats>
-           <!-- <TotalPayableBillWidget></TotalPayableBillWidget> -->
+           <TotalPayableBillWidget></TotalPayableBillWidget>
            <UsersTable :option="usersDataTableOption"></UsersTable>
 
-        </Drawer>
+        </Drawer> -->
     </NuxtLayout>
 </template>
 
 <script setup lang="ts">
-import { UserModel, type User } from '~/server/api/user/model/user.model';
+import { UserModel, type User } from '~/server/api/auth/user/model/user.model';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
+import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
 useHead({title : "Overview"})
+definePageMeta({ middleware: 'auth' })
 
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Users',
@@ -56,6 +58,18 @@ const usersDataTableOption = ref<UserTableOptionDTO>({
             columns: ["Id", "Name", "Email", "Phone Number", "Role", "Devices"]
 } as UserTableOptionDTO);
 
+const monthlyConsumptionStatOption:{ deviceId:string, consumption:number } = {
+    consumption: 4,
+    deviceId : ""
+}
+
+const consumptionChart:IWaterConsumptionChart = {
+    isLoading : false,
+    series : [],
+    success : true,
+    xAxisCategories : []
+}
 
 
-</script>
+
+</script>~/server/api/auth/user/model/user.model

@@ -84,24 +84,27 @@
 
 <script setup lang="ts">
 import type { IDevice } from '~/server/api/device/model/device.model';
-import { UserModel, type User } from '~/server/api/user/model/user.model';
+import { UserModel, type User } from '~/server/api/auth/user/model/user.model';
 import { useAuthStore } from '~/stores/auth/auth.store';
 import { useBillStore } from '~/stores/bill/bill.store';
 import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
+import { useUserStore } from '~/stores/auth/user/user.store';
 
 
 useHead({ title: "Devices" })
+definePageMeta({ middleware: 'auth' })
 
 const deviceStore = useDeviceStore()
 const billStore = useBillStore()
 const authStore = useAuthStore()
 const controlStore = useControlStore()
+const userStore = useUserStore()
 
 
 onBeforeMount(() => {
-    deviceStore.getDevicesByUser(authStore.currentUser.objectId);
+    deviceStore.getDevicesByUser(userStore.currentUser!.objectId);
 })
 
 
@@ -174,4 +177,4 @@ watch(deviceStore, async state => {
 
 
 
-</script>
+</script>~/server/api/auth/user/model/user.model

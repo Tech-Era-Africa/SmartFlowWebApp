@@ -36,8 +36,9 @@
 </template>
 <script setup lang="ts">
 import {type UserTableOptionDTO} from '~/utils/dto/userTable.option.dto';
-import { UserModel, type User } from '~/server/api/user/model/user.model';
+import { UserModel, type User } from '~/server/api/auth/user/model/user.model';
 
+definePageMeta({ middleware: 'auth' })
 useHead({title : "Water Billing"})
 
 const usersDataTableOption = ref<UserTableOptionDTO>({

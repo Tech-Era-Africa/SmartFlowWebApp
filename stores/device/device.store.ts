@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { useStoreFetchRequest } from '~/composables/use_store_fetch_request';
 import { DeviceModel, type IDevice } from '~/server/api/device/model/device.model';
-import { UserModel, type User } from '~/server/api/user/model/user.model';
+import { UserModel, type User } from '~/server/api/auth/user/model/user.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 
 export const useDeviceStore = defineStore({

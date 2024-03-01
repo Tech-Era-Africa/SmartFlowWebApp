@@ -33,11 +33,12 @@
      </div>
 </template>
 <script setup lang="ts">
+import type { PropType } from 'vue';
 import { useDeviceStore } from '~/stores/device/device.store';
 
 const props = defineProps({
     option: {
-        type: Object as () => { deviceId:string, consumption:number },
+        type: Object as PropType<{ deviceId:string, consumption:number }>,
         required: true
     },
 })

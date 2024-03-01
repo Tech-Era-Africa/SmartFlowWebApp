@@ -1,6 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
   ssr:false,
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', "@nuxt/image", "nuxt-icon",'shadcn-nuxt',],
   spaLoadingTemplate: 'spa-loading-template.html',
@@ -27,6 +26,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     B4A_APP_ID: process.env.NUXT_B4A_APP_ID,
     B4A_API_KEY: process.env.NUXT_B4A_API_KEY,
+    B4A_MASTER_KEY: process.env.NUXT_B4A_MASTER_KEY,
     MG_API_KEY: process.env.NUXT_MG_API_KEY,
     public: {
       API_BASE_URL: process.env.NUXT_PUBLIC_API_BASE_URL,
@@ -36,7 +36,6 @@ export default defineNuxtConfig({
 
   },
   routeRules:{
-    '/': { redirect: '/devices' },
     '/api/**': { cors: true },
   },
   imports:{

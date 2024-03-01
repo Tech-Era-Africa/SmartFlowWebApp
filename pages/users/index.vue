@@ -11,9 +11,10 @@
 </template>
 <script setup lang="ts">
 import {type UserTableOptionDTO} from '~/utils/dto/userTable.option.dto';
-import { UserModel } from '~/server/api/user/model/user.model';
+import { UserModel } from '~/server/api/auth/user/model/user.model';
 
 useHead({title : "Users"})
+definePageMeta({ middleware: 'auth' })
 
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Users',
@@ -24,4 +25,4 @@ const usersDataTableOption = ref<UserTableOptionDTO>({
 } as UserTableOptionDTO);
 
 
-</script>
+</script>~/server/api/auth/user/model/user.model
