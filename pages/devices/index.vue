@@ -17,8 +17,17 @@
                                 </DialogContent>
                             </Dialog>
 
-                            <button class="btn btn-outline" @click="openNewDeviceModal()">Add New Device <Icon
-                                    name="material-symbols-light:add-rounded"></Icon></button>
+                            <Dialog>
+
+                            </Dialog>
+                            <Dialog>
+                                <DialogTrigger>
+                                    <Button variant="outline" class="gap-2">Add New Device <Plus :size="16"></Plus> </Button>
+                                </DialogTrigger>
+                                <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
+                                    <NewDevice></NewDevice>
+                                </DialogContent>
+                            </Dialog>
                         </div>
 
                     </div>
@@ -91,7 +100,7 @@ import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
 import { useUserStore } from '~/stores/auth/user/user.store';
-import { Star } from 'lucide-vue-next'
+import { Star, Plus } from 'lucide-vue-next'
 
 
 useHead({ title: "Devices" })
