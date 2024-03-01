@@ -7,8 +7,16 @@
                     <div class="flex flex-row justify-between gap-2items-center">
                         <h1 class="font-bold text-lg">Devices</h1>
                         <div class="flex items-center gap-4">
-                            <button class="btn btn-outline" @click="controlStore.openModal('generateBillModal')">Generate
-                                Bill <Icon name="bi:stars"></Icon></button>
+                            <Dialog>
+                                <DialogTrigger>
+                                    <Button variant="outline" class="gap-2">Generate
+                                        Bill <Star :size="16"></Star> </Button>
+                                </DialogTrigger>
+                                <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
+                                    <DynamicBillPreview></DynamicBillPreview>
+                                </DialogContent>
+                            </Dialog>
+
                             <button class="btn btn-outline" @click="openNewDeviceModal()">Add New Device <Icon
                                     name="material-symbols-light:add-rounded"></Icon></button>
                         </div>
@@ -56,16 +64,8 @@
 
                     <!-- LOADING -->
                     <template v-if="deviceStore.isGettingDevices">
-                        <div class="w-full h-[50vh] flex flex-col justify-center items-center gap-36">
-                            <div class="flex justify-between gap-10">
-                                <div class="flex flex-col gap-4 w-52" v-for="i in 4">
-                                    <div class="skeleton h-32 w-full"></div>
-                                    <div class="skeleton h-4 w-28"></div>
-
-                                </div>
-                            </div>
-
-                            <p class="text-gray-600">...</p>
+                        <div class="grid grid-cols-4 gap-10 p-10">
+                            <Skeleton class="h-[150px] w-[180px]" v-for="i in 8" />
                         </div>
                     </template>
                     <!-- end of LOADING -->
@@ -91,6 +91,7 @@ import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
 import { useUserStore } from '~/stores/auth/user/user.store';
+import { Star } from 'lucide-vue-next'
 
 
 useHead({ title: "Devices" })

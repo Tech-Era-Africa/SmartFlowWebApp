@@ -88,16 +88,12 @@
         </div>
 
     </div>
-    <div class="modal-action">
-        <form method="dialog" class="flex gap-4">
-            <span v-if="deviceStore.isGettingDeviceConsumption" class="loading loading-bars"></span>
-            <template v-else>
-                <div disabled class="btn bg-black text-white hover:bg-black hover:text-white" @click="createBill">Create
-                    Invoice <span v-if="billStore.isCreatingBill" class="ml-2 loading loading-spinner"></span></div>
-            </template>
-
-            <div class="btn" @click="controlStore.closeModal(option.modalId)">Close</div>
-        </form>
+    <div>
+        <span v-if="deviceStore.isGettingDeviceConsumption" class="loading loading-bars"></span>
+        <template v-else>
+            <Button disabled class="w-full bg-black text-white hover:bg-black hover:text-white" @click="createBill">Create
+                Invoice <span v-if="billStore.isCreatingBill" class="ml-2 loading loading-spinner"></span></Button>
+        </template>
     </div>
 </template>
 <script setup lang="ts">
@@ -106,15 +102,7 @@ import { useBillStore } from '~/stores/bill/bill.store';
 import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 
-const props = defineProps({
-    option: {
-        type: Object as () => { modalId: string },
-        required: true,
-        default: {
-            dynamic: false
-        }
-    },
-})
+const props = defineProps()
 
 const deviceStore = useDeviceStore()
 const billStore = useBillStore()
