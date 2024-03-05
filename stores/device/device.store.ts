@@ -3,6 +3,7 @@ import { useStoreFetchRequest } from '~/composables/use_store_fetch_request';
 import { DeviceModel, type IDevice } from '~/server/api/device/model/device.model';
 import { UserModel, type User } from '~/server/api/auth/user/model/user.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
+import { useUserStore } from '../auth/user/user.store';
 
 export const useDeviceStore = defineStore({
   id: 'deviceStore',
@@ -28,7 +29,7 @@ export const useDeviceStore = defineStore({
     consumptionApiFailure : {message : ""},
 
      // Min Max consumption
-     minMaxconsumption : {min : 0, max : 0},
+     minMaxconsumption : {min : 0, max : 0, sum : 0},
      minMaxconsumptionApiState : ApiResponseState.NULL,
      minMaxconsumptionApiFailure : {message : ""},
 
@@ -123,22 +124,26 @@ export const useDeviceStore = defineStore({
     },
 
 
-    async getMonthlyMinMaxConsumption(deviceId: string) {
+    async getMonthlyMinMaxConsumption(startDate:string, endDate:string) {
       try {
+        
         this.minMaxconsumptionApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ deviceId }).toString();
-        const data = await useStoreFetchRequest(`/api/device/consumption/minMax?${queryString}`, 'GET');
-        console.log(data)
-        this.minMaxconsumption = {
-          max : (data as any).highestConsumption.value,
-          min : (data as any).lowestConsumption.value
-        }
+        const queryString = new URLSearchParams({ uid : useUserStore().currentUser?.objectId!, startDate, endDate}).toString();
+        const data = await useStoreFetchRequest(`/api/device/consumption/sumAll?${queryString}`, 'GET');
+
         this.minMaxconsumptionApiState = ApiResponseState.SUCCESS;
 
+        // Assign data once successful
+        if((data as any).success){
+          this.minMaxconsumption = {
+            max : (data as any).data[0].max_consumption,
+            min : (data as any).data[0].min_consumption,
+            sum : (data as any).data[0].sum_consumption
+          }
+        } 
+
+
       } catch (error: any) {
-        this.minMaxconsumption = {
-          min : 0,max : 0
-        }
         this.minMaxconsumptionApiFailure.message = error.message;
         this.minMaxconsumptionApiState = ApiResponseState.FAILED;
       }
@@ -164,11 +169,13 @@ export const useDeviceStore = defineStore({
     },
 
 
-    async getAllDevicesConsumptionTrend(uid:string, startDate:string, endDate:string) {
+    async getAllDevicesConsumptionTrend(startDate:string, endDate:string) {
       try {
+
+        console.log(useUserStore().currentUser?.objectId!)
         
         this.consumptionTrendsApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ uid, startDate, endDate}).toString();
+        const queryString = new URLSearchParams({ uid : useUserStore().currentUser?.objectId!, startDate, endDate}).toString();
         const data = await useStoreFetchRequest(`/api/device/consumption/all?${queryString}`, 'GET');
 
         this.consumptionTrendsApiState = ApiResponseState.SUCCESS;

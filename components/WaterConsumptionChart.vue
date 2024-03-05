@@ -22,7 +22,7 @@ import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
 const props = defineProps({
     option: {
-        type: Object as () => IWaterConsumptionChart,
+        type: Object as PropType<IWaterConsumptionChart>,
         required: true
     },
 })

@@ -53,11 +53,13 @@ definePageMeta({ middleware: 'auth' })
 const deviceStore = useDeviceStore()
 
 onBeforeMount(() => {
-    deviceStore.getAllDevicesConsumptionTrend("W23wd", "2024-03-01T00:00:00.000Z", "2024-03-31T23:59:00.000Z")
+    deviceStore.getAllDevicesConsumptionTrend("2024-03-01T00:00:00.000Z", "2024-03-31T23:59:00.000Z")
+    deviceStore.getMonthlyMinMaxConsumption("2024-03-01T00:00:00.000Z", "2024-03-31T23:59:00.000Z")
 
 })
 
-const monthlyConsumptionStatOption: { deviceId: string, consumption: number } = {
+const monthlyConsumptionStatOption: { deviceId: string, consumption: number, title?:string } = {
+    title : "Total Monthly Consumption",
     consumption: 4,
     deviceId: ""
 }
