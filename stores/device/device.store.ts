@@ -163,6 +163,40 @@ export const useDeviceStore = defineStore({
       }
     },
 
+
+    async getAllDevicesConsumptionTrend(uid:string, startDate:string, endDate:string) {
+      try {
+        
+        this.consumptionTrendsApiState = ApiResponseState.LOADING;
+        const queryString = new URLSearchParams({ uid, startDate, endDate}).toString();
+        const data = await useStoreFetchRequest(`/api/device/consumption/all?${queryString}`, 'GET');
+
+        this.consumptionTrendsApiState = ApiResponseState.SUCCESS;
+
+        // TODO!: MUST GIVE THIS THE RIGHT TYPE
+        const groupedData = (data as any).data.reduce((acc:any, entry:any) => {
+          const { deviceId, consumptionChange, time } = entry;
+          
+          if (!acc[deviceId]) {
+              acc[deviceId] = {
+                  name: deviceId,
+                  data: []
+              };
+          }
+      
+          acc[deviceId].data.push({ y: consumptionChange, x: time });
+          return acc;
+      }, {});
+
+        this.deviceConsumptionTrend = Object.values(groupedData)
+
+      } catch (error: any) {
+        this.deviceConsumptionTrend = [] //Default to empty
+        this.consumptionTrendsApiFailure.message = error.message;
+        this.consumptionTrendsApiState = ApiResponseState.FAILED;
+      }
+    },
+
     async selectDevice(device: IDevice) {
       this.selectedDevice = device
 

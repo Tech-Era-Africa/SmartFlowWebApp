@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDeviceStore } from '~/stores/device/device.store';
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
 
@@ -26,81 +27,75 @@ const props = defineProps({
     },
 })
 
+
 // CHART SETTTINGS
 const chart4Options = ref({
-  chart: {
-    type: 'area',
-    height: 50,
-    toolbar: {
-      show: false,
+    chart: {
+        type: 'area',
+        height: 250,
+        toolbar: {
+            show: false,
+        },
+        zoom: {
+            enabled: false,
+        },
     },
-    zoom: {
-      enabled: false,
+    series: props.option.chartSeries,
+    dataLabels: {
+        enabled: false,
     },
-  },
-  series: [
-    {
-      name: 'Consumption',
-      data: generateRandomData(30), // Generate random data for the last 30 days
+    stroke: {
+        show: true,
+        curve: 'smooth',
+        lineCap: 'butt',
+        colors: undefined,
+        width: 2,
     },
-  ],
-  dataLabels: {
-    enabled: false,
-  },
-  stroke: {
-    show: true,
-    curve: 'smooth',
-    lineCap: 'butt',
-    colors: undefined,
-    width: 2,
-  },
-  grid: {
-    row: {
-      opacity: 0,
+    grid: {
+        row: {
+            opacity: 0,
+        },
     },
-  },
-  xaxis: {
-    type: 'datetime',
-  },
-  yaxis: {
-    show: false, // Hide the y-axis
-  },
-  tooltip: {
-    x: {
-      format: 'dd MMM yyyy',
+    xaxis: {
+        type: 'datetime',
     },
-  },
-  fill: {
-    type: 'gradient',
-    gradient: {
-      shadeIntensity: 1,
-      opacityFrom: 0.7,
-      opacityTo: 0.9,
-      stops: [0, 100],
+    yaxis: {
+        show: true,
     },
-  },
-  colors: ['#0080F0'],
-  legend: {
-    show: false, // Hide the legend
-  },
-});
-
-// Function to generate random data for the last n days
-function generateRandomData(days:any) {
-  const currentDate = new Date();
-  const data = [];
-
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(currentDate);
-    date.setDate(currentDate.getDate() - i);
-    const consumption = Math.random() * 10; // Random consumption between 0 and 5
-    data.push({ x: date.getTime(), y: consumption });
-  }
-
-  return data;
-}
+    tooltip: {
+          x: {
+            format: 'dd MMM yyyy'
+          }
+        },
+    fill: {
+        type: 'gradient',
+        gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.7,
+            opacityTo: 0.9,
+            stops: [0, 100]
+        }
+    },
+    colors: ['#4F46E5', '#F87878'],
+    legend: {
+        position: 'bottom',
+        markers: {
+            radius: 12,
+            offsetX: -4,
+        },
+        itemMargin: {
+            horizontal: 12,
+            vertical: 20,
+        },
+    },
+})
+// end of CHART SETTING
 
 
+// Used to watch for changes and update the charts 
+watchEffect(()=>{
+    chart4Options.value.series = props.option.chartSeries
+})
 
 
 </script>

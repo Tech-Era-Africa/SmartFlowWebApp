@@ -1,7 +1,6 @@
 export interface IWaterConsumptionChart{
     title:string,
-    series : {name : string, data : number[]}[],
-    xAxisCategories : string[],
+    chartSeries : any[],
     isLoading: boolean,
     success : boolean,
 }
