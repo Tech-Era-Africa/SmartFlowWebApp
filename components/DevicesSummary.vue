@@ -1,34 +1,62 @@
 <template>
-    <div class="w-full max-h-[340px] bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
-        <div class="flex  justify-between items-center">
-            <h1 class="font-bold text-lg">Device Groups</h1>
-        </div>
-        <div class="flex-1 flex-grow w-full whitespace- flex gap-2 overflow-x-auto">
-            <!-- <DeviceCard @click="openDeviceDrawer"  v-for="i in 3"></DeviceCard> -->
-            <Card class="overflow-hidden w-full">
-                <CardHeader>
-                    <CardTitle>Big Ben</CardTitle>
-                    <CardDescription>2 Devices</CardDescription>
-                </CardHeader>
-                <CardContent class="px-0 h-full">
-                    <apexchart :key="chart4Options.series" :options="chart4Options"
-                        :series="chart4Options.series">
-                    </apexchart>
-                </CardContent>
-            </Card>
-            
-            <div class="bg-gray-100 flex justify-center items-center px-5 rounded-xl">
-                <p class="font-bold text-xl">+3</p>
-            </div>
-        </div>
+  <div class="w-full max-h-[340px] bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
+    <div class="flex  justify-between items-center">
+      <h1 class="font-bold text-lg">Device Clusters</h1>
     </div>
-</template>
-<script setup lang="ts">
+    <div class="flex-1 flex-grow w-full whitespace- flex gap-2 overflow-x-auto">
+      <template v-if="deviceStore.hasGroupDevices">
+        <NuxtLink :to="`/devices/group/${deviceStore.devicesGroups[0].objectId}`">
+          <Card class="overflow-hidden w-full cursor-pointer">
+          <CardHeader>
+            <CardTitle>{{ deviceStore.devicesGroups[0].name }}</CardTitle>
+            <CardDescription>{{ deviceStore.devicesGroups[0].devicesCount }} Device{{
+        deviceStore.devicesGroups[0].devicesCount! >= 2 ? 's' : '' }}</CardDescription>
+          </CardHeader>
+          <CardContent class="px-0 h-full">
+            <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
+            </apexchart>
+          </CardContent>
+        </Card>
+        </NuxtLink>
+        
 
+        <NuxtLink to="/devices/group">
+          <div class="bg-gray-100 flex justify-center items-center px-5 rounded-xl cursor-pointer h-full">
+          <p class="font-bold text-xl">+{{ deviceStore.devicesGroups.length - 1 }}</p>
+        </div>
+        </NuxtLink>
+        
+      </template>
+
+      <template v-else-if="deviceStore.loading_DevicesGroup">
+        <p>Loading Clusters...</p>
+      </template>
+
+      <template v-else>
+        <div>
+          <p>No Cluster</p>
+        </div>
+      </template>
+
+
+
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useDeviceStore } from '~/stores/device/device.store';
+
+
+const deviceStore = useDeviceStore()
+
+onBeforeMount(() => {
+  deviceStore.getUserDeviceGroup();
+})
 
 const openDeviceDrawer = () => {
-    const drawer = document.getElementById("deviceDrawer");
-    drawer?.click()
+  const drawer = document.getElementById("deviceDrawer");
+  drawer?.click()
 }
 
 // CHART SETTTINGS
@@ -59,9 +87,9 @@ const chart4Options = ref({
     colors: undefined,
     width: 2,
   },
-  
+
   grid: {
-    show:false,
+    show: false,
     row: {
       opacity: 0,
     },
@@ -93,7 +121,7 @@ const chart4Options = ref({
 });
 
 // Function to generate random data for the last n days
-function generateRandomData(days:any) {
+function generateRandomData(days: any) {
   const currentDate = new Date();
   const data = [];
 

@@ -41,7 +41,7 @@
                   class="w-full h-[150px] flex justify-between items-center cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300 shadow-none">
                   <CardHeader>
                     <CardTitle>{{ group.name }}</CardTitle>
-                    <CardDescription>{{ group.devicesCount }} Devices</CardDescription>
+                    <CardDescription>{{ group.devicesCount }} Device{{ group.devicesCount! >= 2 ? 's' : ''}}</CardDescription>
                   </CardHeader>
                   <CardContent class="p-2 w-[150px]">
                     <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
@@ -50,11 +50,28 @@
                 </Card>
               </NuxtLink>
 
-              <Card class="h-[150px] outline-dashed border-none outline-blue-300 cursor-pointer">
+              <Dialog>
+                <DialogTrigger>
+                  <Card class="h-[150px] outline-dashed border-none outline-blue-300 cursor-pointer">
                 <CardContent class="flex justify-center items-center w-full h-full p-0">
                   <PlusCircle :size="30" class="text-blue-500"></PlusCircle>
                 </CardContent>
               </Card>
+                </DialogTrigger>
+                
+                <DialogContent>
+                  <DialogTitle>
+                  <p>Create New Cluster</p>
+                </DialogTitle>
+                <DialogDescription>
+                  <p>Clusters keeps track of groups of your devices for easier management. You can place all devices in a facility in one cluster.</p>
+                </DialogDescription>
+                <Input placeholder="Eg. Apartment CB"/>
+                <Button> Create</Button>
+
+                </DialogContent>
+              </Dialog>
+              
             </div>
 
           </template>
@@ -105,7 +122,6 @@ const userStore = useUserStore()
 
 
 onBeforeMount(() => {
-  deviceStore.getDevicesByUser(userStore.currentUser!.objectId);
   deviceStore.getUserDeviceGroup();
 })
 
