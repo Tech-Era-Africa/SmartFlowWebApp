@@ -41,7 +41,8 @@
                   class="w-full h-[150px] flex justify-between items-center cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300 shadow-none">
                   <CardHeader>
                     <CardTitle>{{ group.name }}</CardTitle>
-                    <CardDescription>{{ group.devicesCount }} Device{{ group.devicesCount! >= 2 ? 's' : ''}}</CardDescription>
+                    <CardDescription>
+                      <Badge variant="outline" class="my-3">{{ group.devicesCount }} Device{{ group.devicesCount! >= 2 ? 's' : ''}}</Badge></CardDescription>
                   </CardHeader>
                   <CardContent class="p-2 w-[150px]">
                     <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">

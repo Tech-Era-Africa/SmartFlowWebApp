@@ -7,7 +7,7 @@
                     <div class="flex flex-row justify-between gap-2 items-center">
                         <div class="flex gap-2 items-center">
                             <Button variant="outline" @click="useRouter().back()"><ArrowLeftCircle></ArrowLeftCircle></Button>
-                            <h1 class="font-bold text-lg">{{ !deviceStore.isGettingDevices ? deviceStore.deviceGroupName : '' }}</h1>
+                            <h1 class="font-bold text-lg">Clusters/{{ !deviceStore.isGettingDevices ? deviceStore.deviceGroupName : '' }}</h1>
                         </div>
                         
                         <div class="flex items-center gap-4">
