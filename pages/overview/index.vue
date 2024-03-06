@@ -11,9 +11,10 @@
                     </MonthlyConsumptionStats>
                     <div class="flex gap-2">
                         <Stat :option="{ title: 'Smart Credits', value: '0', clearBg: true }">
-                            <!-- <div class="text-right">
-                            <Button class="btn btn-sm btn-outline flex gap-2 items-center">Top Up <Icon name="material-symbols:arrow-forward-rounded"></Icon></Button>
-                        </div> -->
+                            <div class="text-right">
+                                <Button class="btn btn-sm btn-outline flex gap-2 items-center">Top Up <Icon
+                                        name="material-symbols:arrow-forward-rounded"></Icon></Button>
+                            </div>
                         </Stat>
                     </div>
                 </div>
@@ -58,8 +59,8 @@ onBeforeMount(() => {
 
 })
 
-const monthlyConsumptionStatOption: { deviceId: string, consumption: number, title?:string } = {
-    title : "Total Monthly Consumption",
+const monthlyConsumptionStatOption: { deviceId: string, consumption: number, title?: string } = {
+    title: "Total Monthly Consumption",
     consumption: 4,
     deviceId: ""
 }
@@ -72,8 +73,8 @@ const consumptionChart = ref<IWaterConsumptionChart>({
 })
 
 // Watch and update consumption chart trend
-watchEffect(()=>{
-    if(deviceStore.success_ConsumptionTrend){
+watchEffect(() => {
+    if (deviceStore.success_ConsumptionTrend) {
         consumptionChart.value.chartSeries = deviceStore.deviceConsumptionTrend
     }
 })

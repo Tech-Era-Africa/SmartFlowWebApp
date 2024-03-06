@@ -4,6 +4,7 @@ import { DeviceModel, type IDevice } from '~/server/api/device/model/device.mode
 import { UserModel, type User } from '~/server/api/auth/user/model/user.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 import { useUserStore } from '../auth/user/user.store';
+import { DeviceGroupModel, type IDeviceGroup } from '~/server/api/device/model/deviceGroup.model';
 
 export const useDeviceStore = defineStore({
   id: 'deviceStore',
@@ -40,7 +41,12 @@ export const useDeviceStore = defineStore({
     //TOTAL CONSUMPTION ALL DEVICE BY USER
     allTotalConsumptionApiState : ApiResponseState.NULL,
     allTotalConsumptionApiFailure : {message : ""},
-    allTotalConsumption : 0
+    allTotalConsumption : 0,
+
+    //DEVICES GROUP BY USER
+    devicesGroupApiState : ApiResponseState.NULL,
+    devicesGroupApiFailure : {message : ""},
+    devicesGroups : [] as IDeviceGroup[]
 
   }),
   actions: {
@@ -57,6 +63,23 @@ export const useDeviceStore = defineStore({
       } catch (error: any) {
         this.newDeviceApiFailure.message = error.message;
         this.newDeviceApiState = ApiResponseState.FAILED;
+      }
+    },
+
+    async getUserDeviceGroup() {
+      try {
+        
+        this.devicesGroupApiState = ApiResponseState.LOADING;
+
+        const data = await useStoreFetchRequest(`/api/device/group/${useUserStore().currentUser?.objectId!}`, 'GET');
+
+        this.devicesGroupApiState = ApiResponseState.SUCCESS;
+        this.devicesGroups = (data as []).map(deviceGroup=> DeviceGroupModel.fromMap(deviceGroup))
+
+      } catch (error: any) {
+        this.devicesGroups = [] //Default to empty
+        this.devicesGroupApiFailure.message = error.message;
+        this.devicesGroupApiState = ApiResponseState.FAILED;
       }
     },
 
@@ -249,5 +272,10 @@ export const useDeviceStore = defineStore({
     loading_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.LOADING,
     failed_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.FAILED,
     success_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.SUCCESS,
+
+    loading_DevicesGroup: (state) => state.devicesGroupApiState === ApiResponseState.LOADING,
+    failed_DevicesGroup: (state) => state.devicesGroupApiState === ApiResponseState.FAILED,
+    success_DevicesGroup: (state) => state.devicesGroupApiState === ApiResponseState.SUCCESS,
+    hasGroupDevices: (state) => state.devicesGroupApiState === ApiResponseState.SUCCESS && state.devicesGroups.length > 0,
   },
 })

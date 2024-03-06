@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full max-h-[300px] bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
+    <div class="w-full max-h-[340px] bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
         <div class="flex  justify-between items-center">
             <h1 class="font-bold text-lg">Device Groups</h1>
         </div>
@@ -10,12 +10,13 @@
                     <CardTitle>Big Ben</CardTitle>
                     <CardDescription>2 Devices</CardDescription>
                 </CardHeader>
-                <CardContent class="px-0">
-                    <apexchart :key="chart4Options.series"  :options="chart4Options"
+                <CardContent class="px-0 h-full">
+                    <apexchart :key="chart4Options.series" :options="chart4Options"
                         :series="chart4Options.series">
                     </apexchart>
                 </CardContent>
             </Card>
+            
             <div class="bg-gray-100 flex justify-center items-center px-5 rounded-xl">
                 <p class="font-bold text-xl">+3</p>
             </div>
@@ -32,9 +33,9 @@ const openDeviceDrawer = () => {
 
 // CHART SETTTINGS
 const chart4Options = ref({
+
   chart: {
     type: 'area',
-    height: 250,
     toolbar: {
       show: false,
     },

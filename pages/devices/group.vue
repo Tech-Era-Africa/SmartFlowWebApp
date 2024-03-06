@@ -22,7 +22,8 @@
                             </Dialog>
                             <Dialog>
                                 <DialogTrigger>
-                                    <Button variant="outline" class="gap-2">Add New Device <Plus :size="16"></Plus> </Button>
+                                    <Button variant="outline" class="gap-2">Add New Device <Plus :size="16"></Plus>
+                                    </Button>
                                 </DialogTrigger>
                                 <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
                                     <NewDevice></NewDevice>
@@ -33,46 +34,32 @@
                     </div>
 
                     <!-- DEVICES -->
-                    <template v-if="deviceStore.hasDevices">
-                        <Sheet :open="isSheetDialogueOpen" @update:open="handleOnSheetDialogOpen">
-                            <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
-                                <DeviceCard :option="{ device }" @click="openSheetDrawer(device)"
-                                    v-for="device in deviceStore.devices"></DeviceCard>
+                    <template v-if="deviceStore.hasGroupDevices">
+                        <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-3 grid gap-2">
+                                <Card class="w-full flex justify-between items-center cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300 shadow-none" v-for="group in deviceStore.devicesGroups">
+                                    <CardHeader>
+                                        <CardTitle>{{ group.name }}</CardTitle>
+                                        <CardDescription>{{ group.devicesCount }} Devices</CardDescription>
+                                    </CardHeader>
+                                    <CardContent >
+                                        <apexchart :key="chart4Options.series" :options="chart4Options"
+                                            :series="chart4Options.series">
+                                        </apexchart>
+                                    </CardContent>
+                                </Card>
+                                <Card class="outline-dashed border-none outline-blue-300 cursor-pointer">
+                                    <CardContent class="flex justify-center items-center w-full h-full p-0">
+                                        <PlusCircle :size="30" class="text-blue-500"></PlusCircle>
+                                    </CardContent>
+                                </Card>
                             </div>
-                            <SheetContent class=" bg-white overflow-y-auto md:max-w-[600px]">
-                                <template v-if="deviceStore.selectedDevice.objectId">
-                                    <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }">
-                                    </SingleDeviceMonitoring>
-                                    <WaterConsumptionChart :option="consumptionChart"></WaterConsumptionChart>
-                                    <MonthlyConsumptionStats
-                                        :option="{ consumption: deviceStore.consumption, deviceId: deviceStore.selectedDevice.objectId }">
-                                    </MonthlyConsumptionStats>
-                                    <TotalPayableBillWidget
-                                        :option="{ consumption: deviceStore.consumption, currency: 'GHC', device: deviceStore.selectedDevice }">
-                                        <div class="text-right">
-                                            <p class="text-xs text-gray-500">Consumption</p>
-                                            <p class="font-bold flex justify-end items-center gap-2"><span
-                                                    v-if="deviceStore.isGettingDeviceConsumption"
-                                                    class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
-                                                        useUseCubicToLitre(deviceStore.consumption)
-                                                    }}L</span>
-                                            </p>
-                                        </div>
-                                    </TotalPayableBillWidget>
-                                    <!-- <UsersTable :option="usersDataTableOption"></UsersTable>
-            <BillingTable :option="billingDataTableOption"></BillingTable> -->
-                                </template>
-
-                            </SheetContent>
-
-                        </Sheet>
-
 
                     </template>
                     <!-- end of DEVICES -->
 
                     <!-- LOADING -->
-                    <template v-if="deviceStore.isGettingDevices">
+
+                    <template v-if="deviceStore.loading_DevicesGroup">
                         <div class="grid grid-cols-4 gap-10 p-10">
                             <Skeleton class="h-[150px] w-[180px]" v-for="i in 8" />
                         </div>
@@ -100,7 +87,7 @@ import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
 import { useUserStore } from '~/stores/auth/user/user.store';
-import { Star, Plus } from 'lucide-vue-next'
+import { Plus, PlusCircle } from 'lucide-vue-next'
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
 
@@ -116,6 +103,7 @@ const userStore = useUserStore()
 
 onBeforeMount(() => {
     deviceStore.getDevicesByUser(userStore.currentUser!.objectId);
+    deviceStore.getUserDeviceGroup();
 })
 
 
@@ -172,9 +160,86 @@ watch(deviceStore, async state => {
 
 })
 
+// CHART SETTTINGS
+const chart4Options = ref({
+
+chart: {
+  type: 'area',
+  toolbar: {
+    show: false,
+  },
+  zoom: {
+    enabled: false,
+  },
+},
+series: [
+  {
+    name: 'Consumption',
+    data: generateRandomData(30), // Generate random data for the last 30 days
+  },
+],
+dataLabels: {
+  enabled: false,
+},
+stroke: {
+  show: true,
+  curve: 'smooth',
+  lineCap: 'butt',
+  colors: undefined,
+  width: 2,
+},
+
+grid: {
+  show:false,
+  row: {
+    opacity: 0,
+  },
+},
+xaxis: {
+  type: 'datetime',
+},
+yaxis: {
+  show: false, // Hide the y-axis
+},
+tooltip: {
+  x: {
+    format: 'dd MMM yyyy',
+  },
+},
+fill: {
+  type: 'gradient',
+  gradient: {
+    shadeIntensity: 1,
+    opacityFrom: 0.7,
+    opacityTo: 0.9,
+    stops: [0, 100],
+  },
+},
+colors: ['#46DAE5'],
+legend: {
+  show: false, // Hide the legend
+},
+});
+
+// Function to generate random data for the last n days
+function generateRandomData(days:any) {
+const currentDate = new Date();
+const data = [];
+
+for (let i = days - 1; i >= 0; i--) {
+  const date = new Date(currentDate);
+  date.setDate(currentDate.getDate() - i);
+  const consumption = Math.random() * 5; // Random consumption between 0 and 5
+  data.push({ x: date.getTime(), y: consumption });
+}
+
+return data;
+}
+
+
+// end of CHART SETTING
 
 
 
 
-
-</script>~/server/api/auth/user/model/user.model
+</script>
