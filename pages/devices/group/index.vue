@@ -5,7 +5,7 @@
       <div class="w-full flex  p-2 gap-4">
         <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
           <div class="flex flex-row justify-between gap-2items-center">
-            <h1 class="font-bold text-lg">Devices</h1>
+            <h1 class="font-bold text-lg">Clusters</h1>
             <div class="flex items-center gap-4">
               <!-- <Dialog>
                                 <DialogTrigger>
@@ -21,10 +21,10 @@
 
               </Dialog>
               <Dialog>
-                <DialogTrigger>
+                <!-- <DialogTrigger>
                   <Button variant="outline" class="gap-2">Add New Device <Plus :size="16"></Plus>
                   </Button>
-                </DialogTrigger>
+                </DialogTrigger> -->
                 <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
                   <NewDevice></NewDevice>
                 </DialogContent>
@@ -38,19 +38,19 @@
             <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-3 grid gap-2">
               <NuxtLink :to="`/devices/group/${group.objectId}`" v-for="group in deviceStore.devicesGroups">
                 <Card
-                  class="w-full flex justify-between items-center cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300 shadow-none">
+                  class="w-full h-[150px] flex justify-between items-center cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300 shadow-none">
                   <CardHeader>
                     <CardTitle>{{ group.name }}</CardTitle>
                     <CardDescription>{{ group.devicesCount }} Devices</CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent class="p-2 w-[150px]">
                     <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
                     </apexchart>
                   </CardContent>
                 </Card>
               </NuxtLink>
 
-              <Card class="outline-dashed border-none outline-blue-300 cursor-pointer">
+              <Card class="h-[150px] outline-dashed border-none outline-blue-300 cursor-pointer">
                 <CardContent class="flex justify-center items-center w-full h-full p-0">
                   <PlusCircle :size="30" class="text-blue-500"></PlusCircle>
                 </CardContent>
