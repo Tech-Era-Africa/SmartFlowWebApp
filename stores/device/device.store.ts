@@ -46,7 +46,8 @@ export const useDeviceStore = defineStore({
     //DEVICES GROUP BY USER
     devicesGroupApiState : ApiResponseState.NULL,
     devicesGroupApiFailure : {message : ""},
-    devicesGroups : [] as IDeviceGroup[]
+    devicesGroups : [] as IDeviceGroup[],
+    deviceGroupName : "",
 
   }),
   actions: {
@@ -108,7 +109,8 @@ export const useDeviceStore = defineStore({
         this.getDevicesApiState = ApiResponseState.LOADING;
         const queryString = new URLSearchParams({ groupId }).toString();
         const data = await useStoreFetchRequest(`/api/device/by/group?${queryString}`, 'GET');
-        this.devices = (data as any).map((data: { device: any; }) => DeviceModel.fromMap(data.device).device)
+        this.devices = (data as any).groupDevices.map((data: { device: any; }) => DeviceModel.fromMap(data.device).device)
+        this.deviceGroupName = (data as any).groupName; 
         this.getDevicesApiState = ApiResponseState.SUCCESS;
 
       } catch (error: any) {

@@ -1,11 +1,11 @@
 <template>
     <NuxtLayout name="dashboard">
         <Header name="Devices"></Header>
-        <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0">
-            <div class="w-full flex  p-2 gap-4">
+        <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0 h-[400px]">
+            <div class="w-full flex h-full p-2 gap-4">
                 <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
                     <div class="flex flex-row justify-between gap-2items-center">
-                        <h1 class="font-bold text-lg">Devices</h1>
+                        <h1 class="font-bold text-lg">{{ !deviceStore.isGettingDevices ? deviceStore.deviceGroupName : '' }}</h1>
                         <div class="flex items-center gap-4">
                             <!-- <Dialog>
                                 <DialogTrigger>
@@ -69,6 +69,12 @@
                         </Sheet>
 
 
+                    </template>
+
+                    <template v-if="!deviceStore.hasDevices && !deviceStore.isGettingDevices">
+                        <div class="w-full h-full flex justify-center items-center">
+                            <p>No Devices Found In This Group</p>
+                        </div>
                     </template>
                     <!-- end of DEVICES -->
 
