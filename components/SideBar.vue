@@ -15,7 +15,7 @@
                             Overview
                         </NuxtLink>
 
-                        <NuxtLink to="/devices" title="" :class="{'bg-indigo-50 text-blue-600 mx-5 rounded-lg' : isActive('/devices')}" class="flex items-center px-4 py-3 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200 group">
+                        <NuxtLink to="/devices" title="" :class="{'bg-indigo-50 text-blue-600 mx-5 rounded-lg' : isActive('/devices/group')}" class="flex items-center px-4 py-3 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200 group">
                             <Icon name="material-symbols-light:device-hub-rounded" size="24" class="mr-5"></Icon>
                             Devices
                         </NuxtLink>

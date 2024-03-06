@@ -22,7 +22,8 @@
                             </Dialog>
                             <Dialog>
                                 <DialogTrigger>
-                                    <Button variant="outline" class="gap-2">Add New Device <Plus :size="16"></Plus> </Button>
+                                    <Button variant="outline" class="gap-2">Add New Device <Plus :size="16"></Plus>
+                                    </Button>
                                 </DialogTrigger>
                                 <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
                                     <NewDevice></NewDevice>
@@ -54,8 +55,8 @@
                                             <p class="font-bold flex justify-end items-center gap-2"><span
                                                     v-if="deviceStore.isGettingDeviceConsumption"
                                                     class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
-                                                        useUseCubicToLitre(deviceStore.consumption)
-                                                    }}L</span>
+                                        useUseCubicToLitre(deviceStore.consumption)
+                                    }}L</span>
                                             </p>
                                         </div>
                                     </TotalPayableBillWidget>
@@ -72,6 +73,7 @@
                     <!-- end of DEVICES -->
 
                     <!-- LOADING -->
+
                     <template v-if="deviceStore.isGettingDevices">
                         <div class="grid grid-cols-4 gap-10 p-10">
                             <Skeleton class="h-[150px] w-[180px]" v-for="i in 8" />
@@ -112,11 +114,13 @@ const billStore = useBillStore()
 const authStore = useAuthStore()
 const controlStore = useControlStore()
 const userStore = useUserStore()
+const groupId = useRoute().params.id
 
 
 onBeforeMount(() => {
-    deviceStore.getDevicesByUser(userStore.currentUser!.objectId);
+    deviceStore.getDevicesByGroup(groupId.toString());
 })
+
 
 
 // SHEET CONTROL

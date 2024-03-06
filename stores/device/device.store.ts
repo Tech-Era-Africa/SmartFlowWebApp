@@ -101,6 +101,23 @@ export const useDeviceStore = defineStore({
       }
     },
 
+
+    async getDevicesByGroup(groupId: string) {
+
+      try {
+        this.getDevicesApiState = ApiResponseState.LOADING;
+        const queryString = new URLSearchParams({ groupId }).toString();
+        const data = await useStoreFetchRequest(`/api/device/by/group?${queryString}`, 'GET');
+        this.devices = (data as any).map((data: { device: any; }) => DeviceModel.fromMap(data.device).device)
+        this.getDevicesApiState = ApiResponseState.SUCCESS;
+
+      } catch (error: any) {
+        this.devices = [] //Default to empty
+        this.getDevicesApiFailure.message = error.message;
+        this.getDevicesApiState = ApiResponseState.FAILED;
+      }
+    },
+
     async getDeviceUsers(deviceId: string) {
       try {
         this.deviceUsersApiState = ApiResponseState.LOADING;
@@ -226,6 +243,7 @@ export const useDeviceStore = defineStore({
         this.consumptionTrendsApiState = ApiResponseState.FAILED;
       }
     },
+    
 
     async selectDevice(device: IDevice) {
       this.selectedDevice = device
