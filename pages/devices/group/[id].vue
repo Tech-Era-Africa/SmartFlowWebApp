@@ -3,9 +3,13 @@
         <Header name="Devices"></Header>
         <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0 h-[400px]">
             <div class="w-full flex h-full p-2 gap-4">
-                <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
-                    <div class="flex flex-row justify-between gap-2items-center">
-                        <h1 class="font-bold text-lg">{{ !deviceStore.isGettingDevices ? deviceStore.deviceGroupName : '' }}</h1>
+                <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-5">
+                    <div class="flex flex-row justify-between gap-2 items-center">
+                        <div class="flex gap-2 items-center">
+                            <Button variant="outline" @click="useRouter().back()"><ArrowLeftCircle></ArrowLeftCircle></Button>
+                            <h1 class="font-bold text-lg">{{ !deviceStore.isGettingDevices ? deviceStore.deviceGroupName : '' }}</h1>
+                        </div>
+                        
                         <div class="flex items-center gap-4">
                             <!-- <Dialog>
                                 <DialogTrigger>
@@ -108,7 +112,7 @@ import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
 import { useUserStore } from '~/stores/auth/user/user.store';
-import { Star, Plus } from 'lucide-vue-next'
+import { ArrowLeftCircle, Plus } from 'lucide-vue-next'
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
 
