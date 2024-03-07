@@ -45,7 +45,7 @@
                     <Card class="my-5 shadow-none">
                         <CardContent class="flex items-center gap-2 p-2">
                             <Avatar size="sm">
-                                <AvatarImage src="https://github.com/radix-vue.png" alt="@radix-vue" />
+                                <AvatarImage src="https://res.cloudinary.com/techera/image/upload/v1709782492/download_df7agc.png" alt="@radix-vue" />
                                 <AvatarFallback>UN</AvatarFallback>
                             </Avatar>
                             <p class="text-sm">Ashesi University</p>
