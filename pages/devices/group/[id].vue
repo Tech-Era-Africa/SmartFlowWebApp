@@ -20,17 +20,13 @@
                                     <DynamicBillPreview></DynamicBillPreview>
                                 </DialogContent>
                             </Dialog> -->
-
-                            <Dialog>
-
-                            </Dialog>
-                            <Dialog>
+                            <Dialog :open="isNewDeviceDialogOpen" @update:open="handleNewDeviceDialogOpenUpdate">
                                 <DialogTrigger>
                                     <Button variant="outline" class="gap-2">Add New Device <Plus :size="16"></Plus>
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
-                                    <NewDevice :cluster-id="groupId.toString()"></NewDevice>
+                                    <NewDevice :cluster-id="groupId.toString()" @update:open="handleNewDeviceDialogOpenUpdate"></NewDevice>
                                 </DialogContent>
                             </Dialog>
                         </div>
@@ -136,6 +132,11 @@ const handleOnSheetDialogOpen = (isOpen: boolean) => {
     isSheetDialogueOpen.value = isOpen
 }
 // end of SHEET CONTROL
+
+// NEW DEVICE DIALOG CONTROL
+const isNewDeviceDialogOpen = ref(false)
+const handleNewDeviceDialogOpenUpdate = (state:boolean)=> isNewDeviceDialogOpen.value = state
+// end of NEW DEVICE DIALOG CONTROL
 
 const openSheetDrawer = async (device: IDevice) => {
     isSheetDialogueOpen.value = true
