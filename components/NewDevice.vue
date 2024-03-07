@@ -112,14 +112,14 @@ const deviceStore = useDeviceStore()
 
 const addNewDevice = async (deviceData:{eui:string, deviceId:string, deviceName:string}) => {
     // Update the new device ref
-    newDevice.value = {...newDevice.value, ...deviceData}
+    newDevice.value = {...newDevice.value, ...deviceData, name:deviceData.deviceName}
 
     await deviceStore.addNewDevice(newDevice.value, props.clusterId)
 
     // Handle success
     if (deviceStore.success_AddingNewDevice) {
-        console.log("Successfully added device")
         emits('update:open',false)
+        useRouter().go(0); //TODO!: GIVE THIS A BETTER EXPERIENCE
         return;
     }
 
