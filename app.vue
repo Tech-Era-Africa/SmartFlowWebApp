@@ -5,7 +5,7 @@
 <script setup lang="ts">
 useHead({
   titleTemplate: (titleChunk) => {
-    return titleChunk ? `${titleChunk} - WataFlow` : 'WataFlow';
+    return titleChunk ? `${titleChunk} - SmartFlow` : 'SmartFlow';
   }
 })
 </script>

@@ -134,8 +134,6 @@ function generateRandomData(days: any) {
 
   return data;
 }
-
-
 // end of CHART SETTING
 
 </script>

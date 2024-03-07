@@ -22,6 +22,7 @@ export class UserModel {
       email: "",
       phoneNumber: "",
       createdAt : "",
+      orgId : ""
 
     };
 
@@ -36,6 +37,7 @@ export class UserModel {
       email: json.email,
       avatarUrl : json.avatarUrl,
       role:json.role?.objectId,
+      orgId : "hXR7sQI3FI", //TODO!: MAKE SURE TO LOAD THIS WELL
       phoneNumber: "",
       createdAt : json.createdAt,
 
@@ -47,6 +49,7 @@ export class UserModel {
 
 export interface User {
   objectId:string;
+  orgId:string;
   firstName: string;
   lastName: string;
   middleName?: string;

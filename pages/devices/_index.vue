@@ -69,7 +69,7 @@
 
             <template v-if="deviceStore.selectedDevice.objectId">
                 <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }"></SingleDeviceMonitoring>
-                <WaterConsumptionChart :option="waterConsumptionChartOptions"></WaterConsumptionChart>
+                <!-- <WaterConsumptionChart :option="waterConsumptionChartOptions"></WaterConsumptionChart> -->
                 <MonthlyConsumptionStats
                     :option="{ consumption: deviceStore.consumption, deviceId: deviceStore.selectedDevice.objectId }">
                 </MonthlyConsumptionStats>
@@ -104,7 +104,7 @@
         </Modal>
 
         <Modal modal-id="addNewDeviceModal">
-            <NewDevice></NewDevice>
+            <!-- <NewDevice></NewDevice> -->
         </Modal>
 
         <Modal modal-id="generateBillModal">
@@ -142,7 +142,7 @@ await deviceStore.getDevicesByUser(userStore?.currentUser!.objectId);
 const openDeviceDrawer = async (device: IDevice) => {
     // Update the device store
     deviceStore.selectDevice(device)
-    deviceStore.getMonthlyMinMaxConsumption(device.objectId)
+    // deviceStore.getMonthlyMinMaxConsumption(device.objectId)
     billStore.getCurrentPaidBills(device.objectId)
     controlStore.toggleDeviceDrawer()
 }
@@ -155,7 +155,7 @@ const getBill = () => useWaterBillAlgo({ consumption: deviceStore.consumption })
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Users',
     users: [
-        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" }).user
+        // new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" }).user
     ] as User[],
     columns: ["Id", "Name", "Email", "Phone Number", "Role", "Devices"]
 } as UserTableOptionDTO);
@@ -163,7 +163,7 @@ const usersDataTableOption = ref<UserTableOptionDTO>({
 const billingDataTableOption = ref<UserTableOptionDTO>({
     title: 'Billing History',
     users: [
-        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" }).user
+        // new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" }).user
     ] as User[],
     columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
 } as UserTableOptionDTO);

@@ -30,7 +30,7 @@
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
-                                    <NewDevice></NewDevice>
+                                    <NewDevice :cluster-id="groupId.toString()"></NewDevice>
                                 </DialogContent>
                             </Dialog>
                         </div>
@@ -121,9 +121,6 @@ definePageMeta({ middleware: 'auth' })
 
 const deviceStore = useDeviceStore()
 const billStore = useBillStore()
-const authStore = useAuthStore()
-const controlStore = useControlStore()
-const userStore = useUserStore()
 const groupId = useRoute().params.id
 
 
@@ -149,27 +146,6 @@ const openSheetDrawer = async (device: IDevice) => {
     // controlStore.toggleDeviceDrawer()
 }
 
-const openNewDeviceModal = () => controlStore.openModal("addNewDeviceModal")
-
-
-const getBill = () => useWaterBillAlgo({ consumption: deviceStore.consumption })
-
-const usersDataTableOption = ref<UserTableOptionDTO>({
-    title: 'Users',
-    users: [
-        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" }).user
-    ] as User[],
-    columns: ["Id", "Name", "Email", "Phone Number", "Role", "Devices"]
-} as UserTableOptionDTO);
-
-const billingDataTableOption = ref<UserTableOptionDTO>({
-    title: 'Billing History',
-    users: [
-        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" }).user
-    ] as User[],
-    columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
-} as UserTableOptionDTO);
-
 const consumptionChart = ref<IWaterConsumptionChart>({
     title: "Total Water Consumption",
     chartSeries: deviceStore.deviceConsumptionTrend,
@@ -177,18 +153,10 @@ const consumptionChart = ref<IWaterConsumptionChart>({
     success: true,
 })
 
-watch(deviceStore, async state => {
-
-    // if (state.isGettingConsumptionTrend) waterConsumptionChartOptions.isLoading = true;
-    // if (state.success_ConsumptionTrend) waterConsumptionChartOptions.series[0].data = state.deviceConsumptionTrend;
-    // if (state.success_DeviceUsers) usersDataTableOption.value.users = state.deviceUsers
-
-
-})
 
 
 
 
 
 
-</script>~/server/api/auth/user/model/user.model
+</script>

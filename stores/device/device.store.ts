@@ -38,6 +38,10 @@ export const useDeviceStore = defineStore({
     newDeviceApiState:ApiResponseState.NULL,
     newDeviceApiFailure : {message : ""},
 
+    //NEW DEVICE CLUSTER
+    newClusterApiState:ApiResponseState.NULL,
+    newClusterApiFailure : {message : ""},
+
     //TOTAL CONSUMPTION ALL DEVICE BY USER
     allTotalConsumptionApiState : ApiResponseState.NULL,
     allTotalConsumptionApiFailure : {message : ""},
@@ -52,11 +56,12 @@ export const useDeviceStore = defineStore({
   }),
   actions: {
 
-    async addNewDevice(device:IDevice) {
+    async addNewDevice(device:IDevice, clusterId:string) {
       try {
         this.newDeviceApiState = ApiResponseState.LOADING;
-        await useStoreFetchRequest('/api/device', 'POST', {device, ownerId : "95lmGWfP9C"});
+        const data = await useStoreFetchRequest('/api/device', 'POST', {device, ownerId : useUserStore().currentUser?.objectId!,orgId: useUserStore().currentUser?.orgId, clusterId});
         this.newDeviceApiState = ApiResponseState.SUCCESS;
+        console.log(data)
         setTimeout(() => {
           this.newDeviceApiState = ApiResponseState.NULL;//Resets cos the state changes retriggering this. might need to do this better
         }, 100);
@@ -64,6 +69,28 @@ export const useDeviceStore = defineStore({
       } catch (error: any) {
         this.newDeviceApiFailure.message = error.message;
         this.newDeviceApiState = ApiResponseState.FAILED;
+      }
+    },
+
+    async addNewDeviceCluster(name:string) {
+      try {
+        this.newClusterApiState = ApiResponseState.LOADING;
+        // TODO!: MAKE ORG DYNAMIC
+        const data = await useStoreFetchRequest('/api/device/cluster', 'POST', {name, createdBy : useUserStore().currentUser?.objectId!, orgId : useUserStore().currentUser?.orgId});
+        this.newClusterApiState = ApiResponseState.SUCCESS;
+        this.devicesGroups.push(DeviceGroupModel.fromMap({
+          userDeviceGroup: data,
+          devicesCount : 0
+        }))
+        
+        // Reset
+        setTimeout(() => {
+          this.newClusterApiState = ApiResponseState.NULL;
+        }, 500);
+
+      } catch (error: any) {
+        this.newClusterApiFailure.message = error.message;
+        this.newClusterApiState = ApiResponseState.FAILED;
       }
     },
 
@@ -287,6 +314,10 @@ export const useDeviceStore = defineStore({
     isAddingNewDevice: (state) => state.newDeviceApiState === ApiResponseState.LOADING,
     failed_AddingNewDevice: (state) => state.newDeviceApiState === ApiResponseState.FAILED,
     success_AddingNewDevice: (state) => state.newDeviceApiState === ApiResponseState.SUCCESS,
+
+    isAddingNewCluster: (state) => state.newClusterApiState === ApiResponseState.LOADING,
+    failed_AddingNewCluster: (state) => state.newClusterApiState === ApiResponseState.FAILED,
+    success_AddingNewCluster: (state) => state.newClusterApiState === ApiResponseState.SUCCESS,
 
 
     loading_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.LOADING,

@@ -52,37 +52,25 @@
 </template>
 <script setup lang="ts">
 import type { IDevice } from '~/server/api/device/model/device.model';
-import { useAuthStore } from '~/stores/auth/auth.store';
-import { useUserStore } from '~/stores/auth/user/user.store';
-import { useControlStore } from '~/stores/control/control.store';
+
 import { useDeviceStore } from '~/stores/device/device.store';
-import { Loader, Loader2 } from 'lucide-vue-next'
+import { Loader2 } from 'lucide-vue-next'
+
+const props = defineProps<{clusterId:string}>()
 
 const newDevice = ref<IDevice>({} as IDevice)
 const deviceStore = useDeviceStore()
-const controlStore = useControlStore()
-const authStore = useAuthStore()
-const userStore = useUserStore()
-
-const closeNewDeviceModal = () => controlStore.closeModal("addNewDeviceModal")
-
-watch(deviceStore, async state => {
-
-if(state.success_AddingNewDevice){
-    closeNewDeviceModal();
-    newDevice.value = {} as IDevice;
-    await deviceStore.getDevicesByUser(userStore.currentUser!.objectId);
-    return;
-}
-
-if(state.failed_AddingNewDevice){
-    alert(state.newDeviceApiFailure.message);
-    return;
-}
-
-})
 
 const addNewDevice = async()=>{
-    await deviceStore.addNewDevice(newDevice.value)
+    await deviceStore.addNewDevice(newDevice.value, props.clusterId)
+
+    // Handle success
+    if(deviceStore.success_AddingNewDevice){
+        console.log("Successfully added device")
+        return;
+    }
+
+    // Handle error
+    alert("Could not add device. Something went wrong.")
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
     <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex  justify-between items-center">
-            <h1 class="font-bold text-lg">Device Monitoring</h1>
+            <h1 class="font-bold text-lg">{{ title ?? 'Device Monitoring' }}</h1>
             <!-- <button class="btn">
                 Device A
                 <Icon name="ion:caret-down-outline" />
@@ -14,7 +14,7 @@
                     <Stat :option="{ title: 'Users', value: '1' }"></Stat>
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Bill Amount', value: 'GHC4540' }"></Stat>
+                    <Stat :option="{ title: 'Total Bill', value: 'GHC4540' }"></Stat>
                     <!-- <Stat :option="{ title: 'Valve', value: 'Open' }"></Stat> -->
                 </div>
                 <div class="flex gap-2">
@@ -48,5 +48,7 @@ const userStore = useUserStore();
 onBeforeMount(() => {
     deviceStore.getDevicesByUser(userStore.currentUser!.objectId);
 })
+
+const props = defineProps<{title?:string}>()
 
 </script>

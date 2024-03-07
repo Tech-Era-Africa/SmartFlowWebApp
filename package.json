@@ -25,6 +25,7 @@
     "@pinia/nuxt": "^0.5.1",
     "@tanstack/vue-table": "^8.13.2",
     "@types/luxon": "^3.3.5",
+    "@vee-validate/zod": "^4.12.5",
     "@vueuse/core": "^10.9.0",
     "apexcharts": "^3.44.0",
     "axios": "^1.6.1",
@@ -36,6 +37,8 @@
     "radix-vue": "^1.4.9",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
-    "vue3-apexcharts": "^1.4.4"
+    "vee-validate": "^4.12.5",
+    "vue3-apexcharts": "^1.4.4",
+    "zod": "^3.22.4"
   }
 }

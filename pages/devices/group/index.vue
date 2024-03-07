@@ -6,30 +6,6 @@
         <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
           <div class="flex flex-row justify-between gap-2items-center">
             <h1 class="font-bold text-lg">Clusters</h1>
-            <div class="flex items-center gap-4">
-              <!-- <Dialog>
-                                <DialogTrigger>
-                                    <Button variant="outline" class="gap-2">Generate
-                                        Bill <Star :size="16"></Star> </Button>
-                                </DialogTrigger>
-                                <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
-                                    <DynamicBillPreview></DynamicBillPreview>
-                                </DialogContent>
-                            </Dialog> -->
-
-              <Dialog>
-
-              </Dialog>
-              <Dialog>
-                <!-- <DialogTrigger>
-                  <Button variant="outline" class="gap-2">Add New Device <Plus :size="16"></Plus>
-                  </Button>
-                </DialogTrigger> -->
-                <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
-                  <NewDevice></NewDevice>
-                </DialogContent>
-              </Dialog>
-            </div>
 
           </div>
 
@@ -42,7 +18,9 @@
                   <CardHeader>
                     <CardTitle>{{ group.name }}</CardTitle>
                     <CardDescription>
-                      <Badge variant="outline" class="my-3">{{ group.devicesCount }} Device{{ group.devicesCount! >= 2 ? 's' : ''}}</Badge></CardDescription>
+                      <Badge variant="outline" class="my-3">{{ group.devicesCount }} Device{{ group.devicesCount! >= 2 ?
+            's' : '' }}</Badge>
+                    </CardDescription>
                   </CardHeader>
                   <CardContent class="p-2 w-[150px]">
                     <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
@@ -51,28 +29,45 @@
                 </Card>
               </NuxtLink>
 
-              <Dialog>
+              <Dialog :open="isClusterDialogueOpen" @update:open="handleOnClusterDialogOpen">
                 <DialogTrigger>
                   <Card class="h-[150px] outline-dashed border-none outline-blue-300 cursor-pointer">
-                <CardContent class="flex justify-center items-center w-full h-full p-0">
-                  <PlusCircle :size="30" class="text-blue-500"></PlusCircle>
-                </CardContent>
-              </Card>
+                    <CardContent class="flex justify-center items-center w-full h-full p-0">
+                      <PlusCircle :size="30" class="text-blue-500"></PlusCircle>
+                    </CardContent>
+                  </Card>
                 </DialogTrigger>
-                
+
                 <DialogContent>
                   <DialogTitle>
-                  <p>Create New Cluster</p>
-                </DialogTitle>
-                <DialogDescription>
-                  <p>Clusters keeps track of groups of your devices for easier management. You can place all devices in a facility in one cluster.</p>
-                </DialogDescription>
-                <Input placeholder="Eg. Apartment CB"/>
-                <Button> Create</Button>
+                    <p>Create New Cluster</p>
+                  </DialogTitle>
+                  <DialogDescription>
+                    <p>Clusters keeps track of groups of your devices for easier management. You can place all devices
+                      in a facility in one cluster.</p>
+                  </DialogDescription>
+                  <form class="w-full space-y-6" @submit="onFormSubmit">
+                    <FormField v-slot="{ componentField }" name="clusterName">
+                      <FormItem>
+                        <FormControl>
+                          <Input type="text" placeholder="Eg. Apartment 1" v-bind="componentField"
+                            :disabled="deviceStore.isAddingNewCluster" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    </FormField>
+                    <Button type="submit" class="w-full"
+                      :disabled="!isFieldValid('clusterName') && !deviceStore.isAddingNewCluster">
+                      <template v-if="deviceStore.isAddingNewCluster">
+                        <Loader2 class="animate-spin"></Loader2>
+                      </template>
+                      <span v-else>Create New Cluster</span>
+                    </Button>
+                  </form>
 
                 </DialogContent>
               </Dialog>
-              
+
             </div>
 
           </template>
@@ -100,26 +95,20 @@
 </template>
 
 <script setup lang="ts">
-import type { IDevice } from '~/server/api/device/model/device.model';
-import { UserModel, type User } from '~/server/api/auth/user/model/user.model';
-import { useAuthStore } from '~/stores/auth/auth.store';
-import { useBillStore } from '~/stores/bill/bill.store';
-import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
-import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
-import { useUserStore } from '~/stores/auth/user/user.store';
-import { Plus, PlusCircle } from 'lucide-vue-next'
-import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
+import { PlusCircle } from 'lucide-vue-next'
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
+import { Loader2 } from 'lucide-vue-next'
+
+
 
 
 useHead({ title: "Devices" })
 definePageMeta({ middleware: 'auth' })
 
 const deviceStore = useDeviceStore()
-const billStore = useBillStore()
-const authStore = useAuthStore()
-const controlStore = useControlStore()
-const userStore = useUserStore()
 
 
 onBeforeMount(() => {
@@ -134,51 +123,12 @@ const handleOnSheetDialogOpen = (isOpen: boolean) => {
 }
 // end of SHEET CONTROL
 
-const openSheetDrawer = async (device: IDevice) => {
-  isSheetDialogueOpen.value = true
-  // Update the device store
-  deviceStore.selectDevice(device)
-  // deviceStore.getMonthlyMinMaxConsumption(device.objectId)
-  billStore.getCurrentPaidBills(device.objectId)
-  // controlStore.toggleDeviceDrawer()
+// NEW CLUSTER DIALOG CONTROL
+const isClusterDialogueOpen = ref(false)
+const handleOnClusterDialogOpen = (isOpen: boolean) => {
+  isClusterDialogueOpen.value = isOpen
 }
-
-const openNewDeviceModal = () => controlStore.openModal("addNewDeviceModal")
-
-
-const getBill = () => useWaterBillAlgo({ consumption: deviceStore.consumption })
-
-const usersDataTableOption = ref<UserTableOptionDTO>({
-  title: 'Users',
-  users: [
-    new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" }).user
-  ] as User[],
-  columns: ["Id", "Name", "Email", "Phone Number", "Role", "Devices"]
-} as UserTableOptionDTO);
-
-const billingDataTableOption = ref<UserTableOptionDTO>({
-  title: 'Billing History',
-  users: [
-    new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" }).user
-  ] as User[],
-  columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
-} as UserTableOptionDTO);
-
-const consumptionChart = ref<IWaterConsumptionChart>({
-  title: "Total Water Consumption",
-  chartSeries: deviceStore.deviceConsumptionTrend,
-  isLoading: false,
-  success: true,
-})
-
-watch(deviceStore, async state => {
-
-  // if (state.isGettingConsumptionTrend) waterConsumptionChartOptions.isLoading = true;
-  // if (state.success_ConsumptionTrend) waterConsumptionChartOptions.series[0].data = state.deviceConsumptionTrend;
-  // if (state.success_DeviceUsers) usersDataTableOption.value.users = state.deviceUsers
-
-
-})
+// end of SHEET CONTROL
 
 // CHART SETTTINGS
 const chart4Options = ref({
@@ -255,11 +205,32 @@ function generateRandomData(days: any) {
 
   return data;
 }
-
-
 // end of CHART SETTING
 
+// FORM SETTINGS
+const formSchema = toTypedSchema(z.object({
+  clusterName: z.string().min(2, "Cluster name should be more than 2 characters").max(20, "Cluster name should not be more than 20 characters"),
+}))
 
+const { handleSubmit, isFieldValid } = useForm({
+  validationSchema: formSchema,
+})
+
+const onFormSubmit = handleSubmit(async (values) => {
+  // Add new device cluster
+  await deviceStore.addNewDeviceCluster(values.clusterName)
+
+  if (deviceStore.success_DevicesGroup) {
+    // Close modal
+    isClusterDialogueOpen.value = false;
+
+    return;
+  }
+
+  alert("Could not create cluster. Something went wrong.")
+  //  end of FORM SETTINGS
+
+})
 
 
 </script>
