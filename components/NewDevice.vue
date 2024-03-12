@@ -141,4 +141,4 @@ const { handleSubmit } = useForm({
 
 const onFormSubmit = handleSubmit(async (values) => addNewDevice(values))
 //  end of FORM SETTINGS
-</script>
+</script>~/stores/device/model/device.model

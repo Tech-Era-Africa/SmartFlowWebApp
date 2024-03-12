@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { IBill, IBillOption } from '~/server/api/bill/model/bill.model';
+import type { IBill, IBillOption } from '~/stores/bill/model/bill.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 
 export const useBillStore = defineStore({

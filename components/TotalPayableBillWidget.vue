@@ -64,4 +64,4 @@ const generateBill = ()=>{
     //  Get the current water consumption
     deviceStore.getCurrentDeviceConsumption(props.option.device.objectId)
 }
-</script>
+</script>~/stores/device/model/device.model

@@ -175,4 +175,4 @@ watch(billStore, (state) => {
 
 
 
-</script>
+</script>~/stores/device/model/device.model

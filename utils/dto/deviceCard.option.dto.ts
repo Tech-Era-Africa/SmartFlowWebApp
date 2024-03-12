@@ -1,4 +1,4 @@
-import type { IDevice } from "~/server/api/device/model/device.model";
+import type { IDevice } from "~/stores/device/model/device.model";
 
 export interface DeviceCardOptionDTO {
     device:IDevice,

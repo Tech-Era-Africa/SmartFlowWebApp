@@ -1,6 +1,6 @@
 import type { ColumnDef } from "@tanstack/vue-table"
 import { Checkbox } from "~/components/ui/checkbox"
-import type { User } from "~/server/api/auth/user/model/user.model"
+import type { User } from "~/stores/auth/user/model/user.model"
 import UserFullAvatar from "~/components/UserFullAvatar.vue"
 
 export const userColumns: ColumnDef<User>[] = [

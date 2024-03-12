@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { UserModel } from '~/server/api/auth/user/model/user.model';
+import { UserModel } from '~/stores/auth/user/model/user.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 import type { LoginDTO } from './dto/login.dto';
 import { useUserStore } from './user/user.store';

@@ -116,14 +116,14 @@
 </template>
 
 <script setup lang="ts">
-import type { IDevice } from '~/server/api/device/model/device.model';
-import { UserModel, type User } from '~/server/api/auth/user/model/user.model';
 import { useAuthStore } from '~/stores/auth/auth.store';
 import { useBillStore } from '~/stores/bill/bill.store';
 import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
 import { useUserStore } from '~/stores/auth/user/user.store';
+import type { IDevice } from '~/stores/device/model/device.model';
+import type { User } from '~/stores/auth/user/model/user.model';
 
 
 useHead({ title: "Devices" })
@@ -200,4 +200,4 @@ watch(deviceStore, async state => {
 
 
 
-</script>
+</script>~/stores/device/model/device.model~/stores/auth/user/model/user.model

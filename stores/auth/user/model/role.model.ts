@@ -1,4 +1,5 @@
-import { IPermission } from "../../../permission/model/permission.model";
+import type { IPermission } from "./permission.model";
+
 
 
 export interface IRole {

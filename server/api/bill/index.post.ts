@@ -1,5 +1,5 @@
 import {useApiFetch} from "~/composables/use_api_fetch";
-import { IBillOption } from "./model/bill.model";
+import { IBillOption } from "../../../stores/bill/model/bill.model";
 
 
 export default defineEventHandler((event) => new Promise(async (resolve, reject) => {

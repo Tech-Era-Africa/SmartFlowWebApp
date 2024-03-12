@@ -35,8 +35,8 @@
     </NuxtLayout>
 </template>
 <script setup lang="ts">
+import { UserModel, type User } from '~/stores/auth/user/model/user.model';
 import {type UserTableOptionDTO} from '~/utils/dto/userTable.option.dto';
-import { UserModel, type User } from '~/server/api/auth/user/model/user.model';
 
 definePageMeta({ middleware: 'auth' })
 useHead({title : "Water Billing"})
@@ -44,11 +44,11 @@ useHead({title : "Water Billing"})
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Billing History',
             users : [
-                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"}).user
+                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin", orgId : "Org A"}).user
             ] as User[],
             columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
 } as UserTableOptionDTO);
 
 
 
-</script>
+</script>~/stores/auth/user/model/user.model

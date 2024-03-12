@@ -1,5 +1,5 @@
-import { IObject } from "~/utils/type/i.object";
-import { IDevice } from "../../device/model/device.model";
+import { type IObject } from "~/utils/type/i.object";
+import { type IDevice } from "../../device/model/device.model";
 
 
 export class BillModel {

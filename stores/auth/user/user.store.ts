@@ -1,7 +1,7 @@
 
 import { defineStore } from 'pinia';
-import { RoleModel, type IRole } from '~/server/api/auth/user/model/role.model';
-import { UserModel, type User } from '~/server/api/auth/user/model/user.model';
+import { RoleModel, type IRole } from '~/stores/auth/user/model/role.model';
+import { UserModel, type User } from '~/stores/auth/user/model/user.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 
 

@@ -133,4 +133,4 @@ const isPaid = computed(()=> props.option.bill.status.objectId == 'vcDFmQoFkD')
 
 
 
-</script>
+</script>~/stores/bill/model/bill.model

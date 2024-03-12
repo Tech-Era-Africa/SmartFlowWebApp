@@ -39,4 +39,4 @@ const handleRowClicked = (row: Row<User>) => {
 }
 
 
-</script>
+</script>~/stores/auth/user/model/user.model
