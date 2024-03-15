@@ -86,7 +86,7 @@ export const usePaymentStore = defineStore({
     async getTotalBilling(option:ProcessBillPayment){
       try {
         this.totalBillingApiState = ApiResponseState.LOADING;
-        const data = await useStoreFetchRequest("/api/bill/payment/process", 'POST', option);
+        const data = await useStoreFetchRequest("/api/bill/all", 'POST', option);
         this.totalBillingApiState = ApiResponseState.SUCCESS;
 
 
