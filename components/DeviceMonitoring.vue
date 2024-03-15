@@ -14,11 +14,11 @@
                     <Stat :option="{ title: 'Users', value: '1' }"></Stat>
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Bill', value: 'GHC4540' }"></Stat>
+                    <Stat :option="{ title: 'Total Bill', value: billingStore.totalBilling.toString(), isLoading:billingStore.isLoading_TotalBilling }"></Stat>
                     <!-- <Stat :option="{ title: 'Valve', value: 'Open' }"></Stat> -->
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Consumption', value: '296,800L' }">
+                    <Stat :option="{ title: 'Total Consumption', value: `${deviceStore.allTotalConsumption}L`, isLoading : deviceStore.loading_AllTotalConsumption }">
                     </Stat>
                 </div>
 
@@ -40,13 +40,16 @@
 import { useUserStore } from '~/stores/auth/user/user.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import { Loader2 } from 'lucide-vue-next'
+import { usePaymentStore } from '~/stores/payment/payment.store';
 
 
 const deviceStore = useDeviceStore();
 const userStore = useUserStore();
+const billingStore = usePaymentStore();
 
 onBeforeMount(() => {
     deviceStore.getDevicesByUser(userStore.currentUser!.objectId);
+    billingStore.getTotalBilling()
 })
 
 const props = defineProps<{title?:string}>()

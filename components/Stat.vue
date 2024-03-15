@@ -2,7 +2,10 @@
     <div class="flex flex-wrap items-center justify-between w-full  rounded-xl p-5" :class="option.clearBg ? 'bg-white' : 'bg-blue-50'">
         <div>
             <p class="text-sm text-gray-500">{{ option.title }}</p>
-            <h1 class="font-bold text-xl">{{ option.value }}</h1>
+            <Loader2 class="animate-spin" v-if="option.isLoading"></Loader2>
+            <template v-else>
+                <h1 class="font-bold text-xl">{{ option.value }}</h1>
+            </template>
         </div>
         <slot />
     </div>
@@ -10,6 +13,7 @@
 <script setup lang="ts">
 /* __placeholder__ */
 import type { StatOptionDTO } from '~/utils/dto/stat.option.dto';
+import { Loader2 } from 'lucide-vue-next'
 
 const props = defineProps({
     option: {
@@ -17,6 +21,7 @@ const props = defineProps({
         default: {
             title: 'Title',
             value: 'Value',
+            isLoading : false
 
         } as StatOptionDTO,
         required: true
