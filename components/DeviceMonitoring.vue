@@ -40,12 +40,12 @@
 import { useUserStore } from '~/stores/auth/user/user.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import { Loader2 } from 'lucide-vue-next'
-import { usePaymentStore } from '~/stores/payment/payment.store';
+import { useBillStore } from '~/stores/bill/bill.store';
 
 
 const deviceStore = useDeviceStore();
 const userStore = useUserStore();
-const billingStore = usePaymentStore();
+const billingStore = useBillStore();
 
 onBeforeMount(() => {
     deviceStore.getDevicesByUser(userStore.currentUser!.objectId);

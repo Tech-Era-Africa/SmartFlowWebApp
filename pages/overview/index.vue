@@ -10,7 +10,7 @@
                     <MonthlyConsumptionStats :option="monthlyConsumptionStatOption" class="h-full">
                     </MonthlyConsumptionStats>
                     <div class="flex gap-2">
-                        <Stat :option="{ title: 'Smart Credits', value: '0', clearBg: true }">
+                        <Stat :option="{ title: 'Smart Credits', value: `${billingStore.accountCredit}`, clearBg: true, isLoading: billingStore.loading_AccountCredit }">
                             <div class="text-right">
                                 <Button class="btn btn-sm btn-outline flex gap-2 items-center">Top Up <Icon
                                         name="material-symbols:arrow-forward-rounded"></Icon></Button>
@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { useBillStore } from '~/stores/bill/bill.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
@@ -50,10 +51,12 @@ useHead({ title: "Overview" })
 definePageMeta({ middleware: 'auth' })
 
 const deviceStore = useDeviceStore()
+const billingStore = useBillStore()
 
 onBeforeMount(() => {
     deviceStore.getAllDevicesConsumptionTrend("2024-03-01T00:00:00.000Z", "2024-03-31T23:59:00.000Z")
     deviceStore.getMonthlyMinMaxConsumption("2024-03-01T00:00:00.000Z", "2024-03-31T23:59:00.000Z")
+    billingStore.getAccountCredit()
 
 })
 

@@ -9,6 +9,11 @@ export const useBillStore = defineStore({
     billApiFailure: { message: "" },
     createdBill: {} as IBill,
 
+    // ACCOUNT CREDITS
+    accountCredit : 0,
+    accountCreditState : ApiResponseState.NULL,
+    accountCreditFailure: {message : ""},
+
     // GET BILL
     fetchBillApiState: ApiResponseState.NULL,
     fetchBillApiFailure: { message: "" },
@@ -17,7 +22,12 @@ export const useBillStore = defineStore({
     // PAID BILL
     paidBillApiState: ApiResponseState.NULL,
     paidBillApiFailure: { message: "" },
-    paidBills: []
+    paidBills: [],
+
+    // TOTAL BILLING
+    totalBillingApiState : ApiResponseState.NULL,
+    totalBilling : 0,
+    totalBillingFailure : {message : ""},
   }),
   actions: {
 
@@ -32,6 +42,24 @@ export const useBillStore = defineStore({
       } catch (error: any) {
         this.billApiFailure.message = error.message;
         this.billApiState = ApiResponseState.FAILED;
+      }
+    },
+
+    async getAccountCredit() {
+      try {
+
+        this.accountCreditState = ApiResponseState.LOADING;
+        const data: any = await useStoreFetchRequest(`/api/credit`, 'GET');
+
+        // Throw error exception
+        if (!data.success) throw data.error
+
+        this.accountCreditState = ApiResponseState.SUCCESS;
+        this.accountCredit = data;
+
+      } catch (error: any) {
+        this.accountCreditFailure.message = error.message;
+        this.accountCreditState = ApiResponseState.FAILED;
       }
     },
 
@@ -76,6 +104,20 @@ export const useBillStore = defineStore({
       }
     },
 
+    async getTotalBilling(){
+      try {
+        this.totalBillingApiState = ApiResponseState.LOADING;
+        const data = await useStoreFetchRequest("/api/bill/all", 'GET');
+        this.totalBillingApiState = ApiResponseState.SUCCESS;
+
+
+      } catch (error: any) {
+        console.log(error)
+        this.totalBillingFailure.message = error.message;
+        this.totalBillingApiState = ApiResponseState.FAILED;
+      }
+    },
+
     calculateTotalBill(consumption: number) {
       if(consumption == 0) return 0;
 
@@ -94,6 +136,16 @@ export const useBillStore = defineStore({
     failed_FetchingBill: (state) => state.fetchBillApiState === ApiResponseState.FAILED,
     success_FetchingBill: (state) => state.fetchBillApiState === ApiResponseState.SUCCESS,
     hasBill: (state) => state.fetchBillApiState === ApiResponseState.SUCCESS && state.bill,
+
+    // ACCOUNT CREDIT
+    loading_AccountCredit : (state) => state.accountCreditState === ApiResponseState.LOADING,
+    success_AccountCredit : (state) => state.accountCreditState === ApiResponseState.SUCCESS,
+    failed_AccountCredit : (state) => state.accountCreditState === ApiResponseState.FAILED,
+
+    // TOTAL BILLING
+    isLoading_TotalBilling: (state) => state.totalBillingApiState === ApiResponseState.LOADING,
+    failed_TotalBilling: (state) => state.totalBillingApiState === ApiResponseState.FAILED,
+    success_TotalBilling: (state) => state.totalBillingApiState === ApiResponseState.SUCCESS,
 
   },
 

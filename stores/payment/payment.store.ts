@@ -13,10 +13,6 @@ export const usePaymentStore = defineStore({
 
     processBillApiState: ApiResponseState.NULL,
     processBillApiFailure: { message: "" },
-
-    totalBillingApiState : ApiResponseState.NULL,
-    totalBilling : 0,
-    totalBillingFailure : {message : ""},
   }),
   actions: {
     async initPayment(paymentOption: PaymentDTO) {
@@ -83,19 +79,7 @@ export const usePaymentStore = defineStore({
       }
     },
 
-    async getTotalBilling(){
-      try {
-        this.totalBillingApiState = ApiResponseState.LOADING;
-        const data = await useStoreFetchRequest("/api/bill/all", 'GET');
-        this.totalBillingApiState = ApiResponseState.SUCCESS;
-
-
-      } catch (error: any) {
-        console.log(error)
-        this.totalBillingFailure.message = error.message;
-        this.totalBillingApiState = ApiResponseState.FAILED;
-      }
-    }
+   
   },
 
   getters: {
@@ -111,9 +95,6 @@ export const usePaymentStore = defineStore({
     failed_ProcessingBillPayment: (state) => state.processBillApiState === ApiResponseState.FAILED,
     success_ProcessingBillPayment: (state) => state.processBillApiState === ApiResponseState.SUCCESS,
 
-    isLoading_TotalBilling: (state) => state.totalBillingApiState === ApiResponseState.LOADING,
-    failed_TotalBilling: (state) => state.totalBillingApiState === ApiResponseState.FAILED,
-    success_TotalBilling: (state) => state.totalBillingApiState === ApiResponseState.SUCCESS,
 
   },
 })
