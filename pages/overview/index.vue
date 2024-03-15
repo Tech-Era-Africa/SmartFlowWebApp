@@ -58,7 +58,6 @@ onBeforeMount(() => {
 })
 
 const monthlyConsumptionStatOption: { deviceId: string, consumption: number, title?: string } = {
-    title: "Total Monthly Consumption",
     consumption: 4,
     deviceId: ""
 }

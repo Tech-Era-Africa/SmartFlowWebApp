@@ -2,18 +2,10 @@
      <div class="w-full min-h-[200px] bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex justify-between items-center">
             <div>
-                <h1 class="font-bold text-lg">{{ option.title ?? 'Monthly Consumption' }}</h1>
+                <h1 class="font-bold text-lg">{{ option.title ?? 'Total Consumption' }}</h1>
                 <!-- <p class="text-xs text-gray-400">Updated 10mins ago</p> -->
             </div>
-            <div class="dropdown dropdown-end dropdown-bottom">
-                <!-- <label tabindex="0" class="btn btn-ghost m-1">This Month
-                    <Icon name="ion:caret-down-outline" />
-                </label> -->
-                <!-- <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                    <li><a>This Month</a></li>
-                    <li><a>This Year</a></li>
-                </ul> -->
-            </div>
+            <DateRangePicker></DateRangePicker>
         </div>
         <div class="mt-5 flex flex-col flex-1 justify-between">
             <div class="flex justify-between items-center">

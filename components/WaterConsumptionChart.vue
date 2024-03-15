@@ -2,10 +2,8 @@
     <div class="w-full min-h-[300px] bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex justify-between items-center">
             <h1 class="font-bold text-lg">{{ option.title ?? 'Water Consumption' }}</h1>
-            <!-- <button class="btn">
-                This Year
-                <Icon name="material-symbols:calendar-month-outline" />
-            </button> -->
+            <DateRangePicker></DateRangePicker>
+            
         </div>
 
         <apexchart :key="chart4Options.series" height="100%" width="100%" :options="chart4Options"
@@ -16,7 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { useDeviceStore } from '~/stores/device/device.store';
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
 
