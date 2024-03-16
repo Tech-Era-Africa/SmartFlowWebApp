@@ -41,7 +41,7 @@ export class DeviceModel {
 
     };
 
-    return new DeviceModel(device);
+    return device;
   }
 }
 

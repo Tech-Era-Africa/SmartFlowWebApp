@@ -119,7 +119,7 @@ export const useDeviceStore = defineStore({
         this.getDevicesApiState = ApiResponseState.LOADING;
         const queryString = new URLSearchParams({ userId }).toString();
         const data = await useStoreFetchRequest(`/api/device/by/user?${queryString}`, 'GET');
-        this.devices = (data as any).map((data: { device: any; }) => DeviceModel.fromMap(data.device).device)
+        this.devices = (data as any).map((data: { device: any; }) => DeviceModel.fromMap(data.device))
         this.getDevicesApiState = ApiResponseState.SUCCESS;
 
       } catch (error: any) {
@@ -136,8 +136,25 @@ export const useDeviceStore = defineStore({
         this.getDevicesApiState = ApiResponseState.LOADING;
         const queryString = new URLSearchParams({ groupId }).toString();
         const data = await useStoreFetchRequest(`/api/device/by/group?${queryString}`, 'GET');
-        this.devices = (data as any).groupDevices.map((data: { device: any; }) => DeviceModel.fromMap(data.device).device)
+        this.devices = (data as any).groupDevices.map((data: { device: any; }) => DeviceModel.fromMap(data.device))
         this.deviceGroupName = (data as any).groupName; 
+        this.getDevicesApiState = ApiResponseState.SUCCESS;
+
+      } catch (error: any) {
+        this.devices = [] //Default to empty
+        this.getDevicesApiFailure.message = error.message;
+        this.getDevicesApiState = ApiResponseState.FAILED;
+      }
+    },
+
+    async getDevicesByOrg() {
+
+      try {
+        this.getDevicesApiState = ApiResponseState.LOADING;
+        const queryString = new URLSearchParams({ id : "hXR7sQI3FI" }).toString(); //TODO!: Must dynamically pass this
+        const data = await useStoreFetchRequest(`/api/device/by/org?${queryString}`, 'GET');
+        console.log("fetched devices: " ,data)
+        this.devices = (data as any).map((data: any) => DeviceModel.fromMap(data))
         this.getDevicesApiState = ApiResponseState.SUCCESS;
 
       } catch (error: any) {

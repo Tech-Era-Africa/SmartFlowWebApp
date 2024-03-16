@@ -14,11 +14,11 @@
                     <Stat :option="{ title: 'Users', value: '1' }"></Stat>
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Bill', value: billingStore.totalBilling.toString(), isLoading:billingStore.isLoading_TotalBilling }"></Stat>
+                    <Stat :option="{ title: 'Total Bill', value: billingStore.totalBilling.toString(), isLoading:billingStore.isLoading_TotalBilling, hasError:billingStore.failed_TotalBilling }"></Stat>
                     <!-- <Stat :option="{ title: 'Valve', value: 'Open' }"></Stat> -->
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Consumption', value: `${deviceStore.allTotalConsumption}L`, isLoading : deviceStore.loading_AllTotalConsumption }">
+                    <Stat :option="{ title: 'Total Consumption', value: `${deviceStore.allTotalConsumption}L`, isLoading : deviceStore.loading_AllTotalConsumption, hasError:deviceStore.failed_AllTotalConsumption }">
                     </Stat>
                 </div>
 
@@ -48,7 +48,7 @@ const userStore = useUserStore();
 const billingStore = useBillStore();
 
 onBeforeMount(() => {
-    deviceStore.getDevicesByUser(userStore.currentUser!.objectId);
+    deviceStore.getDevicesByOrg()
     billingStore.getTotalBilling()
 })
 

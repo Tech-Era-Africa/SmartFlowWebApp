@@ -10,7 +10,7 @@
                     <MonthlyConsumptionStats :option="monthlyConsumptionStatOption" class="h-full">
                     </MonthlyConsumptionStats>
                     <div class="flex gap-2">
-                        <Stat :option="{ title: 'Smart Credits', value: `${billingStore.accountCredit}`, clearBg: true, isLoading: billingStore.loading_AccountCredit }">
+                        <Stat :option="{ title: 'Smart Credits', value: `${billingStore.accountCredit}`, clearBg: true, isLoading: billingStore.loading_AccountCredit, hasError:billingStore.failed_AccountCredit }">
                             <div class="text-right">
                                 <Button class="btn btn-sm btn-outline flex gap-2 items-center">Top Up <Icon
                                         name="material-symbols:arrow-forward-rounded"></Icon></Button>
