@@ -302,7 +302,17 @@ export const useDeviceStore = defineStore({
 
       // Get device users
       this.getDeviceUsers(device.objectId)
-    }
+    },
+
+    filterActiveDevices(){
+      return this.devices.filter((device)=> device.status == "heWFtvGqhO")
+    },
+
+    sumTotalConsumptionFromDevices() {
+      return this.devices.reduce((totalConsumption, device) => {
+          return totalConsumption + (device.lastTotalConsumption || 0); 
+      }, 0); 
+  }
 
   },
 

@@ -10,15 +10,15 @@
         <div class="flex-1 flex flex-col lg:flex-row gap-2">
             <div class="w-full flex flex-col gap-2">
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Active', value: '0' }"></Stat>
+                    <Stat :option="{ title: 'Active', value: deviceStore.filterActiveDevices().length.toString(), isLoading:deviceStore.isGettingDevices }"></Stat>
                     <Stat :option="{ title: 'Users', value: '1' }"></Stat>
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Bill', value: billingStore.totalBilling.toString(), isLoading:billingStore.isLoading_TotalBilling, hasError:billingStore.failed_TotalBilling }"></Stat>
+                    <Stat :option="{ title: 'Total Bill', value: billingStore.totalBilling.toString(), isLoading:deviceStore.isGettingDevices, hasError:billingStore.failed_TotalBilling }"></Stat>
                     <!-- <Stat :option="{ title: 'Valve', value: 'Open' }"></Stat> -->
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Consumption', value: `${deviceStore.allTotalConsumption}L`, isLoading : deviceStore.loading_AllTotalConsumption, hasError:deviceStore.failed_AllTotalConsumption }">
+                    <Stat :option="{ title: 'Total Consumption', value: `${deviceStore.sumTotalConsumptionFromDevices()}L`, isLoading : deviceStore.isGettingDevices, hasError:deviceStore.failed_AllTotalConsumption }">
                     </Stat>
                 </div>
 
