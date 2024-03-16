@@ -49,13 +49,11 @@ export const useBillStore = defineStore({
       try {
 
         this.accountCreditState = ApiResponseState.LOADING;
-        const data: any = await useStoreFetchRequest(`/api/credit`, 'GET');
-
-        // Throw error exception
-        if (!data.success) throw data.error
+        const queryString = new URLSearchParams({ id : "hXR7sQI3FI" }).toString();
+        const data = await useStoreFetchRequest(`/api/credit/by/org?${queryString}`, 'GET');
 
         this.accountCreditState = ApiResponseState.SUCCESS;
-        this.accountCredit = data;
+        this.accountCredit = data as any;
 
       } catch (error: any) {
         this.accountCreditFailure.message = error.message;

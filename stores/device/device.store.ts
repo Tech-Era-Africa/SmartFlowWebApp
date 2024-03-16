@@ -12,7 +12,7 @@ export const useDeviceStore = defineStore({
     // ALL DEVICE STATE
     devices: [] as IDevice[],
     selectedDevice: {} as IDevice,
-    deviceUsers : [] as User[],
+    deviceUsers: [] as User[],
     getDevicesApiState: ApiResponseState.NULL,
     getDevicesApiFailure: { message: "" },
 
@@ -25,41 +25,41 @@ export const useDeviceStore = defineStore({
     consumptionTrendsApiFailure: { message: "" },
 
     // Current consumption
-    consumption : 0,
-    consumptionApiState : ApiResponseState.NULL,
-    consumptionApiFailure : {message : ""},
+    consumption: 0,
+    consumptionApiState: ApiResponseState.NULL,
+    consumptionApiFailure: { message: "" },
 
-     // Min Max consumption
-     minMaxconsumption : {min : 0, max : 0, sum : 0},
-     minMaxconsumptionApiState : ApiResponseState.NULL,
-     minMaxconsumptionApiFailure : {message : ""},
+    // Min Max consumption
+    minMaxconsumption: { min: 0, max: 0, sum: 0 },
+    minMaxconsumptionApiState: ApiResponseState.NULL,
+    minMaxconsumptionApiFailure: { message: "" },
 
     //NEW DEVICE
-    newDeviceApiState:ApiResponseState.NULL,
-    newDeviceApiFailure : {message : ""},
+    newDeviceApiState: ApiResponseState.NULL,
+    newDeviceApiFailure: { message: "" },
 
     //NEW DEVICE CLUSTER
-    newClusterApiState:ApiResponseState.NULL,
-    newClusterApiFailure : {message : ""},
+    newClusterApiState: ApiResponseState.NULL,
+    newClusterApiFailure: { message: "" },
 
     //TOTAL CONSUMPTION ALL DEVICE BY USER
-    allTotalConsumptionApiState : ApiResponseState.NULL,
-    allTotalConsumptionApiFailure : {message : ""},
-    allTotalConsumption : 0,
+    allTotalConsumptionApiState: ApiResponseState.NULL,
+    allTotalConsumptionApiFailure: { message: "" },
+    allTotalConsumption: 0,
 
     //DEVICES GROUP BY USER
-    devicesGroupApiState : ApiResponseState.NULL,
-    devicesGroupApiFailure : {message : ""},
-    devicesGroups : [] as IDeviceGroup[],
-    deviceGroupName : "",
+    devicesGroupApiState: ApiResponseState.NULL,
+    devicesGroupApiFailure: { message: "" },
+    devicesGroups: [] as IDeviceGroup[],
+    deviceGroupName: "",
 
   }),
   actions: {
 
-    async addNewDevice(device:IDevice, clusterId:string) {
+    async addNewDevice(device: IDevice, clusterId: string) {
       try {
         this.newDeviceApiState = ApiResponseState.LOADING;
-        const data = await useStoreFetchRequest('/api/device', 'POST', {device, ownerId : useUserStore().currentUser?.objectId!,orgId: useUserStore().currentUser?.orgId, clusterId});
+        const data = await useStoreFetchRequest('/api/device', 'POST', { device, ownerId: useUserStore().currentUser?.objectId!, orgId: useUserStore().currentUser?.orgId, clusterId });
         this.newDeviceApiState = ApiResponseState.SUCCESS;
         console.log(data)
         setTimeout(() => {
@@ -72,17 +72,17 @@ export const useDeviceStore = defineStore({
       }
     },
 
-    async addNewDeviceCluster(name:string) {
+    async addNewDeviceCluster(name: string) {
       try {
         this.newClusterApiState = ApiResponseState.LOADING;
         // TODO!: MAKE ORG DYNAMIC
-        const data = await useStoreFetchRequest('/api/device/cluster', 'POST', {name, createdBy : useUserStore().currentUser?.objectId!, orgId : useUserStore().currentUser?.orgId});
+        const data = await useStoreFetchRequest('/api/device/cluster', 'POST', { name, createdBy: useUserStore().currentUser?.objectId!, orgId: useUserStore().currentUser?.orgId });
         this.newClusterApiState = ApiResponseState.SUCCESS;
         this.devicesGroups.push(DeviceGroupModel.fromMap({
           userDeviceGroup: data,
-          devicesCount : 0
+          devicesCount: 0
         }))
-        
+
         // Reset
         setTimeout(() => {
           this.newClusterApiState = ApiResponseState.NULL;
@@ -96,13 +96,13 @@ export const useDeviceStore = defineStore({
 
     async getUserDeviceGroup() {
       try {
-        
+
         this.devicesGroupApiState = ApiResponseState.LOADING;
 
         const data = await useStoreFetchRequest(`/api/device/group/${useUserStore().currentUser?.objectId!}`, 'GET');
 
         this.devicesGroupApiState = ApiResponseState.SUCCESS;
-        this.devicesGroups = (data as []).map(deviceGroup=> DeviceGroupModel.fromMap(deviceGroup))
+        this.devicesGroups = (data as []).map(deviceGroup => DeviceGroupModel.fromMap(deviceGroup))
 
       } catch (error: any) {
         this.devicesGroups = [] //Default to empty
@@ -113,7 +113,7 @@ export const useDeviceStore = defineStore({
 
     async getDevicesByUser(userId: string) {
       // Do nothing if the devices have already been fetched
-      if(this.getDevicesApiState != ApiResponseState.NULL) return;
+      if (this.getDevicesApiState != ApiResponseState.NULL) return;
 
       try {
         this.getDevicesApiState = ApiResponseState.LOADING;
@@ -137,7 +137,7 @@ export const useDeviceStore = defineStore({
         const queryString = new URLSearchParams({ groupId }).toString();
         const data = await useStoreFetchRequest(`/api/device/by/group?${queryString}`, 'GET');
         this.devices = (data as any).groupDevices.map((data: { device: any; }) => DeviceModel.fromMap(data.device))
-        this.deviceGroupName = (data as any).groupName; 
+        this.deviceGroupName = (data as any).groupName;
         this.getDevicesApiState = ApiResponseState.SUCCESS;
 
       } catch (error: any) {
@@ -151,9 +151,9 @@ export const useDeviceStore = defineStore({
 
       try {
         this.getDevicesApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ id : "hXR7sQI3FI" }).toString(); //TODO!: Must dynamically pass this
+        const queryString = new URLSearchParams({ id: "hXR7sQI3FI" }).toString(); //TODO!: Must dynamically pass this
         const data = await useStoreFetchRequest(`/api/device/by/org?${queryString}`, 'GET');
-        console.log("fetched devices: " ,data)
+        console.log("fetched devices: ", data)
         this.devices = (data as any).map((data: any) => DeviceModel.fromMap(data))
         this.getDevicesApiState = ApiResponseState.SUCCESS;
 
@@ -179,7 +179,7 @@ export const useDeviceStore = defineStore({
       }
     },
 
-    async getCurrentDeviceConsumption(deviceId: string, period:string = 'M') {
+    async getCurrentDeviceConsumption(deviceId: string, period: string = 'M') {
       try {
         this.consumptionApiState = ApiResponseState.LOADING;
         const queryString = new URLSearchParams({ deviceId, period }).toString();
@@ -194,7 +194,7 @@ export const useDeviceStore = defineStore({
       }
     },
 
-    async getAllDeviceTotalConsumption(userId:string) {
+    async getAllDeviceTotalConsumption(userId: string) {
       try {
         this.allTotalConsumptionApiState = ApiResponseState.LOADING;
         const queryString = new URLSearchParams({ userId }).toString();
@@ -210,23 +210,23 @@ export const useDeviceStore = defineStore({
     },
 
 
-    async getMonthlyMinMaxConsumption(startDate:string, endDate:string) {
+    async getMonthlyMinMaxConsumption(startDate: string, endDate: string) {
       try {
-        
+
         this.minMaxconsumptionApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ uid : useUserStore().currentUser?.objectId!, startDate, endDate}).toString();
+        const queryString = new URLSearchParams({ uid: useUserStore().currentUser?.objectId!, startDate, endDate }).toString();
         const data = await useStoreFetchRequest(`/api/device/consumption/sumAll?${queryString}`, 'GET');
 
         this.minMaxconsumptionApiState = ApiResponseState.SUCCESS;
 
         // Assign data once successful
-        if((data as any).success){
+        if ((data as any).success) {
           this.minMaxconsumption = {
-            max : (data as any).data[0].max_consumption,
-            min : (data as any).data[0].min_consumption,
-            sum : (data as any).data[0].sum_consumption
+            max: (data as any).data[0].max_consumption,
+            min: (data as any).data[0].min_consumption,
+            sum: (data as any).data[0].sum_consumption
           }
-        } 
+        }
 
 
       } catch (error: any) {
@@ -235,17 +235,17 @@ export const useDeviceStore = defineStore({
       }
     },
 
-    
+
 
     async getDeviceConsumptionTrend(deviceId: string, year?: number) {
       try {
-        
+
         this.consumptionTrendsApiState = ApiResponseState.LOADING;
         const queryString = new URLSearchParams({ deviceId, year: year?.toString() ?? new Date(Date.now()).getFullYear().toString() }).toString();
         const data = await useStoreFetchRequest(`/api/device/consumption?${queryString}`, 'GET');
 
         this.consumptionTrendsApiState = ApiResponseState.SUCCESS;
-        this.deviceConsumptionTrend = (data as []).map(consumption=>parseFloat((consumption * 1000).toFixed(2))) as []
+        this.deviceConsumptionTrend = (data as []).map(consumption => parseFloat((consumption * 1000).toFixed(2))) as []
 
       } catch (error: any) {
         this.deviceConsumptionTrend = [] //Default to empty
@@ -255,31 +255,31 @@ export const useDeviceStore = defineStore({
     },
 
 
-    async getAllDevicesConsumptionTrend(startDate:string, endDate:string) {
+    async getAllDevicesConsumptionTrend(startDate: string, endDate: string) {
       try {
 
         console.log(useUserStore().currentUser?.objectId!)
-        
+
         this.consumptionTrendsApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ uid : useUserStore().currentUser?.objectId!, startDate, endDate}).toString();
+        const queryString = new URLSearchParams({ uid: useUserStore().currentUser?.objectId!, startDate, endDate }).toString();
         const data = await useStoreFetchRequest(`/api/device/consumption/all?${queryString}`, 'GET');
 
         this.consumptionTrendsApiState = ApiResponseState.SUCCESS;
 
         // TODO!: MUST GIVE THIS THE RIGHT TYPE
-        const groupedData = (data as any).data.reduce((acc:any, entry:any) => {
+        const groupedData = (data as any).data.reduce((acc: any, entry: any) => {
           const { deviceId, consumptionChange, time } = entry;
-          
+
           if (!acc[deviceId]) {
-              acc[deviceId] = {
-                  name: deviceId,
-                  data: []
-              };
+            acc[deviceId] = {
+              name: deviceId,
+              data: []
+            };
           }
-      
+
           acc[deviceId].data.push({ y: consumptionChange, x: time });
           return acc;
-      }, {});
+        }, {});
 
         this.deviceConsumptionTrend = Object.values(groupedData)
 
@@ -289,13 +289,13 @@ export const useDeviceStore = defineStore({
         this.consumptionTrendsApiState = ApiResponseState.FAILED;
       }
     },
-    
+
 
     async selectDevice(device: IDevice) {
       this.selectedDevice = device
 
       // Get the consumption trend data
-       this.getDeviceConsumptionTrend(device.objectId)
+      this.getDeviceConsumptionTrend(device.objectId)
 
       // Get the current consumption
       this.getCurrentDeviceConsumption(device.objectId)
@@ -304,15 +304,21 @@ export const useDeviceStore = defineStore({
       this.getDeviceUsers(device.objectId)
     },
 
-    filterActiveDevices(){
-      return this.devices.filter((device)=> device.status == "heWFtvGqhO")
+    filterActiveDevices() {
+      return this.devices.filter((device) => device.status == "heWFtvGqhO")
     },
 
     sumTotalConsumptionFromDevices() {
       return this.devices.reduce((totalConsumption, device) => {
-          return totalConsumption + (device.lastTotalConsumption || 0); 
-      }, 0); 
-  }
+        return totalConsumption + (device.lastTotalConsumption || 0);
+      }, 0);
+    },
+
+    sumTotalUsageFromDevices() {
+      return this.devices.reduce((totalUsageCredit, device) => {
+        return totalUsageCredit + (device.usageCredit || 0);
+      }, 0);
+    }
 
   },
 
@@ -337,7 +343,7 @@ export const useDeviceStore = defineStore({
     isGettingDeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.LOADING,
     failed_DeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.FAILED,
     success_DeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.SUCCESS,
-    
+
     isAddingNewDevice: (state) => state.newDeviceApiState === ApiResponseState.LOADING,
     failed_AddingNewDevice: (state) => state.newDeviceApiState === ApiResponseState.FAILED,
     success_AddingNewDevice: (state) => state.newDeviceApiState === ApiResponseState.SUCCESS,
