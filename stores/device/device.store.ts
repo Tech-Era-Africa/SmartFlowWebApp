@@ -226,9 +226,9 @@ export const useDeviceStore = defineStore({
         // Assign data once successful
         if ((data as any).success) {
           this.minMaxconsumption = {
-            max: (data as any).data[0].max_consumption,
-            min: (data as any).data[0].min_consumption,
-            sum: (data as any).data[0].sum_consumption
+            max: (data as any).data[0].max_consumption_change,
+            min: (data as any).data[0].min_consumption_change,
+            sum: (data as any).data[0].sum_consumption_change
           }
         }
 

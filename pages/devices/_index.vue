@@ -70,9 +70,9 @@
             <template v-if="deviceStore.selectedDevice.objectId">
                 <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }"></SingleDeviceMonitoring>
                 <!-- <WaterConsumptionChart :option="waterConsumptionChartOptions"></WaterConsumptionChart> -->
-                <MonthlyConsumptionStats
+                <ConsumptionStats
                     :option="{ consumption: deviceStore.consumption, deviceId: deviceStore.selectedDevice.objectId }">
-                </MonthlyConsumptionStats>
+                </ConsumptionStats>
                 <TotalPayableBillWidget
                     :option="{ consumption:deviceStore.consumption, currency: 'GHC', device: deviceStore.selectedDevice }">
                     <div class="text-right">

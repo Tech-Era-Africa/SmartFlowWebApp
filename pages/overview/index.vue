@@ -7,8 +7,8 @@
                     <DeviceMonitoring title="All Devices"></DeviceMonitoring>
                 </div>
                 <div class="flex flex-col gap-2 flex-1 flex-grow">
-                    <MonthlyConsumptionStats :option="monthlyConsumptionStatOption" class="h-full">
-                    </MonthlyConsumptionStats>
+                    <ConsumptionStats :option="monthlyConsumptionStatOption" class="h-full">
+                    </ConsumptionStats>
                     <div class="flex gap-2">
                         <Stat
                             :option="{ title: 'Smart Credits', value: `GHC ${billingStore.accountCredit - deviceStore.sumTotalUsageFromDevices()}`, clearBg: true, isLoading: billingStore.loading_AccountCredit || deviceStore.isGettingDevices, hasError: billingStore.failed_AccountCredit }">
@@ -40,7 +40,7 @@
         <!-- <Drawer drawerId = "deviceDrawer">
            <SingleDeviceMonitoring></SingleDeviceMonitoring>
            <WaterConsumptionChart></WaterConsumptionChart>
-           <MonthlyConsumptionStats></MonthlyConsumptionStats>
+           <ConsumptionStats></ConsumptionStats>
            <TotalPayableBillWidget></TotalPayableBillWidget>
            <UsersTable :option="usersDataTableOption"></UsersTable>
 
@@ -64,6 +64,7 @@ onBeforeMount(() => {
     const currentDate = new Date();
     const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
     deviceStore.getAllDevicesConsumptionTrend(startOfMonth.toISOString(), endOfMonth.toISOString())
     deviceStore.getMonthlyMinMaxConsumption(startOfMonth.toISOString(), endOfMonth.toISOString())
     billingStore.getAccountCredit()
