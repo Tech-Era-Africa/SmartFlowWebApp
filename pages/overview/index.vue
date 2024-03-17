@@ -7,7 +7,7 @@
                     <DeviceMonitoring title="All Devices"></DeviceMonitoring>
                 </div>
                 <div class="flex flex-col gap-2 flex-1 flex-grow">
-                    <ConsumptionStats :option="monthlyConsumptionStatOption" class="h-full">
+                    <ConsumptionStats @on-date-changed="handleWaterConsumptionStatsDateChanged" :option="monthlyConsumptionStatOption" class="h-full">
                     </ConsumptionStats>
                     <div class="flex gap-2">
                         <Stat
@@ -75,10 +75,14 @@ const handleWaterConsumptionChartDateChanged = (date: { start: Date, end: Date }
     deviceStore.getAllDevicesConsumptionTrend(date.start.toISOString(), date.end.toISOString())
 }
 
-const monthlyConsumptionStatOption: { deviceId: string, consumption: number, title?: string } = {
+const handleWaterConsumptionStatsDateChanged = (date: { start: Date, end: Date }) => {
+    deviceStore.getMonthlyMinMaxConsumption(date.start.toISOString(), date.end.toISOString())
+}
+
+const monthlyConsumptionStatOption = ref<{ deviceId: string, consumption: number, title?: string, isLoading?:boolean }>({
     consumption: 4,
     deviceId: ""
-}
+})
 
 const consumptionChart = ref<IWaterConsumptionChart>({
     title: "Total Water Consumption",
@@ -94,6 +98,7 @@ watchEffect(() => {
     }
 
     consumptionChart.value.isLoading = deviceStore.isGettingConsumptionTrend
+    monthlyConsumptionStatOption.value.isLoading = deviceStore.isGettingDeviceMinMaxConsumption
 })
 
 </script>
