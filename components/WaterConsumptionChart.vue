@@ -73,7 +73,7 @@ const chart4Options = ref({
             stops: [0, 100]
         }
     },
-    colors: ['#4F46E5', '#F87878'],
+    colors: ['#46D5E5', '#C578F8', '#86FC5F','#F729C0'],
     legend: {
         position: 'bottom',
         markers: {
