@@ -7,25 +7,28 @@
       <template v-if="deviceStore.hasGroupDevices">
         <NuxtLink :to="`/devices/group/${deviceStore.devicesGroups[0].objectId}`">
           <Card class="overflow-hidden w-full cursor-pointer">
-          <CardHeader>
-            <CardTitle>{{ deviceStore.devicesGroups[0].name }}</CardTitle>
-            <CardDescription>{{ deviceStore.devicesGroups[0].devicesCount }} Device{{
+            <CardHeader>
+              <CardTitle>{{ deviceStore.devicesGroups[0].name }}</CardTitle>
+              <CardDescription>{{ deviceStore.devicesGroups[0].devicesCount }} Device{{
         deviceStore.devicesGroups[0].devicesCount! >= 2 ? 's' : '' }}</CardDescription>
-          </CardHeader>
-          <CardContent class="px-0 h-full">
-            <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
-            </apexchart>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent class="px-0 h-full">
+              <div v-if="deviceStore.loading_TotalConsumptionByCluster">Loading...</div>
+              <template v-else>
+                <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
+                </apexchart>
+              </template>
+            </CardContent>
+          </Card>
         </NuxtLink>
-        
+
 
         <NuxtLink to="/devices/group">
           <div class="bg-gray-100 flex justify-center items-center px-5 rounded-xl cursor-pointer h-full">
-          <p class="font-bold text-xl">+{{ deviceStore.devicesGroups.length - 1 }}</p>
-        </div>
+            <p class="font-bold text-xl">+{{ deviceStore.devicesGroups.length - 1 }}</p>
+          </div>
         </NuxtLink>
-        
+
       </template>
 
       <template v-else-if="deviceStore.loading_DevicesGroup">
@@ -49,15 +52,15 @@ import { useDeviceStore } from '~/stores/device/device.store';
 
 
 const deviceStore = useDeviceStore()
+const clusterSummaryChartData = ref([])
 
 onBeforeMount(() => {
+  // TODO!: THIS MUST BE THE ORGANISATION GROUP INSTEAD OF USER GROUP
   deviceStore.getUserDeviceGroup();
+  const series = deviceStore.getDeviceSummaryConsumptionTrend("2024-03-01T00:00:00.000Z", "2024-03-31T23:59:00.000Z");
+  console.log(series)
 })
 
-const openDeviceDrawer = () => {
-  const drawer = document.getElementById("deviceDrawer");
-  drawer?.click()
-}
 
 // CHART SETTTINGS
 const chart4Options = ref({
@@ -135,5 +138,15 @@ function generateRandomData(days: any) {
   return data;
 }
 // end of CHART SETTING
+
+
+// Used to watch for changes and update the charts 
+watchEffect(() => {
+  if (deviceStore.success_TotalConsumptionByCluster) {
+    chart4Options.value.series = clusterSummaryChartData.value
+  }
+
+})
+
 
 </script>

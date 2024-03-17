@@ -47,6 +47,10 @@ export const useDeviceStore = defineStore({
     allTotalConsumptionApiFailure: { message: "" },
     allTotalConsumption: 0,
 
+     //TOTAL CONSUMPTION BY CLUSTER
+     totalConsumptionByClusterApiState: ApiResponseState.NULL,
+     totalConsumptionByClusterApiFailure: { message: "" },
+
     //DEVICES GROUP BY USER
     devicesGroupApiState: ApiResponseState.NULL,
     devicesGroupApiFailure: { message: "" },
@@ -299,6 +303,50 @@ export const useDeviceStore = defineStore({
       }
     },
 
+    async getDeviceSummaryConsumptionTrend(startDate: string, endDate: string) {
+      try {
+
+        this.totalConsumptionByClusterApiState = ApiResponseState.LOADING;
+        const queryString = new URLSearchParams({ clusterId: "C123", startDate, endDate }).toString(); //TODO!: MAKE MORE DYNAMIC
+        const data = await useStoreFetchRequest(`/api/device/consumption/by/cluster?${queryString}`, 'GET');
+
+        this.totalConsumptionByClusterApiState = ApiResponseState.SUCCESS;
+
+        // TODO!: MUST GIVE THIS THE RIGHT TYPE
+        const groupedData = (data as any).data.reduce((acc: any, entry: any) => {
+          const { date_bin } = entry;
+
+          // Iterate over the keys in the entry
+          Object.keys(entry).forEach((key: string) => {
+            // Exclude the date_bin key
+            if (key !== 'date_bin') {
+              // If the key doesn't exist in the accumulator, create it
+              if (!acc[key]) {
+                acc[key] = {
+                  name: key,
+                  data: []
+                };
+              }
+
+              // Push the consumption data to the corresponding key in the accumulator
+              acc[key].data.push({
+                x: date_bin,
+                y : entry[key]
+              });
+            }
+          });
+          return acc;
+        }, {});
+
+        return Object.values(groupedData)
+
+      } catch (error: any) {
+        this.totalConsumptionByClusterApiFailure.message = error.message;
+        this.totalConsumptionByClusterApiState = ApiResponseState.FAILED;
+        return []
+      }
+    },
+
 
     async selectDevice(device: IDevice) {
       this.selectedDevice = device
@@ -365,6 +413,11 @@ export const useDeviceStore = defineStore({
     loading_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.LOADING,
     failed_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.FAILED,
     success_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.SUCCESS,
+
+    loading_TotalConsumptionByCluster: (state) => state.totalConsumptionByClusterApiState === ApiResponseState.LOADING,
+    failed_TotalConsumptionByCluster: (state) => state.totalConsumptionByClusterApiState === ApiResponseState.FAILED,
+    success_TotalConsumptionByCluster: (state) => state.totalConsumptionByClusterApiState === ApiResponseState.SUCCESS,
+
 
     loading_DevicesGroup: (state) => state.devicesGroupApiState === ApiResponseState.LOADING,
     failed_DevicesGroup: (state) => state.devicesGroupApiState === ApiResponseState.FAILED,
