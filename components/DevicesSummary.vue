@@ -6,7 +6,7 @@
     <div class="flex-1 flex-grow w-full whitespace- flex gap-2 overflow-x-auto">
       <template v-if="deviceStore.hasGroupDevices">
         <NuxtLink :to="`/devices/group/${deviceStore.devicesGroups[0].objectId}`">
-          <Card class="overflow-hidden w-full cursor-pointer">
+          <Card class="overflow-hidden w-full h-full cursor-pointer">
             <CardHeader>
               <CardTitle>{{ deviceStore.devicesGroups[0].name }}</CardTitle>
               <CardDescription>{{ deviceStore.devicesGroups[0].devicesCount }} Device{{
@@ -100,6 +100,10 @@ const chart4Options = ref({
   },
   xaxis: {
     type: 'datetime',
+    show: false,
+    labels: {
+      show: false,
+    },
   },
   yaxis: {
     show: false, // Hide the y-axis
