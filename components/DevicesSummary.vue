@@ -78,7 +78,7 @@ const chart4Options = ref({
   series: [
     {
       name: 'Consumption',
-      data: generateRandomData(30), // Generate random data for the last 30 days
+      data: [],
     },
   ],
   dataLabels: {
@@ -128,20 +128,20 @@ const chart4Options = ref({
   },
 });
 
-// Function to generate random data for the last n days
-function generateRandomData(days: any) {
-  const currentDate = new Date();
-  const data = [];
+// // Function to generate random data for the last n days
+// function generateRandomData(days: any) {
+//   const currentDate = new Date();
+//   const data = [];
 
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(currentDate);
-    date.setDate(currentDate.getDate() - i);
-    const consumption = Math.random() * 5; // Random consumption between 0 and 5
-    data.push({ x: date.getTime(), y: consumption });
-  }
+//   for (let i = days - 1; i >= 0; i--) {
+//     const date = new Date(currentDate);
+//     date.setDate(currentDate.getDate() - i);
+//     const consumption = Math.random() * 5; // Random consumption between 0 and 5
+//     data.push({ x: date.getTime(), y: consumption });
+//   }
 
-  return data;
-}
+//   return data;
+// }
 // end of CHART SETTING
 
 

@@ -307,7 +307,7 @@ export const useDeviceStore = defineStore({
       try {
 
         this.totalConsumptionByClusterApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ id: "C123", startDate, endDate }).toString(); //TODO!: MAKE MORE DYNAMIC
+        const queryString = new URLSearchParams({ id: "CF124", startDate, endDate }).toString(); //TODO!: MAKE MORE DYNAMIC
         const data = await useStoreFetchRequest(`/api/device/consumption/by/cluster?${queryString}`, 'GET');
 
         this.totalConsumptionByClusterApiState = ApiResponseState.SUCCESS;
