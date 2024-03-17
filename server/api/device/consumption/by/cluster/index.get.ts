@@ -3,12 +3,12 @@
 
 export default defineEventHandler(async(event) =>  {
     const queryParams = getQuery(event);
-        const {clusterId, startDate, endDate} = queryParams;
+        const {id, startDate, endDate} = queryParams;
 
         
     try {
         // Check for the availability of a user id
-        if(!clusterId) throw Error("Cluster id required")
+        if(!id) throw Error("Cluster id required")
         if(!startDate) throw Error("Start date required")
         if(!endDate) throw Error("End date required")
 
@@ -20,6 +20,8 @@ export default defineEventHandler(async(event) =>  {
                 endDate
             }
           })
+
+          console.log(res)
 
        return res
 

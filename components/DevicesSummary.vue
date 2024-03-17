@@ -48,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import { any } from 'zod';
 import { useDeviceStore } from '~/stores/device/device.store';
 
 
@@ -57,8 +58,8 @@ const clusterSummaryChartData = ref([])
 onBeforeMount(() => {
   // TODO!: THIS MUST BE THE ORGANISATION GROUP INSTEAD OF USER GROUP
   deviceStore.getUserDeviceGroup();
-  const series = deviceStore.getDeviceSummaryConsumptionTrend("2024-03-01T00:00:00.000Z", "2024-03-31T23:59:00.000Z");
-  console.log(series)
+  deviceStore.getDeviceSummaryConsumptionTrend("2024-03-01T00:00:00.000Z", "2024-03-31T23:59:00.000Z");
+
 })
 
 
@@ -143,7 +144,7 @@ function generateRandomData(days: any) {
 // Used to watch for changes and update the charts 
 watchEffect(() => {
   if (deviceStore.success_TotalConsumptionByCluster) {
-    chart4Options.value.series = clusterSummaryChartData.value
+    chart4Options.value.series = deviceStore.summaryClusterConsumptionTrend
   }
 
 })

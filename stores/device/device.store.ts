@@ -50,6 +50,7 @@ export const useDeviceStore = defineStore({
      //TOTAL CONSUMPTION BY CLUSTER
      totalConsumptionByClusterApiState: ApiResponseState.NULL,
      totalConsumptionByClusterApiFailure: { message: "" },
+     summaryClusterConsumptionTrend : [],
 
     //DEVICES GROUP BY USER
     devicesGroupApiState: ApiResponseState.NULL,
@@ -157,7 +158,6 @@ export const useDeviceStore = defineStore({
         this.getDevicesApiState = ApiResponseState.LOADING;
         const queryString = new URLSearchParams({ id: "hXR7sQI3FI" }).toString(); //TODO!: Must dynamically pass this
         const data = await useStoreFetchRequest(`/api/device/by/org?${queryString}`, 'GET');
-        console.log("fetched devices: ", data)
         this.devices = (data as any).map((data: any) => DeviceModel.fromMap(data))
         this.getDevicesApiState = ApiResponseState.SUCCESS;
 
@@ -307,7 +307,7 @@ export const useDeviceStore = defineStore({
       try {
 
         this.totalConsumptionByClusterApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ clusterId: "C123", startDate, endDate }).toString(); //TODO!: MAKE MORE DYNAMIC
+        const queryString = new URLSearchParams({ id: "C123", startDate, endDate }).toString(); //TODO!: MAKE MORE DYNAMIC
         const data = await useStoreFetchRequest(`/api/device/consumption/by/cluster?${queryString}`, 'GET');
 
         this.totalConsumptionByClusterApiState = ApiResponseState.SUCCESS;
@@ -338,12 +338,12 @@ export const useDeviceStore = defineStore({
           return acc;
         }, {});
 
-        return Object.values(groupedData)
+        this.summaryClusterConsumptionTrend =  Object.values(groupedData)
 
       } catch (error: any) {
         this.totalConsumptionByClusterApiFailure.message = error.message;
         this.totalConsumptionByClusterApiState = ApiResponseState.FAILED;
-        return []
+        this.summaryClusterConsumptionTrend = []
       }
     },
 
