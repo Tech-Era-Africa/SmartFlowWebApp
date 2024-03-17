@@ -12,10 +12,19 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 
+const emits = defineEmits(['handleDateChange'])
+const currentDate = new Date();
+const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
 const date = ref({
-  start: new Date(2022, 0, 20),
-  end: addDays(new Date(2022, 0, 20), 20),
+  start: startOfMonth,
+  end: endOfMonth
 })
+
+const handleDateChange = (date:any)=>{
+  emits('handleDateChange', date)
+}
 </script>
 
 <template>
@@ -42,6 +51,7 @@ const date = ref({
       </PopoverTrigger>
       <PopoverContent class="w-auto p-0" align="start">
         <Calendar
+        @update:model-value="handleDateChange"
           v-model.range="date"
           :columns="2"
         />

@@ -10,9 +10,11 @@
                     <MonthlyConsumptionStats :option="monthlyConsumptionStatOption" class="h-full">
                     </MonthlyConsumptionStats>
                     <div class="flex gap-2">
-                        <Stat :option="{ title: 'Smart Credits', value: `GHC ${billingStore.accountCredit - deviceStore.sumTotalUsageFromDevices()}`, clearBg: true, isLoading: billingStore.loading_AccountCredit || deviceStore.isGettingDevices, hasError:billingStore.failed_AccountCredit }">
+                        <Stat
+                            :option="{ title: 'Smart Credits', value: `GHC ${billingStore.accountCredit - deviceStore.sumTotalUsageFromDevices()}`, clearBg: true, isLoading: billingStore.loading_AccountCredit || deviceStore.isGettingDevices, hasError: billingStore.failed_AccountCredit }">
                             <div>
-                                <p class="text-muted-foreground text-xs">Consumed: {{ deviceStore.sumTotalUsageFromDevices() }}</p>
+                                <p class="text-muted-foreground text-xs">Consumed: {{
+                        deviceStore.sumTotalUsageFromDevices() }}</p>
                             </div>
                             <div class="text-right">
                                 <Button class="btn btn-sm btn-outline flex gap-2 items-center">Top Up <Icon
@@ -25,7 +27,8 @@
             </div>
             <div class="w-full h-96 flex flex-col lg:flex-row   p-2 gap-4">
                 <div class="w-full lg:w-3/5 h-full">
-                    <WaterConsumptionChart :option="consumptionChart"></WaterConsumptionChart>
+                    <WaterConsumptionChart :option="consumptionChart" 
+                        @on-date-changed="handleWaterConsumptionChartDateChanged"></WaterConsumptionChart>
                 </div>
                 <div class="flex-1 h-full">
                     <DevicesSummary></DevicesSummary>
@@ -57,11 +60,19 @@ const deviceStore = useDeviceStore()
 const billingStore = useBillStore()
 
 onBeforeMount(() => {
-    deviceStore.getAllDevicesConsumptionTrend("2024-03-01T00:00:00.000Z", "2024-03-31T23:59:00.000Z")
-    deviceStore.getMonthlyMinMaxConsumption("2024-03-01T00:00:00.000Z", "2024-03-31T23:59:00.000Z")
+    // TODO!: MOVE THIS TO THE STORE
+    const currentDate = new Date();
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    deviceStore.getAllDevicesConsumptionTrend(startOfMonth.toISOString(), endOfMonth.toISOString())
+    deviceStore.getMonthlyMinMaxConsumption(startOfMonth.toISOString(), endOfMonth.toISOString())
     billingStore.getAccountCredit()
 
 })
+
+const handleWaterConsumptionChartDateChanged = (date: { start: Date, end: Date }) => {
+    deviceStore.getAllDevicesConsumptionTrend(date.start.toISOString(), date.end.toISOString())
+}
 
 const monthlyConsumptionStatOption: { deviceId: string, consumption: number, title?: string } = {
     consumption: 4,
@@ -71,7 +82,7 @@ const monthlyConsumptionStatOption: { deviceId: string, consumption: number, tit
 const consumptionChart = ref<IWaterConsumptionChart>({
     title: "Total Water Consumption",
     chartSeries: deviceStore.deviceConsumptionTrend,
-    isLoading: false,
+    isLoading: deviceStore.isGettingConsumptionTrend,
     success: true,
 })
 
@@ -80,6 +91,8 @@ watchEffect(() => {
     if (deviceStore.success_ConsumptionTrend) {
         consumptionChart.value.chartSeries = deviceStore.deviceConsumptionTrend
     }
+
+    consumptionChart.value.isLoading = deviceStore.isGettingConsumptionTrend
 })
 
 </script>

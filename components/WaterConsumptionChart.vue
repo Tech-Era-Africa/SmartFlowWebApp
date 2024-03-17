@@ -2,13 +2,17 @@
     <div class="w-full min-h-[300px] bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex justify-between items-center">
             <h1 class="font-bold text-lg">{{ option.title ?? 'Water Consumption' }}</h1>
-            <DateRangePicker></DateRangePicker>
-            
-        </div>
+            <DateRangePicker @handle-date-change="onDateChanged"></DateRangePicker>
 
-        <apexchart :key="chart4Options.series" height="100%" width="100%" :options="chart4Options"
-            :series="chart4Options.series">
-        </apexchart>
+        </div>
+        <div v-if="option.isLoading">
+            <p>Loading...</p>
+        </div>
+        <template v-else>
+            <apexchart :key="chart4Options.series" height="100%" width="100%" :options="chart4Options"
+                :series="chart4Options.series">
+            </apexchart>
+        </template>
 
     </div>
 </template>
@@ -16,6 +20,7 @@
 <script setup lang="ts">
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
+const emits = defineEmits(['onDateChanged'])
 
 const props = defineProps({
     option: {
@@ -23,6 +28,10 @@ const props = defineProps({
         required: true
     },
 })
+
+const onDateChanged = (date: any) => {
+    emits('onDateChanged', date)
+}
 
 
 // CHART SETTTINGS
@@ -60,10 +69,10 @@ const chart4Options = ref({
         show: true,
     },
     tooltip: {
-          x: {
+        x: {
             format: 'dd MMM yyyy'
-          }
-        },
+        }
+    },
     fill: {
         type: 'gradient',
         gradient: {
@@ -73,7 +82,7 @@ const chart4Options = ref({
             stops: [0, 100]
         }
     },
-    colors: ['#46D5E5', '#C578F8', '#86FC5F','#F729C0'],
+    colors: ['#46D5E5', '#C578F8', '#86FC5F', '#F729C0'],
     legend: {
         position: 'bottom',
         markers: {
@@ -90,7 +99,7 @@ const chart4Options = ref({
 
 
 // Used to watch for changes and update the charts 
-watchEffect(()=>{
+watchEffect(() => {
     chart4Options.value.series = props.option.chartSeries
 })
 
