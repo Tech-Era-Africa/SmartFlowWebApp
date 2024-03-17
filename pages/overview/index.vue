@@ -10,7 +10,7 @@
                     <MonthlyConsumptionStats :option="monthlyConsumptionStatOption" class="h-full">
                     </MonthlyConsumptionStats>
                     <div class="flex gap-2">
-                        <Stat :option="{ title: 'Smart Credits', value: `GHC ${0}`, clearBg: true, isLoading: deviceStore.isGettingDevices, hasError:billingStore.failed_AccountCredit }">
+                        <Stat :option="{ title: 'Smart Credits', value: `GHC ${billingStore.accountCredit - deviceStore.sumTotalUsageFromDevices()}`, clearBg: true, isLoading: billingStore.loading_AccountCredit || deviceStore.isGettingDevices, hasError:billingStore.failed_AccountCredit }">
                             <div>
                                 <p class="text-muted-foreground text-xs">Consumed: {{ deviceStore.sumTotalUsageFromDevices() }}</p>
                             </div>

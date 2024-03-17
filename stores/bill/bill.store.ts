@@ -52,6 +52,8 @@ export const useBillStore = defineStore({
         const queryString = new URLSearchParams({ id : "hXR7sQI3FI" }).toString();
         const data = await useStoreFetchRequest(`/api/credit/by/org?${queryString}`, 'GET');
 
+        console.log("CREDIT STUFF: ", data)
+
         this.accountCreditState = ApiResponseState.SUCCESS;
         this.accountCredit = data as any;
 

@@ -258,8 +258,6 @@ export const useDeviceStore = defineStore({
     async getAllDevicesConsumptionTrend(startDate: string, endDate: string) {
       try {
 
-        console.log(useUserStore().currentUser?.objectId!)
-
         this.consumptionTrendsApiState = ApiResponseState.LOADING;
         const queryString = new URLSearchParams({ uid: useUserStore().currentUser?.objectId!, startDate, endDate }).toString();
         const data = await useStoreFetchRequest(`/api/device/consumption/all?${queryString}`, 'GET');
@@ -268,16 +266,27 @@ export const useDeviceStore = defineStore({
 
         // TODO!: MUST GIVE THIS THE RIGHT TYPE
         const groupedData = (data as any).data.reduce((acc: any, entry: any) => {
-          const { deviceId, consumptionChange, time } = entry;
+          const { date_bin } = entry;
 
-          if (!acc[deviceId]) {
-            acc[deviceId] = {
-              name: deviceId,
-              data: []
-            };
-          }
+          // Iterate over the keys in the entry
+          Object.keys(entry).forEach((key: string) => {
+            // Exclude the date_bin key
+            if (key !== 'date_bin') {
+              // If the key doesn't exist in the accumulator, create it
+              if (!acc[key]) {
+                acc[key] = {
+                  name: key,
+                  data: []
+                };
+              }
 
-          acc[deviceId].data.push({ y: consumptionChange, x: time });
+              // Push the consumption data to the corresponding key in the accumulator
+              acc[key].data.push({
+                x: date_bin,
+                y : entry[key]
+              });
+            }
+          });
           return acc;
         }, {});
 

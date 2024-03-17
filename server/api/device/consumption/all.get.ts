@@ -12,10 +12,10 @@ export default defineEventHandler((event) => new Promise(async (resolve, reject)
         if(!startDate) throw Error("Start date required")
         if(!endDate) throw Error("End date required")
 
-        const res= await $fetch('http://localhost:4700/consumption/query/by/uid',{
+        const res= await $fetch('http://localhost:4700/consumption/trend/change/by/org',{
             method : "GET",
             query:{
-                uid,
+                orgId : "ASH2025", //TODO!: MAKE DYNAMIC
                 startDate,
                 endDate
             }
