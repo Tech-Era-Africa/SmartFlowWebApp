@@ -13,20 +13,7 @@
           <template v-if="deviceStore.hasGroupDevices">
             <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-3 grid gap-2">
               <NuxtLink :to="`/devices/group/${group.objectId}`" v-for="group in deviceStore.devicesGroups">
-                <Card
-                  class="w-full h-[150px] flex justify-between items-center cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300 shadow-none">
-                  <CardHeader>
-                    <CardTitle>{{ group.name }}</CardTitle>
-                    <CardDescription>
-                      <Badge variant="outline" class="my-3">{{ group.devicesCount }} Device{{ group.devicesCount! >= 2 ?
-            's' : '' }}</Badge>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent class="p-2 w-[150px]">
-                    <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
-                    </apexchart>
-                  </CardContent>
-                </Card>
+                <DeviceClusterCard :option="{devicesCount : group.devicesCount ?? 0, id : group.objectId, name : group.name}"></DeviceClusterCard>
               </NuxtLink>
 
               <Dialog :open="isClusterDialogueOpen" @update:open="handleOnClusterDialogOpen">

@@ -47,10 +47,10 @@ export const useDeviceStore = defineStore({
     allTotalConsumptionApiFailure: { message: "" },
     allTotalConsumption: 0,
 
-     //TOTAL CONSUMPTION BY CLUSTER
-     totalConsumptionByClusterApiState: ApiResponseState.NULL,
-     totalConsumptionByClusterApiFailure: { message: "" },
-     summaryClusterConsumptionTrend : [],
+    //TOTAL CONSUMPTION BY CLUSTER
+    totalConsumptionByClusterApiState: ApiResponseState.NULL,
+    totalConsumptionByClusterApiFailure: { message: "" },
+    summaryClusterConsumptionTrend: [],
 
     //DEVICES GROUP BY USER
     devicesGroupApiState: ApiResponseState.NULL,
@@ -287,7 +287,7 @@ export const useDeviceStore = defineStore({
               // Push the consumption data to the corresponding key in the accumulator
               acc[key].data.push({
                 x: date_bin,
-                y : entry[key]
+                y: entry[key]
               });
             }
           });
@@ -331,19 +331,55 @@ export const useDeviceStore = defineStore({
               // Push the consumption data to the corresponding key in the accumulator
               acc[key].data.push({
                 x: date_bin,
-                y : entry[key]
+                y: entry[key]
               });
             }
           });
           return acc;
         }, {});
 
-        this.summaryClusterConsumptionTrend =  Object.values(groupedData)
+        this.summaryClusterConsumptionTrend = Object.values(groupedData)
 
       } catch (error: any) {
         this.totalConsumptionByClusterApiFailure.message = error.message;
         this.totalConsumptionByClusterApiState = ApiResponseState.FAILED;
         this.summaryClusterConsumptionTrend = []
+      }
+    },
+
+    async getClusterConsumptionTrend(clusterId: string, startDate: string, endDate: string): Promise<any> {
+      try {
+        const queryString = new URLSearchParams({ id: clusterId, startDate, endDate }).toString(); //TODO!: MAKE MORE DYNAMIC
+        const data = await useStoreFetchRequest(`/api/device/consumption/by/cluster?${queryString}`, 'GET');
+
+        const key = "Total Consumption"
+
+        // TODO!: MUST GIVE THIS THE RIGHT TYPE
+        const groupedData = (data as any).data.reduce((acc: any, entry: any) => {
+          const { date_bin, total_consumption_change } = entry;
+          // If the key doesn't exist in the accumulator, create it
+         
+          if (!acc[key]) {
+            acc[key] = {
+              name: key,
+              data: []
+            };
+          }
+
+          // Push the consumption data to the corresponding key in the accumulator
+          acc[key].data.push({
+            x: date_bin,
+            y: total_consumption_change
+          });
+
+          return acc;
+        }, {});
+
+        return Object.values(groupedData)
+
+      } catch (error: any) {
+
+        return []
       }
     },
 
