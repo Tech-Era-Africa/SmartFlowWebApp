@@ -268,6 +268,12 @@ export const useDeviceStore = defineStore({
 
         this.consumptionTrendsApiState = ApiResponseState.SUCCESS;
 
+        const keys:any = {
+          "max_consumption_change" : "Max Consumption",
+          "min_consumption_change" : "Min Consumption",
+          "total_consumption_change" : "Total Consumption"
+        }
+
         // TODO!: MUST GIVE THIS THE RIGHT TYPE
         const groupedData = (data as any).data.reduce((acc: any, entry: any) => {
           const { date_bin } = entry;
@@ -277,15 +283,15 @@ export const useDeviceStore = defineStore({
             // Exclude the date_bin key
             if (key !== 'date_bin') {
               // If the key doesn't exist in the accumulator, create it
-              if (!acc[key]) {
-                acc[key] = {
-                  name: key,
+              if (!acc[keys[key]]) {
+                acc[keys[key]] = {
+                  name: keys[key],
                   data: []
                 };
               }
 
               // Push the consumption data to the corresponding key in the accumulator
-              acc[key].data.push({
+              acc[keys[key]].data.push({
                 x: date_bin,
                 y: entry[key]
               });
@@ -312,29 +318,27 @@ export const useDeviceStore = defineStore({
 
         this.totalConsumptionByClusterApiState = ApiResponseState.SUCCESS;
 
+        
+        const key = "Total Consumption"
+
         // TODO!: MUST GIVE THIS THE RIGHT TYPE
         const groupedData = (data as any).data.reduce((acc: any, entry: any) => {
-          const { date_bin } = entry;
+          const { date_bin, total_consumption_change } = entry;
+          // If the key doesn't exist in the accumulator, create it
+         
+          if (!acc[key]) {
+            acc[key] = {
+              name: key,
+              data: []
+            };
+          }
 
-          // Iterate over the keys in the entry
-          Object.keys(entry).forEach((key: string) => {
-            // Exclude the date_bin key
-            if (key !== 'date_bin') {
-              // If the key doesn't exist in the accumulator, create it
-              if (!acc[key]) {
-                acc[key] = {
-                  name: key,
-                  data: []
-                };
-              }
-
-              // Push the consumption data to the corresponding key in the accumulator
-              acc[key].data.push({
-                x: date_bin,
-                y: entry[key]
-              });
-            }
+          // Push the consumption data to the corresponding key in the accumulator
+          acc[key].data.push({
+            x: date_bin,
+            y: total_consumption_change
           });
+
           return acc;
         }, {});
 
