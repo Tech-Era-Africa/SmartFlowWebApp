@@ -66,7 +66,12 @@ const chart4Options = ref({
         type: 'datetime',
     },
     yaxis: {
-        show: true,
+        labels: {
+            formatter: function (value: number) {
+                // Round the value to two decimal places
+                return `${value.toFixed(2)} L`;
+            }
+        }
     },
     tooltip: {
         x: {

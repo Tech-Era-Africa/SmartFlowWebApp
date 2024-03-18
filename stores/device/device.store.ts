@@ -217,9 +217,10 @@ export const useDeviceStore = defineStore({
     async getMonthlyMinMaxConsumption(startDate: string, endDate: string) {
       try {
 
+        const orgId = "hXR7sQI3FI" //TODO!: MUST TAKE THIS FROM THE USER'S ACCOUNT
         this.minMaxconsumptionApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ uid: useUserStore().currentUser?.objectId!, startDate, endDate }).toString();
-        const data = await useStoreFetchRequest(`/api/device/consumption/sumAll?${queryString}`, 'GET');
+        const queryString = new URLSearchParams({ id : orgId, startDate, endDate }).toString();
+        const data = await useStoreFetchRequest(`/api/device/consumption/by/org?${queryString}`, 'GET');
 
         this.minMaxconsumptionApiState = ApiResponseState.SUCCESS;
 
@@ -262,8 +263,9 @@ export const useDeviceStore = defineStore({
     async getAllDevicesConsumptionTrend(startDate: string, endDate: string) {
       try {
 
+        const orgId = "hXR7sQI3FI"
         this.consumptionTrendsApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ uid: useUserStore().currentUser?.objectId!, startDate, endDate }).toString();
+        const queryString = new URLSearchParams({ id : orgId, startDate, endDate }).toString();
         const data = await useStoreFetchRequest(`/api/device/consumption/all?${queryString}`, 'GET');
 
         this.consumptionTrendsApiState = ApiResponseState.SUCCESS;

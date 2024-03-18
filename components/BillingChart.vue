@@ -58,7 +58,12 @@ const chart4Options = ref({
         categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     },
     yaxis: {
-        show: true,
+        labels: {
+            formatter: function (value: number) {
+                // Round the value to two decimal places
+                return `GHC${value.toFixed(2)}`;
+            }
+        }
     },
     fill: {
         type: 'solid',

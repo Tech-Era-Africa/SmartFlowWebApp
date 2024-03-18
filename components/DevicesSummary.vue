@@ -126,11 +126,24 @@ const chart4Options = ref({
   },
   yaxis: {
     show: false, // Hide the y-axis
+    labels: {
+      show: false,
+      formatter: function (value: number) {
+        // Round the value to two decimal places
+        return `${value.toFixed(2)} L`;
+      }
+    }
   },
   tooltip: {
     x: {
       format: 'dd MMM yyyy',
     },
+    y: {
+      formatter: function (value: any) {
+        // Round the value to two decimal places
+        return `${value.toFixed(2)} L`;
+      }
+    }
   },
   fill: {
     type: 'gradient',

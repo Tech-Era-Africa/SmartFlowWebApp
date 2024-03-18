@@ -48,7 +48,13 @@ const chart4Options = ref({
         show: false // Hide legend
     },
     tooltip: {
-        enabled: true // Hide tooltip
+        enabled: true, // Hide tooltip
+        y: {
+            formatter: function (value: any) {
+                // Round the value to two decimal places
+                return `${value.toFixed(2)} L`;
+            }
+        }
     },
     grid: {
         show: false // Hide grid lines
@@ -61,7 +67,11 @@ const chart4Options = ref({
     },
     yaxis: {
         labels: {
-            show: false // Hide y-axis labels
+            show: false,
+            formatter: function (value: number) {
+                // Round the value to two decimal places
+                return `${value.toFixed(2)} L`;
+            }
         }
     },
     stroke: {
