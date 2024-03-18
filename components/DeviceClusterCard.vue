@@ -30,7 +30,6 @@ const deviceStore = useDeviceStore()
 // CHART SETTTINGS
 const chart4Options = ref({
     chart: {
-        type: 'area',
         animations: {
             enabled: true // Disable animations
         },

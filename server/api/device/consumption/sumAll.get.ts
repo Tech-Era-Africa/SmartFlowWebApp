@@ -12,7 +12,8 @@ export default defineEventHandler((event) => new Promise(async (resolve, reject)
         if(!startDate) throw Error("Start date required")
         if(!endDate) throw Error("End date required")
 
-        const res= await $fetch('http://localhost:4700/consumption/sum/change/by/uid',{
+        const baseUrl = useRuntimeConfig().INFLUX_SERVER_BASE_URL
+        const res= await $fetch(`${baseUrl}/consumption/sum/change/by/uid`,{
             method : "GET",
             query:{
                 uid,

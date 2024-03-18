@@ -12,16 +12,15 @@ export default defineEventHandler(async(event) =>  {
         if(!startDate) throw Error("Start date required")
         if(!endDate) throw Error("End date required")
 
-        const res= await $fetch('http://localhost:4700/consumption/trend/change/by/cluster',{
+        const baseUrl = useRuntimeConfig().INFLUX_SERVER_BASE_URL
+        const res= await $fetch(`${baseUrl}/consumption/trend/change/by/cluster`,{
             method : "GET",
             query:{
-                clusterId : id, //TODO!: MAKE DYNAMIC
+                clusterId : id,
                 startDate,
                 endDate
             }
           })
-
-          console.log(res)
 
        return res
 

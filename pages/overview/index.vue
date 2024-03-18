@@ -7,19 +7,23 @@
                     <DeviceMonitoring title="All Devices"></DeviceMonitoring>
                 </div>
                 <div class="flex flex-col gap-2 flex-1 flex-grow">
-                    <ConsumptionStats @on-date-changed="handleWaterConsumptionStatsDateChanged" :option="monthlyConsumptionStatOption" class="h-full">
+                    <ConsumptionStats @on-date-changed="handleWaterConsumptionStatsDateChanged"
+                        :option="monthlyConsumptionStatOption" class="h-full">
                     </ConsumptionStats>
                     <div class="flex gap-2">
                         <Stat
                             :option="{ title: 'Smart Credits', value: `GHC ${billingStore.accountCredit - deviceStore.sumTotalUsageFromDevices()}`, clearBg: true, isLoading: billingStore.loading_AccountCredit || deviceStore.isGettingDevices, hasError: billingStore.failed_AccountCredit }">
-                            <div>
-                                <p class="text-muted-foreground text-xs">Consumed: {{
-                        deviceStore.sumTotalUsageFromDevices() }}</p>
-                            </div>
                             <div class="text-right">
                                 <Button class="btn btn-sm btn-outline flex gap-2 items-center">Top Up <Icon
                                         name="material-symbols:arrow-forward-rounded"></Icon></Button>
                             </div>
+
+                            <template #bottom>
+                                <div class="mt-2">
+                                    <p class="text-muted-foreground text-xs">Usage: {{
+                            deviceStore.sumTotalUsageFromDevices().toFixed(2) }}</p>
+                                </div>
+                            </template>
                         </Stat>
                     </div>
                 </div>
@@ -27,8 +31,9 @@
             </div>
             <div class="w-full h-96 flex flex-col lg:flex-row   p-2 gap-4">
                 <div class="w-full lg:w-3/5 h-full">
-                    <WaterConsumptionChart :option="consumptionChart" 
-                        @on-date-changed="handleWaterConsumptionChartDateChanged"></WaterConsumptionChart>
+                    <WaterConsumptionChart :option="consumptionChart"
+                        @on-date-changed="handleWaterConsumptionChartDateChanged">
+                    </WaterConsumptionChart>
                 </div>
                 <div class="flex-1 h-full">
                     <DevicesSummary></DevicesSummary>
@@ -79,7 +84,7 @@ const handleWaterConsumptionStatsDateChanged = (date: { start: Date, end: Date }
     deviceStore.getMonthlyMinMaxConsumption(date.start.toISOString(), date.end.toISOString())
 }
 
-const monthlyConsumptionStatOption = ref<{ deviceId: string, consumption: number, title?: string, isLoading?:boolean }>({
+const monthlyConsumptionStatOption = ref<{ deviceId: string, consumption: number, title?: string, isLoading?: boolean }>({
     consumption: 4,
     deviceId: ""
 })

@@ -309,11 +309,11 @@ export const useDeviceStore = defineStore({
       }
     },
 
-    async getDeviceSummaryConsumptionTrend(startDate: string, endDate: string) {
+    async getDeviceSummaryConsumptionTrend(clusterId:string, startDate: string, endDate: string) {
       try {
 
         this.totalConsumptionByClusterApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ id: "CF124", startDate, endDate }).toString(); //TODO!: MAKE MORE DYNAMIC
+        const queryString = new URLSearchParams({ id: clusterId, startDate, endDate }).toString(); //TODO!: MAKE MORE DYNAMIC
         const data = await useStoreFetchRequest(`/api/device/consumption/by/cluster?${queryString}`, 'GET');
 
         this.totalConsumptionByClusterApiState = ApiResponseState.SUCCESS;
@@ -343,6 +343,8 @@ export const useDeviceStore = defineStore({
         }, {});
 
         this.summaryClusterConsumptionTrend = Object.values(groupedData)
+
+        console.log("GOT THE TOTAL CONSUMPTION: ", this.summaryClusterConsumptionTrend)
 
       } catch (error: any) {
         this.totalConsumptionByClusterApiFailure.message = error.message;

@@ -26,7 +26,8 @@ export default defineEventHandler((event) => new Promise(async (resolve, reject)
         const deviceData = res.data.result.data;
 
         // Send entry to Influx db
-        const influxRes = await $fetch('http://localhost:4700/consumption/write', {
+        const baseUrl = useRuntimeConfig().INFLUX_SERVER_BASE_URL
+        const influxRes = await $fetch(`${baseUrl}/consumption/write`, {
             method: "POST",
             body: {
                 "uid" : "95lmGWfP9C", //TODO!: MAKE THIS DYNAMIC

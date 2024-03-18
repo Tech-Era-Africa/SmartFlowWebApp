@@ -67,10 +67,17 @@ onBeforeMount(() => {
   // TODO!: THIS MUST BE THE ORGANISATION GROUP INSTEAD OF USER GROUP
   deviceStore.getUserDeviceGroup();
 
+})
+
+watchEffect(() => {
   const currentDate = new Date();
   const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
   const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-  deviceStore.getDeviceSummaryConsumptionTrend(startOfMonth.toISOString(), endOfMonth.toISOString());
+
+  // Get the consumption trend once the groups have been loaded
+  if (deviceStore.success_DevicesGroup && deviceStore.devicesGroups.length > 0) {
+    deviceStore.getDeviceSummaryConsumptionTrend(deviceStore.devicesGroups[0].objectId, startOfMonth.toISOString(), endOfMonth.toISOString());
+  }
 
 })
 
