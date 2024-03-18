@@ -7,10 +7,18 @@
       <template v-if="deviceStore.hasGroupDevices">
         <NuxtLink :to="`/devices/group/${deviceStore.devicesGroups[0].objectId}`">
           <Card class="overflow-hidden w-full h-full cursor-pointer">
-            <CardHeader>
-              <CardTitle>{{ deviceStore.devicesGroups[0].name }}</CardTitle>
-              <CardDescription>{{ deviceStore.devicesGroups[0].devicesCount }} Device{{
-        deviceStore.devicesGroups[0].devicesCount! >= 2 ? 's' : '' }}</CardDescription>
+            <CardHeader class="flex flex-row justify-between items-center w-full">
+              <div>
+                <CardTitle>{{ deviceStore.devicesGroups[0].name }}</CardTitle>
+                <CardDescription>
+                  <Badge class="mt-2" variant="outline">{{ deviceStore.devicesGroups[0].devicesCount }} Device{{
+        deviceStore.devicesGroups[0].devicesCount! >= 2 ? 's' : '' }}</Badge>
+                </CardDescription>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">This month</p>
+              </div>
+
             </CardHeader>
             <CardContent class="px-0 h-full">
               <div v-if="deviceStore.loading_TotalConsumptionByCluster">Loading...</div>
@@ -58,7 +66,11 @@ const clusterSummaryChartData = ref([])
 onBeforeMount(() => {
   // TODO!: THIS MUST BE THE ORGANISATION GROUP INSTEAD OF USER GROUP
   deviceStore.getUserDeviceGroup();
-  deviceStore.getDeviceSummaryConsumptionTrend("2024-03-01T00:00:00.000Z", "2024-03-31T23:59:00.000Z");
+
+  const currentDate = new Date();
+  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  deviceStore.getDeviceSummaryConsumptionTrend(startOfMonth.toISOString(), endOfMonth.toISOString());
 
 })
 
