@@ -100,12 +100,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/auth/auth.store';
 import { useBillStore } from '~/stores/bill/bill.store';
-import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
-import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
-import { useUserStore } from '~/stores/auth/user/user.store';
 import { ArrowLeftCircle, Plus } from 'lucide-vue-next'
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 import type { IDevice } from '~/stores/device/model/device.model';
