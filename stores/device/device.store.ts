@@ -39,6 +39,11 @@ export const useDeviceStore = defineStore({
     minMaxconsumptionApiState: ApiResponseState.NULL,
     minMaxconsumptionApiFailure: { message: "" },
 
+    // Selected Device Min Max consumption
+    selectedDeviceMinMaxConsumption: { min: 0, max: 0, sum: 0 },
+    selectedDeviceMinMaxConsumptionApiState: ApiResponseState.NULL,
+    selectedDeviceMinMaxConsumptionApiFailure: { message: "" },
+
     //NEW DEVICE
     newDeviceApiState: ApiResponseState.NULL,
     newDeviceApiFailure: { message: "" },
@@ -219,7 +224,7 @@ export const useDeviceStore = defineStore({
     },
 
 
-    async getMonthlyMinMaxConsumption(startDate: string, endDate: string) {
+    async getMinMaxConsumption(startDate: string, endDate: string) {
       try {
 
         const orgId = "hXR7sQI3FI" //TODO!: MUST TAKE THIS FROM THE USER'S ACCOUNT
@@ -242,6 +247,31 @@ export const useDeviceStore = defineStore({
       } catch (error: any) {
         this.minMaxconsumptionApiFailure.message = error.message;
         this.minMaxconsumptionApiState = ApiResponseState.FAILED;
+      }
+    },
+
+    async getDeviceMinMaxConsumption(deviceId:string,startDate: string, endDate: string) {
+      try {
+
+        this.selectedDeviceMinMaxConsumptionApiState = ApiResponseState.LOADING;
+        const queryString = new URLSearchParams({ id: deviceId, startDate, endDate }).toString();
+        const data = await useStoreFetchRequest(`/api/device/consumption/by/device/sum?${queryString}`, 'GET');
+
+        this.selectedDeviceMinMaxConsumptionApiState = ApiResponseState.SUCCESS;
+
+        // Assign data once successful
+        if ((data as any).success) {
+          this.selectedDeviceMinMaxConsumption = {
+            max: (data as any).data[0].max_consumption_change,
+            min: (data as any).data[0].min_consumption_change,
+            sum: (data as any).data[0].sum_consumption_change
+          }
+        }
+
+
+      } catch (error: any) {
+        this.selectedDeviceMinMaxConsumptionApiFailure.message = error.message;
+        this.selectedDeviceMinMaxConsumptionApiState = ApiResponseState.FAILED;
       }
     },
 
@@ -493,6 +523,10 @@ export const useDeviceStore = defineStore({
     isGettingDeviceMinMaxConsumption: (state) => state.minMaxconsumptionApiState === ApiResponseState.LOADING,
     failed_DeviceMinMaxConsumption: (state) => state.minMaxconsumptionApiState === ApiResponseState.FAILED,
     success_DeviceMinMaxConsumption: (state) => state.minMaxconsumptionApiState === ApiResponseState.SUCCESS,
+
+    loading_SelectedDeviceMinMaxConsumption: (state) => state.selectedDeviceMinMaxConsumptionApiState === ApiResponseState.LOADING,
+    failed_SelectedDeviceMinMaxConsumption: (state) => state.selectedDeviceMinMaxConsumptionApiState === ApiResponseState.FAILED,
+    success_SelectedDeviceMinMaxConsumption: (state) => state.selectedDeviceMinMaxConsumptionApiState === ApiResponseState.SUCCESS,
 
     isGettingDeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.LOADING,
     failed_DeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.FAILED,

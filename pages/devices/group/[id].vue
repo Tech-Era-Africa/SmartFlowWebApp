@@ -49,8 +49,7 @@
                                     <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }">
                                     </SingleDeviceMonitoring>
                                     <WaterConsumptionChart :option="consumptionChart"></WaterConsumptionChart>
-                                    <ConsumptionStats
-                                        :option="{ consumption: deviceStore.consumption, deviceId: deviceStore.selectedDevice.objectId }">
+                                    <ConsumptionStats :option="consumptionStatOption">
                                     </ConsumptionStats>
                                     <TotalPayableBillWidget
                                         :option="{ consumption: deviceStore.consumption, currency: 'GHC', device: deviceStore.selectedDevice }">
@@ -118,6 +117,7 @@ const deviceStore = useDeviceStore()
 const billStore = useBillStore()
 const groupId = useRoute().params.id
 
+const consumptionStatOption = ref<{ deviceId: string, title?: string, isLoading?: boolean, min: number, max: number, sum: number }>({} as any) //!TODO:IMPELEMENT THIS PROPERLY
 
 onBeforeMount(() => {
     deviceStore.getDevicesByGroup(groupId.toString());
@@ -131,7 +131,7 @@ const handleOnSheetDialogOpen = (isOpen: boolean) => {
     isSheetDialogueOpen.value = isOpen
 
     // Clear the selected device when the modal closes
-    if(!isOpen){
+    if (!isOpen) {
         deviceStore.selectedDevice = {} as IDevice //!TODO: MIGHT NEED TO IMPLEMENT THIS PROPERLY
     }
 }
@@ -149,7 +149,7 @@ const openSheetDrawer = async (device: IDevice) => {
 
     deviceStore.selectDevice(device)
 
-    // deviceStore.getMonthlyMinMaxConsumption(device.objectId)
+    // deviceStore.getMinMaxConsumption(device.objectId)
     billStore.getCurrentPaidBills(device.objectId)
     // controlStore.toggleDeviceDrawer()
 }
@@ -168,7 +168,22 @@ watchEffect(async () => {
     const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
     if (deviceStore.selectedDevice.objectId) {
+
+        // Get chart data and update
         consumptionChart.value.chartSeries = await deviceStore.getDeviceConsumptionTrend(deviceStore.selectedDevice.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
+
+        // Get consumption stats
+        await deviceStore.getDeviceMinMaxConsumption(deviceStore.selectedDevice.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
+        if (deviceStore.success_SelectedDeviceMinMaxConsumption) {
+            consumptionStatOption.value = {
+                isLoading: deviceStore.isGettingDeviceMinMaxConsumption,
+                deviceId: deviceStore.selectedDevice.objectId,
+                min: deviceStore.selectedDeviceMinMaxConsumption.min,
+                max: deviceStore.selectedDeviceMinMaxConsumption.max,
+                sum: deviceStore.selectedDeviceMinMaxConsumption.sum,
+
+            }
+        }
     }
 
 })

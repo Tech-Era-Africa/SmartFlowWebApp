@@ -12,21 +12,21 @@
                 <p class="text-gray-500 font-medium">Maximal Used</p>
                 <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
                 <template v-else>
-                    <p class="text-xl font-bold">{{useUseCubicToLitre(deviceStore.minMaxconsumption.max)}}L</p>
+                    <p class="text-xl font-bold">{{useUseCubicToLitre(+option.max)}}L</p>
                 </template>
             </div>
             <div class="flex justify-between items-center">
                 <p class="text-gray-500 font-medium">Minimal Used</p>
                 <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
                 <template v-else>
-                    <p class="text-xl font-bold">{{useUseCubicToLitre(deviceStore.minMaxconsumption.min)}}L</p>
+                    <p class="text-xl font-bold">{{useUseCubicToLitre(+option.min)}}L</p>
                 </template>
             </div>
             <div class="flex justify-between items-center">
                 <p class="text-gray-500 font-medium">Total Used</p>
                 <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
                 <template v-else>
-                    <p class="text-xl font-bold">{{useUseCubicToLitre(deviceStore.minMaxconsumption.sum)}}L</p>
+                    <p class="text-xl font-bold">{{useUseCubicToLitre(+option.sum)}}L</p>
                 </template>
 
             </div>
@@ -35,19 +35,17 @@
 </template>
 <script setup lang="ts">
 import type { PropType } from 'vue';
-import { useDeviceStore } from '~/stores/device/device.store';
 import { Loader2 } from 'lucide-vue-next'
 
 const emits = defineEmits(['onDateChanged'])
 
 const props = defineProps({
     option: {
-        type: Object as PropType<{ deviceId:string, consumption:number, title?:string, isLoading?:boolean }>,
+        type: Object as PropType<{ title?:string, isLoading?:boolean, max:number, min:number, sum:number }>,
         required: true
     },
 })
 
-const deviceStore = useDeviceStore()
 
 const onDateChanged = (date: any) => {
     emits('onDateChanged', date)

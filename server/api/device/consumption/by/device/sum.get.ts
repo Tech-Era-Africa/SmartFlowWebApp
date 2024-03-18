@@ -13,7 +13,7 @@ export default defineEventHandler(async(event) =>  {
         if(!endDate) throw Error("End date required")
 
         const baseUrl = useRuntimeConfig().INFLUX_SERVER_BASE_URL
-        const res= await $fetch(`${baseUrl}/consumption/trend/change/by/device`,{
+        const res= await $fetch(`${baseUrl}/consumption/sum/change/by/device`,{
             method : "GET",
             query:{
                 deviceId : id,

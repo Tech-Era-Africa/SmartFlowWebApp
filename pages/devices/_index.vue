@@ -142,7 +142,7 @@ await deviceStore.getDevicesByUser(userStore?.currentUser!.objectId);
 const openDeviceDrawer = async (device: IDevice) => {
     // Update the device store
     deviceStore.selectDevice(device)
-    // deviceStore.getMonthlyMinMaxConsumption(device.objectId)
+    // deviceStore.getMinMaxConsumption(device.objectId)
     billStore.getCurrentPaidBills(device.objectId)
     controlStore.toggleDeviceDrawer()
 }
