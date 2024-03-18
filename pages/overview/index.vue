@@ -14,7 +14,7 @@
                         <Stat
                             :option="{ title: 'Smart Credits', value: `GHC ${billingStore.accountCredit - deviceStore.sumTotalUsageFromDevices()}`, clearBg: true, isLoading: billingStore.loading_AccountCredit || deviceStore.isGettingDevices, hasError: billingStore.failed_AccountCredit }">
                             <div class="text-right">
-                                <Button class="btn btn-sm btn-outline flex gap-2 items-center">Top Up <Icon
+                                <Button disabled class="cursor-not-allowed btn btn-sm btn-outline flex gap-2 items-center">Top Up <Icon
                                         name="material-symbols:arrow-forward-rounded"></Icon></Button>
                             </div>
 

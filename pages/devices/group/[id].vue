@@ -51,7 +51,7 @@
                                     <WaterConsumptionChart :option="consumptionChart"></WaterConsumptionChart>
                                     <ConsumptionStats :option="consumptionStatOption">
                                     </ConsumptionStats>
-                                    <TotalPayableBillWidget
+                                    <!-- <TotalPayableBillWidget
                                         :option="{ consumption: deviceStore.consumption, currency: 'GHC', device: deviceStore.selectedDevice }">
                                         <div class="text-right">
                                             <p class="text-xs text-gray-500">Consumption</p>
@@ -62,7 +62,7 @@
                             }}L</span>
                                             </p>
                                         </div>
-                                    </TotalPayableBillWidget>
+                                    </TotalPayableBillWidget> -->
                                     <!-- <UsersTable :option="usersDataTableOption"></UsersTable>
             <BillingTable :option="billingDataTableOption"></BillingTable> -->
                                 </template>
