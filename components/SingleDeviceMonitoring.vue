@@ -11,14 +11,14 @@
             <div class="w-full flex flex-col gap-2">
                 <div class="flex gap-2">
                     <Stat :option="{ title: 'Status', value: `${useUseStatusName(option.device.status)}` }"></Stat>
-                    <Stat :option="{ title: 'Users', value: '0' }"></Stat>
+                    <Stat :option="{ title: 'Usage', value: option.device.usageCredit.toFixed(2) }"></Stat>
                 </div>
                 <div class="flex gap-2">
                     <Stat :option="{ title: 'Battery', value: `${option.device.battery}` }"></Stat>
                     <Stat :option="{ title: 'Valve', value: option.device.valveIsOpen ? 'Open' : 'Closed' }"></Stat>
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Consumption', value: `${useUseCubicToLitre(option.device.consumption)}L` }">
+                    <Stat :option="{ title: 'Total Consumption', value: `${useUseCubicToLitre(option.device.lastTotalConsumption)}L` }">
                     </Stat>
                 </div>
 

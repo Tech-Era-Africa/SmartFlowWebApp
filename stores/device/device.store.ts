@@ -24,6 +24,11 @@ export const useDeviceStore = defineStore({
     consumptionTrendsApiState: ApiResponseState.NULL,
     consumptionTrendsApiFailure: { message: "" },
 
+     // SELECTED DEVICE CONSUMPTION TREND STATE
+     selectedDeviceConsumptionTrend: [],
+     selectedDeviceConsumptionTrendsApiState: ApiResponseState.NULL,
+     selectedDeviceConsumptionTrendsApiFailure: { message: "" },
+
     // Current consumption
     consumption: 0,
     consumptionApiState: ApiResponseState.NULL,
@@ -219,7 +224,7 @@ export const useDeviceStore = defineStore({
 
         const orgId = "hXR7sQI3FI" //TODO!: MUST TAKE THIS FROM THE USER'S ACCOUNT
         this.minMaxconsumptionApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ id : orgId, startDate, endDate }).toString();
+        const queryString = new URLSearchParams({ id: orgId, startDate, endDate }).toString();
         const data = await useStoreFetchRequest(`/api/device/consumption/by/org?${queryString}`, 'GET');
 
         this.minMaxconsumptionApiState = ApiResponseState.SUCCESS;
@@ -242,22 +247,23 @@ export const useDeviceStore = defineStore({
 
 
 
-    async getDeviceConsumptionTrend(deviceId: string, year?: number) {
-      try {
+    //! DEPRECATED
+    // async getDeviceConsumptionTrend(deviceId: string, year?: number) {
+    //   try {
 
-        this.consumptionTrendsApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ deviceId, year: year?.toString() ?? new Date(Date.now()).getFullYear().toString() }).toString();
-        const data = await useStoreFetchRequest(`/api/device/consumption?${queryString}`, 'GET');
+    //     this.consumptionTrendsApiState = ApiResponseState.LOADING;
+    //     const queryString = new URLSearchParams({ deviceId, year: year?.toString() ?? new Date(Date.now()).getFullYear().toString() }).toString();
+    //     const data = await useStoreFetchRequest(`/api/device/consumption?${queryString}`, 'GET');
 
-        this.consumptionTrendsApiState = ApiResponseState.SUCCESS;
-        this.deviceConsumptionTrend = (data as []).map(consumption => parseFloat((consumption * 1000).toFixed(2))) as []
+    //     this.consumptionTrendsApiState = ApiResponseState.SUCCESS;
+    //     this.deviceConsumptionTrend = (data as []).map(consumption => parseFloat((consumption * 1000).toFixed(2))) as []
 
-      } catch (error: any) {
-        this.deviceConsumptionTrend = [] //Default to empty
-        this.consumptionTrendsApiFailure.message = error.message;
-        this.consumptionTrendsApiState = ApiResponseState.FAILED;
-      }
-    },
+    //   } catch (error: any) {
+    //     this.deviceConsumptionTrend = [] //Default to empty
+    //     this.consumptionTrendsApiFailure.message = error.message;
+    //     this.consumptionTrendsApiState = ApiResponseState.FAILED;
+    //   }
+    // },
 
 
     async getAllDevicesConsumptionTrend(startDate: string, endDate: string) {
@@ -265,15 +271,15 @@ export const useDeviceStore = defineStore({
 
         const orgId = "hXR7sQI3FI"
         this.consumptionTrendsApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ id : orgId, startDate, endDate }).toString();
+        const queryString = new URLSearchParams({ id: orgId, startDate, endDate }).toString();
         const data = await useStoreFetchRequest(`/api/device/consumption/all?${queryString}`, 'GET');
 
         this.consumptionTrendsApiState = ApiResponseState.SUCCESS;
 
-        const keys:any = {
-          "max_consumption_change" : "Max Consumption",
-          "min_consumption_change" : "Min Consumption",
-          "total_consumption_change" : "Total Consumption"
+        const keys: any = {
+          "max_consumption_change": "Max Consumption",
+          "min_consumption_change": "Min Consumption",
+          "total_consumption_change": "Total Consumption"
         }
 
         // TODO!: MUST GIVE THIS THE RIGHT TYPE
@@ -311,7 +317,7 @@ export const useDeviceStore = defineStore({
       }
     },
 
-    async getDeviceSummaryConsumptionTrend(clusterId:string, startDate: string, endDate: string) {
+    async getDeviceSummaryConsumptionTrend(clusterId: string, startDate: string, endDate: string) {
       try {
 
         this.totalConsumptionByClusterApiState = ApiResponseState.LOADING;
@@ -320,14 +326,14 @@ export const useDeviceStore = defineStore({
 
         this.totalConsumptionByClusterApiState = ApiResponseState.SUCCESS;
 
-        
+
         const key = "Total Consumption"
 
         // TODO!: MUST GIVE THIS THE RIGHT TYPE
         const groupedData = (data as any).data.reduce((acc: any, entry: any) => {
           const { date_bin, total_consumption_change } = entry;
           // If the key doesn't exist in the accumulator, create it
-         
+
           if (!acc[key]) {
             acc[key] = {
               name: key,
@@ -366,7 +372,7 @@ export const useDeviceStore = defineStore({
         const groupedData = (data as any).data.reduce((acc: any, entry: any) => {
           const { date_bin, total_consumption_change } = entry;
           // If the key doesn't exist in the accumulator, create it
-         
+
           if (!acc[key]) {
             acc[key] = {
               name: key,
@@ -391,12 +397,55 @@ export const useDeviceStore = defineStore({
       }
     },
 
+    async getDeviceConsumptionTrend(deviceId: string, startDate: string, endDate: string): Promise<any> {
+      try {
+        this.selectedDeviceConsumptionTrendsApiState = ApiResponseState.LOADING;
+        const queryString = new URLSearchParams({ id: deviceId, startDate, endDate }).toString(); //TODO!: MAKE MORE DYNAMIC
+        const data = await useStoreFetchRequest(`/api/device/consumption/by/device?${queryString}`, 'GET');
+
+        const key = "Total Consumption"
+
+        // TODO!: MUST GIVE THIS THE RIGHT TYPE
+        const groupedData = (data as any).data.reduce((acc: any, entry: any) => {
+          const { date_bin, total_consumption_change } = entry;
+          // If the key doesn't exist in the accumulator, create it
+
+          if (!acc[key]) {
+            acc[key] = {
+              name: key,
+              data: []
+            };
+          }
+
+          // Push the consumption data to the corresponding key in the accumulator
+          acc[key].data.push({
+            x: date_bin,
+            y: total_consumption_change
+          });
+
+          return acc;
+        }, {});
+
+        const consumptionTrend = Object.values(groupedData)
+
+        this.selectedDeviceConsumptionTrendsApiState = ApiResponseState.SUCCESS;
+        this.selectedDeviceConsumptionTrend = consumptionTrend as any
+        return consumptionTrend
+
+      } catch (error: any) {
+        this.selectedDeviceConsumptionTrend = [] //Default to empty
+        this.selectedDeviceConsumptionTrendsApiFailure.message = error.message;
+        this.selectedDeviceConsumptionTrendsApiState = ApiResponseState.FAILED;
+        return []
+      }
+    },
+
 
     async selectDevice(device: IDevice) {
       this.selectedDevice = device
 
-      // Get the consumption trend data
-      this.getDeviceConsumptionTrend(device.objectId)
+      // // Get the consumption trend data
+      // this.getDeviceConsumptionTrend(device.objectId, startDate, endDate)
 
       // Get the current consumption
       this.getCurrentDeviceConsumption(device.objectId)
@@ -432,6 +481,10 @@ export const useDeviceStore = defineStore({
     isGettingConsumptionTrend: (state) => state.consumptionTrendsApiState === ApiResponseState.LOADING,
     failed_ConsumptionTrend: (state) => state.consumptionTrendsApiState === ApiResponseState.FAILED,
     success_ConsumptionTrend: (state) => state.consumptionTrendsApiState === ApiResponseState.SUCCESS,
+
+    loading_SelectedDeviceConsumptionTrend: (state) => state.selectedDeviceConsumptionTrendsApiState === ApiResponseState.LOADING,
+    failed_SelectedDeviceConsumptionTrend: (state) => state.selectedDeviceConsumptionTrendsApiState === ApiResponseState.FAILED,
+    success_SelectedDeviceConsumptionTrend: (state) => state.selectedDeviceConsumptionTrendsApiState === ApiResponseState.SUCCESS,
 
     isGettingDeviceConsumption: (state) => state.consumptionApiState === ApiResponseState.LOADING,
     failed_DeviceConsumption: (state) => state.consumptionApiState === ApiResponseState.FAILED,

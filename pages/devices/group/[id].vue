@@ -6,10 +6,13 @@
                 <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-5">
                     <div class="flex flex-row justify-between gap-2 items-center">
                         <div class="flex gap-2 items-center">
-                            <Button variant="outline" @click="useRouter().back()"><ArrowLeftCircle></ArrowLeftCircle></Button>
-                            <h1 class="font-bold text-lg">Clusters/{{ !deviceStore.isGettingDevices ? deviceStore.deviceGroupName : '' }}</h1>
+                            <Button variant="outline" @click="useRouter().back()">
+                                <ArrowLeftCircle></ArrowLeftCircle>
+                            </Button>
+                            <h1 class="font-bold text-lg">Clusters/{{ !deviceStore.isGettingDevices ?
+                                deviceStore.deviceGroupName : '' }}</h1>
                         </div>
-                        
+
                         <div class="flex items-center gap-4">
                             <!-- <Dialog>
                                 <DialogTrigger>
@@ -26,7 +29,8 @@
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
-                                    <NewDevice :cluster-id="groupId.toString()" @update:open="handleNewDeviceDialogOpenUpdate"></NewDevice>
+                                    <NewDevice :cluster-id="groupId.toString()"
+                                        @update:open="handleNewDeviceDialogOpenUpdate"></NewDevice>
                                 </DialogContent>
                             </Dialog>
                         </div>
@@ -55,8 +59,8 @@
                                             <p class="font-bold flex justify-end items-center gap-2"><span
                                                     v-if="deviceStore.isGettingDeviceConsumption"
                                                     class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
-                                        useUseCubicToLitre(deviceStore.consumption)
-                                    }}L</span>
+                                useUseCubicToLitre(deviceStore.consumption)
+                            }}L</span>
                                             </p>
                                         </div>
                                     </TotalPayableBillWidget>
@@ -125,18 +129,26 @@ onBeforeMount(() => {
 const isSheetDialogueOpen = ref(false)
 const handleOnSheetDialogOpen = (isOpen: boolean) => {
     isSheetDialogueOpen.value = isOpen
+
+    // Clear the selected device when the modal closes
+    if(!isOpen){
+        deviceStore.selectedDevice = {} as IDevice //!TODO: MIGHT NEED TO IMPLEMENT THIS PROPERLY
+    }
 }
 // end of SHEET CONTROL
 
 // NEW DEVICE DIALOG CONTROL
 const isNewDeviceDialogOpen = ref(false)
-const handleNewDeviceDialogOpenUpdate = (state:boolean)=> isNewDeviceDialogOpen.value = state
+const handleNewDeviceDialogOpenUpdate = (state: boolean) => isNewDeviceDialogOpen.value = state
 // end of NEW DEVICE DIALOG CONTROL
 
 const openSheetDrawer = async (device: IDevice) => {
     isSheetDialogueOpen.value = true
-    // Update the device store
+
+
+
     deviceStore.selectDevice(device)
+
     // deviceStore.getMonthlyMinMaxConsumption(device.objectId)
     billStore.getCurrentPaidBills(device.objectId)
     // controlStore.toggleDeviceDrawer()
@@ -144,9 +156,21 @@ const openSheetDrawer = async (device: IDevice) => {
 
 const consumptionChart = ref<IWaterConsumptionChart>({
     title: "Total Water Consumption",
-    chartSeries: deviceStore.deviceConsumptionTrend,
-    isLoading: false,
-    success: true,
+    chartSeries: deviceStore.selectedDeviceConsumptionTrend,
+    isLoading: deviceStore.loading_SelectedDeviceConsumptionTrend,
+    success: deviceStore.success_SelectedDeviceConsumptionTrend,
+})
+
+// Watch and load seleted device trends
+watchEffect(async () => {
+    // Update the device store
+    const currentDate = new Date();
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    if (deviceStore.selectedDevice.objectId) {
+        consumptionChart.value.chartSeries = await deviceStore.getDeviceConsumptionTrend(deviceStore.selectedDevice.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
+    }
+
 })
 
 
