@@ -25,7 +25,7 @@ export const usePaymentStore = defineStore({
         paymentOption.reference = `${paymentOption.billId}${Date.now()}`
 
         const data: any = await useStoreFetchRequest(`https://api.paystack.co/transaction/initialize`, 'POST', paymentOption, {
-          "Authorization": useRuntimeConfig().PAYSTACK_BEARER_TOKEN,
+          "Authorization": "Bearer sk_live_60441090c21e322edfd443aff8d065265097fc72", //TODO!: NEED TO FIGURE THIS OUT
           "Content-Type": "application/json"
         });
 
@@ -47,7 +47,7 @@ export const usePaymentStore = defineStore({
         this.verifyTxApiState = ApiResponseState.LOADING;
 
         const data: any = await useStoreFetchRequest(`https://api.paystack.co/transaction/verify/${paymentRef}`, 'GET', null, {
-          "Authorization": useRuntimeConfig().PAYSTACK_BEARER_TOKEN,
+          "Authorization": "Bearer sk_live_60441090c21e322edfd443aff8d065265097fc72",
           "Content-Type": "application/json"
         });
   

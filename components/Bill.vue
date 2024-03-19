@@ -101,10 +101,10 @@
 
 <script setup lang="ts">
 
-import type { IBillOption } from '~/server/api/bill/model/bill.model';
 import { Status } from '~/utils/class/status.class';
 import { BillType } from '~/utils/class/billType.class';
 import { usePaymentStore } from '~/stores/payment/payment.store';
+import type { IBillOption } from '~/stores/bill/model/bill.model';
 
 
 const paymentStore = usePaymentStore()
@@ -133,4 +133,4 @@ const isPaid = computed(()=> props.option.bill.status.objectId == 'vcDFmQoFkD')
 
 
 
-</script>~/stores/bill/model/bill.model
+</script>

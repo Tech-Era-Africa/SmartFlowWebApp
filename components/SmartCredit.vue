@@ -16,7 +16,8 @@
                             </DialogDescription>
                         </DialogHeader>
                         <div class="grid grid-cols-3 gap-5 my-5">
-                            <Button v-for="option in packages" @click="selectPackage(option)" variant="outline" :class="{'border-green-600 border-solid border-s-4 bg-green-50' : values.amount == option.amount}"
+                            <Button v-for="option in packages" @click="selectPackage(option)" variant="outline"
+                                :class="{ 'border-green-600 border-solid border-s-4 bg-green-50': values.amount == option.amount }"
                                 class="font-bold text-2xl h-20  border-dashed  cursor-pointer">GHC{{
                 option.amount }}</Button>
                         </div>
@@ -30,14 +31,14 @@
                                         <Input
                                             class="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
                                             type="number" placeholder="GHC50" v-bind="componentField"
-                                            :disabled="deviceStore.isAddingNewDevice" />
+                                            :disabled="paymentStore.isInitPayment" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             </FormField>
 
                             <Button type="submit" class="w-full">
-                                <template v-if="deviceStore.isAddingNewDevice">
+                                <template v-if="paymentStore.isInitPayment">
                                     <Loader2 class="animate-spin"></Loader2>
                                 </template>
                                 <span v-else>Top Up</span>
@@ -64,9 +65,11 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { Loader2 } from 'lucide-vue-next'
+import { usePaymentStore } from '~/stores/payment/payment.store';
 
 const deviceStore = useDeviceStore()
 const billingStore = useBillStore()
+const paymentStore = usePaymentStore()
 
 onBeforeMount(() => {
     billingStore.getAccountCredit()
@@ -104,7 +107,18 @@ const { handleSubmit, values, setFieldValue } = useForm({
 const onFormSubmit = handleSubmit(async (values) => handleTopUpSubmission(values))
 //  end of FORM SETTINGS
 
-const handleTopUpSubmission = (values: { amount: number }) => {
+const handleTopUpSubmission = async (values: { amount: number }) => {
 
+    return alert("Contact admin for payment process.")
+
+    const res = await paymentStore.initPayment({
+        amount: 1 * 100,
+        billId: "TOPUP",
+        email: "ronaldnettey360@gmail.com",
+
+    })
+
+    // // Open the new page in a new tab/window
+    window.location.href = res.data.authorization_url
 }
 </script>
