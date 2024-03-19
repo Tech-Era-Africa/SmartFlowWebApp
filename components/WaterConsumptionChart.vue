@@ -1,12 +1,12 @@
 <template>
-    <div class="w-full min-h-[300px] bg-white rounded-xl p-5 flex flex-col gap-2">
+    <div class="w-full max-h-[340px] h-full bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex justify-between items-center">
             <h1 class="font-bold text-lg">{{ option.title ?? 'Water Consumption' }}</h1>
             <DateRangePicker @handle-date-change="onDateChanged"></DateRangePicker>
 
         </div>
-        <div v-if="option.isLoading">
-           <Skeleton></Skeleton>
+        <div v-if="option.isLoading" class="w-full h-full">
+            <Skeleton class="h-full"/>
         </div>
         <template v-else>
             <apexchart :key="chart4Options.series" height="100%" width="100%" :options="chart4Options"

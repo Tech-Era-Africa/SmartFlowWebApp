@@ -1,12 +1,12 @@
 <template>
-  <div class="w-full max-h-[340px] bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
+  <div class="w-full max-h-[340px] h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
     <div class="flex  justify-between items-center">
       <h1 class="font-bold text-lg">Device Clusters</h1>
     </div>
-    <div class="flex-1 flex-grow w-full whitespace- flex gap-2 overflow-x-auto">
+    <div class="flex gap-2 justify-between">
       <template v-if="deviceStore.hasGroupDevices">
-        <NuxtLink :to="`/devices/group/${deviceStore.devicesGroups[0].objectId}`">
-          <Card class="overflow-hidden w-full h-full cursor-pointer">
+        <NuxtLink :to="`/devices/group/${deviceStore.devicesGroups[0].objectId}`" class="w-full">
+          <Card class="overflow-hidden h-full cursor-pointer flex-1">
             <CardHeader class="flex flex-row justify-between items-center w-full">
               <div>
                 <CardTitle>{{ deviceStore.devicesGroups[0].name }}</CardTitle>
@@ -21,7 +21,9 @@
 
             </CardHeader>
             <CardContent class="px-0 h-full">
-              <div v-if="deviceStore.loading_TotalConsumptionByCluster">Loading...</div>
+              <div v-if="deviceStore.loading_TotalConsumptionByCluster">
+                <Skeleton class="h-[100px] m-4" />
+              </div>
               <template v-else>
                 <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
                 </apexchart>
@@ -40,7 +42,7 @@
       </template>
 
       <template v-else-if="deviceStore.loading_DevicesGroup">
-        <p>Loading Clusters...</p>
+        <Skeleton class="h-[340px]" />
       </template>
 
       <template v-else>
@@ -56,7 +58,6 @@
 </template>
 
 <script setup lang="ts">
-import { any } from 'zod';
 import { useDeviceStore } from '~/stores/device/device.store';
 
 
