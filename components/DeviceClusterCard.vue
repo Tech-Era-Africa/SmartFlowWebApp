@@ -26,6 +26,15 @@ const props = defineProps<{
 }>()
 
 const deviceStore = useDeviceStore()
+const chartData = ref()
+
+onBeforeMount(() => {
+    // Get the chart data
+    const currentDate = new Date();
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    chartData.value = deviceStore.getClusterConsumptionTrend(props.option.id, startOfMonth.toISOString(), endOfMonth.toISOString())
+})
 
 // CHART SETTTINGS
 const chart4Options = ref({
@@ -95,13 +104,13 @@ const chart4Options = ref({
 })
 // end of CHART SETTING
 
-// Get the chart data
-const currentDate = new Date();
-const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-deviceStore.getClusterConsumptionTrend(props.option.id, startOfMonth.toISOString(), endOfMonth.toISOString()).then((clusterData) => {
-    // Update the chart
-    chart4Options.value.series = clusterData
+
+
+watchEffect(async() => {
+    // Listens for when there is data in the chartData and sends it to the chart
+    if (chartData.value) {
+        chart4Options.value.series = await chartData.value
+    }
 })
 
 
