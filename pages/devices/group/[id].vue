@@ -5,12 +5,20 @@
             <div class="w-full flex h-full p-2 gap-4">
                 <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-5">
                     <div class="flex flex-row justify-between gap-2 items-center">
-                        <div class="flex gap-2 items-center">
+                        <div class="flex gap-5 items-center">
                             <Button variant="outline" @click="useRouter().back()">
                                 <ArrowLeftCircle></ArrowLeftCircle>
                             </Button>
-                            <h1 class="font-bold text-lg">Clusters/{{ !deviceStore.isGettingDevices ?
-                                deviceStore.deviceGroupName : '' }}</h1>
+                            <div>
+                                <h1 class="text-sm">Cluster</h1>
+                                <Skeleton v-if="deviceStore.isGettingDevices" class="w-500 h-10 rounded-lg"></Skeleton>
+                                <template v-else>
+                                    <h1 class="text-3xl font-extrabold">{{
+                                deviceStore.deviceGroupName }}</h1>
+                                </template>
+
+                            </div>
+
                         </div>
 
                         <div class="flex items-center gap-4">
@@ -41,7 +49,7 @@
                     <template v-if="deviceStore.hasDevices">
                         <Sheet :open="isSheetDialogueOpen" @update:open="handleOnSheetDialogOpen">
                             <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
-                                <DeviceCard :option="{ device }" @click="openSheetDrawer(device)"
+                                <DeviceCard class="cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300" :option="{ device }" @click="openSheetDrawer(device)"
                                     v-for="device in deviceStore.devices"></DeviceCard>
                             </div>
                             <SheetContent class=" bg-white overflow-y-auto md:max-w-[600px] flex flex-col">
@@ -176,7 +184,7 @@ watchEffect(async () => {
         await deviceStore.getDeviceMinMaxConsumption(deviceStore.selectedDevice.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
         if (deviceStore.success_SelectedDeviceMinMaxConsumption) {
             consumptionStatOption.value = {
-                title : "Consumption Stats",
+                title: "Consumption Stats",
                 isLoading: deviceStore.isGettingDeviceMinMaxConsumption,
                 deviceId: deviceStore.selectedDevice.objectId,
                 min: deviceStore.selectedDeviceMinMaxConsumption.min,
