@@ -63,8 +63,8 @@
           <!-- LOADING -->
 
           <template v-if="deviceStore.loading_DevicesGroup">
-            <div class="grid grid-cols-4 gap-10 p-10">
-              <Skeleton class="h-[150px] w-[180px]" v-for="i in 8" />
+            <div class="grid grid-cols-3 gap-10 p-10">
+              <Skeleton class="h-[150px]" v-for="i in 6" />
             </div>
           </template>
           <!-- end of LOADING -->

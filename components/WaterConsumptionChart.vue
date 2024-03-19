@@ -6,7 +6,7 @@
 
         </div>
         <div v-if="option.isLoading">
-            <p>Loading...</p>
+           <Skeleton></Skeleton>
         </div>
         <template v-else>
             <apexchart :key="chart4Options.series" height="100%" width="100%" :options="chart4Options"
