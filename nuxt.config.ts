@@ -29,6 +29,7 @@ export default defineNuxtConfig({
     B4A_MASTER_KEY: process.env.NUXT_B4A_MASTER_KEY,
     MG_API_KEY: process.env.NUXT_MG_API_KEY,
     INFLUX_SERVER_BASE_URL: process.env.NUXT_INFLUX_SERVER_BASE_URL,
+    PAYSTACK_BEARER_TOKEN : process.env.NUXT_PAYSTACK_BEARER_TOKEN,
     public: {
       API_BASE_URL: process.env.NUXT_PUBLIC_API_BASE_URL,
       APP_BASE_URL : process.env.NUXT_PUBLIC_APP_BASE_URL,

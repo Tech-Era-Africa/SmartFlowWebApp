@@ -10,22 +10,7 @@
                     <ConsumptionStats @on-date-changed="handleWaterConsumptionStatsDateChanged"
                         :option="consumptionStatOption" class="h-full">
                     </ConsumptionStats>
-                    <div class="flex gap-2">
-                        <Stat
-                            :option="{ title: 'Smart Credits', value: `GHC ${billingStore.accountCredit - deviceStore.sumTotalUsageFromDevices()}`, clearBg: true, isLoading: billingStore.loading_AccountCredit || deviceStore.isGettingDevices, hasError: billingStore.failed_AccountCredit }">
-                            <div class="text-right">
-                                <Button disabled class="cursor-not-allowed btn btn-sm btn-outline flex gap-2 items-center">Top Up <Icon
-                                        name="material-symbols:arrow-forward-rounded"></Icon></Button>
-                            </div>
-
-                            <template #bottom>
-                                <div class="mt-2">
-                                    <p class="text-muted-foreground text-xs">Usage: {{
-                            deviceStore.sumTotalUsageFromDevices().toFixed(2) }}</p>
-                                </div>
-                            </template>
-                        </Stat>
-                    </div>
+                    <SmartCredit></SmartCredit>
                 </div>
 
             </div>
@@ -75,7 +60,6 @@ onBeforeMount(() => {
 
     deviceStore.getAllDevicesConsumptionTrend(startOfMonth.toISOString(), endOfMonth.toISOString())
     deviceStore.getMinMaxConsumption(startOfMonth.toISOString(), endOfMonth.toISOString())
-    billingStore.getAccountCredit()
 
 })
 
