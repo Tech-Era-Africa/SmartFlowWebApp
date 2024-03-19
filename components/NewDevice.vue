@@ -2,13 +2,24 @@
     <div class="flex  justify-between items-center">
         <h1 class="font-bold text-lg">New Device</h1>
     </div>
-    <div class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between transition ease-in-out delay-150">
+    <div class="w-full relative bg-blue-50 rounded-xl p-5 flex flex-col justify-between transition ease-in-out delay-150">
+        <div class="absolute left-5 top-5 flex flex-col gap-5">
+            <div>
+                <p class="text-xs font-bold text-black">EUI</p> 
+            <p class="text-muted-foreground text-xs">{{ values.eui }}</p>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-black">Device Id</p> 
+            <p class="text-muted-foreground text-xs">{{ values.deviceId }}</p>
+            </div>
+          
+        </div>
         <div class="w-40 mx-auto ">
             <img class="w-full h-full object-cover" src="/img/lorawan.png" />
         </div>
 
         <div class="text-center">
-            <h1 class="font-bold text-xl">{{ newDevice.name }}</h1>
+            <h1 class="font-bold text-xl">{{values.deviceName }}</h1>
         </div>
     </div>
     <form class="w-full space-y-6" @submit="onFormSubmit">
@@ -97,12 +108,13 @@
 </template>
 
 <script setup lang="ts">
-import type { IDevice } from '~/server/api/device/model/device.model';
+
 import { useDeviceStore } from '~/stores/device/device.store';
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { Loader2 } from 'lucide-vue-next'
+import type { IDevice } from '~/stores/device/model/device.model';
 
 const props = defineProps<{ clusterId: string }>()
 const emits = defineEmits(['update:open'])
@@ -135,10 +147,10 @@ const formSchema = toTypedSchema(z.object({
 
 }))
 
-const { handleSubmit } = useForm({
+const { handleSubmit, values } = useForm({
     validationSchema: formSchema,
 })
 
 const onFormSubmit = handleSubmit(async (values) => addNewDevice(values))
 //  end of FORM SETTINGS
-</script>~/stores/device/model/device.model
+</script>
