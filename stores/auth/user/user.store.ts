@@ -55,10 +55,11 @@ export const useUserStore = defineStore('user', {
           // TODO!: MUST HANDLE ERROR CASES HERE
           await this.getUserOrganisations()
 
+          // Check if there is a successful organisation and set a default
           if (this.success_UserOrganisations && this.organisations.length > 0) {
             // Select a default organisation
             this.selectedOrganisation = this.organisations[0]
-            console.log(this.selectedOrganisation)
+            return;
           }
 
         } catch (e) {
