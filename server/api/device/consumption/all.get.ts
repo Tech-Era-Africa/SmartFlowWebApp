@@ -22,8 +22,6 @@ export default defineEventHandler((event) => new Promise(async (resolve, reject)
             }
           })
 
-          console.log(id)
-
        return resolve(res)
 
     } catch (error:any) {

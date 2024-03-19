@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { RoleModel, type IRole } from '~/stores/auth/user/model/role.model';
 import { UserModel, type User } from '~/stores/auth/user/model/user.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
+import type { IOrganisation } from './model/organisation.model';
 
 
 export const useUserStore = defineStore('user', {
@@ -22,7 +23,13 @@ export const useUserStore = defineStore('user', {
     // USER
     apiRoleState: ApiResponseState.NULL,
     apiRoleFailure: { message: "" },
-    roles: [] as IRole[]
+    roles: [] as IRole[],
+
+    // ORGANISATIONS
+    apiUserOrganisationState: ApiResponseState.NULL,
+    apiUserOrganisationFailure: { message: "" },
+    organisations: [] as IOrganisation[],
+    selectedOrganisation: {} as IOrganisation
 
   }),
   actions: {
@@ -33,10 +40,8 @@ export const useUserStore = defineStore('user', {
     },
 
     async getCurrentUser() {
-      console.log("Getting current user.")
 
       if (this.token) {
-        console.log("Found token")
         try {
           //GET CURRENT USER
           // SERVER LOGIC
@@ -45,6 +50,16 @@ export const useUserStore = defineStore('user', {
 
           //DATA
           this.currentUser = UserModel.fromMap(data).user
+
+          // Get the user's organisations
+          // TODO!: MUST HANDLE ERROR CASES HERE
+          await this.getUserOrganisations()
+
+          if (this.success_UserOrganisations && this.organisations.length > 0) {
+            // Select a default organisation
+            this.selectedOrganisation = this.organisations[0]
+            console.log(this.selectedOrganisation)
+          }
 
         } catch (e) {
           // CLEAR ANY EXISTING USER DATA
@@ -77,6 +92,27 @@ export const useUserStore = defineStore('user', {
       }
     },
 
+    async getUserOrganisations() {
+
+      try {
+        this.apiUserOrganisationState = ApiResponseState.LOADING;
+
+        // SERVER LOGIC
+        const queryString = new URLSearchParams({ userId: this.currentUser?.objectId! }).toString();
+        const data = await useStoreFetchRequest(`/api/auth/user/organisation?${queryString}`, 'GET')
+        // end of SERVER LOGIC
+
+        // Data
+        this.apiUserOrganisationState = ApiResponseState.SUCCESS;
+        this.organisations = data as IOrganisation[]
+
+      } catch (error) {
+        // Handle login error
+        this.apiUserOrganisationFailure.message = 'Server error! Could not load user organisations';
+        this.apiUserOrganisationState = ApiResponseState.FAILED;
+      }
+    },
+
     resetInviteState() {
       this.apiInviteNewUserState = ApiResponseState.NULL;
     },
@@ -88,7 +124,7 @@ export const useUserStore = defineStore('user', {
         this.apiInviteNewUserState = ApiResponseState.LOADING;
 
         // SERVER LOGIC
-        const data = await useStoreFetchRequest('/api/auth/user/invite','POST', {
+        const data = await useStoreFetchRequest('/api/auth/user/invite', 'POST', {
           method: 'POST',
           body: { ...newUser.user, isLink }
         })
@@ -211,5 +247,10 @@ export const useUserStore = defineStore('user', {
     loading_GettingAllRoles: (state) => state.apiRoleState == ApiResponseState.LOADING,
     failed_GettingAllRoles: (state) => state.apiRoleState == ApiResponseState.FAILED,
     success_GettingAllRoles: (state) => state.apiRoleState == ApiResponseState.SUCCESS,
+
+    // ORGANISATIONS
+    loading_UserOrganisations: (state) => state.apiUserOrganisationState == ApiResponseState.LOADING,
+    failed_UserOrganisations: (state) => state.apiUserOrganisationState == ApiResponseState.FAILED,
+    success_UserOrganisations: (state) => state.apiUserOrganisationState == ApiResponseState.SUCCESS,
   }
 })
