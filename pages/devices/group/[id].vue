@@ -44,7 +44,7 @@
                                 <DeviceCard :option="{ device }" @click="openSheetDrawer(device)"
                                     v-for="device in deviceStore.devices"></DeviceCard>
                             </div>
-                            <SheetContent class=" bg-white overflow-y-auto md:max-w-[600px]">
+                            <SheetContent class=" bg-white overflow-y-auto md:max-w-[600px] flex flex-col">
                                 <template v-if="deviceStore.selectedDevice.objectId">
                                     <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }">
                                     </SingleDeviceMonitoring>
@@ -155,7 +155,7 @@ const openSheetDrawer = async (device: IDevice) => {
 }
 
 const consumptionChart = ref<IWaterConsumptionChart>({
-    title: "Total Water Consumption",
+    title: "Consumption Trend",
     chartSeries: deviceStore.selectedDeviceConsumptionTrend,
     isLoading: deviceStore.loading_SelectedDeviceConsumptionTrend,
     success: deviceStore.success_SelectedDeviceConsumptionTrend,
@@ -176,6 +176,7 @@ watchEffect(async () => {
         await deviceStore.getDeviceMinMaxConsumption(deviceStore.selectedDevice.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
         if (deviceStore.success_SelectedDeviceMinMaxConsumption) {
             consumptionStatOption.value = {
+                title : "Consumption Stats",
                 isLoading: deviceStore.isGettingDeviceMinMaxConsumption,
                 deviceId: deviceStore.selectedDevice.objectId,
                 min: deviceStore.selectedDeviceMinMaxConsumption.min,
