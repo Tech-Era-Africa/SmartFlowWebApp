@@ -99,10 +99,12 @@ const chart4Options = ref({
 const currentDate = new Date();
 const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-const clusterData = await deviceStore.getClusterConsumptionTrend(props.option.id, startOfMonth.toISOString(), endOfMonth.toISOString())
+deviceStore.getClusterConsumptionTrend(props.option.id, startOfMonth.toISOString(), endOfMonth.toISOString()).then((clusterData) => {
+    // Update the chart
+    chart4Options.value.series = clusterData
+})
 
-// Update the chart
-chart4Options.value.series = clusterData
+
 
 
 </script>
