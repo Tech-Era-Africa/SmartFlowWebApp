@@ -74,7 +74,7 @@ export const useDeviceStore = defineStore({
     async addNewDevice(device: IDevice, clusterId: string) {
       try {
         this.newDeviceApiState = ApiResponseState.LOADING;
-        const data = await useStoreFetchRequest('/api/device', 'POST', { device, ownerId: useUserStore().currentUser?.objectId!, orgId: useUserStore().currentUser?.orgId, clusterId });
+        const data = await useStoreFetchRequest('/api/device', 'POST', { device, ownerId: useUserStore().currentUser?.objectId!, orgId: useUserStore().selectedOrganisation.objectId, clusterId });
         this.newDeviceApiState = ApiResponseState.SUCCESS;
         console.log(data)
         setTimeout(() => {
@@ -90,8 +90,7 @@ export const useDeviceStore = defineStore({
     async addNewDeviceCluster(name: string) {
       try {
         this.newClusterApiState = ApiResponseState.LOADING;
-        // TODO!: MAKE ORG DYNAMIC
-        const data = await useStoreFetchRequest('/api/device/cluster', 'POST', { name, createdBy: useUserStore().currentUser?.objectId!, orgId: useUserStore().currentUser?.orgId });
+        const data = await useStoreFetchRequest('/api/device/cluster', 'POST', { name, createdBy: useUserStore().currentUser?.objectId!, orgId: useUserStore().selectedOrganisation.objectId });
         this.newClusterApiState = ApiResponseState.SUCCESS;
         this.devicesGroups.push(DeviceGroupModel.fromMap({
           userDeviceGroup: data,
@@ -115,6 +114,24 @@ export const useDeviceStore = defineStore({
         this.devicesGroupApiState = ApiResponseState.LOADING;
 
         const data = await useStoreFetchRequest(`/api/device/group/${useUserStore().currentUser?.objectId!}`, 'GET');
+
+        this.devicesGroupApiState = ApiResponseState.SUCCESS;
+        this.devicesGroups = (data as []).map(deviceGroup => DeviceGroupModel.fromMap(deviceGroup))
+
+      } catch (error: any) {
+        this.devicesGroups = [] //Default to empty
+        this.devicesGroupApiFailure.message = error.message;
+        this.devicesGroupApiState = ApiResponseState.FAILED;
+      }
+    },
+
+    async getOrgDeviceGroup() {
+      try {
+
+        this.devicesGroupApiState = ApiResponseState.LOADING;
+
+        const queryString = new URLSearchParams({ id: useUserStore().selectedOrganisation.objectId }).toString();
+        const data = await useStoreFetchRequest(`/api/device/group/by/org?${queryString}`, 'GET');
 
         this.devicesGroupApiState = ApiResponseState.SUCCESS;
         this.devicesGroups = (data as []).map(deviceGroup => DeviceGroupModel.fromMap(deviceGroup))
@@ -227,9 +244,8 @@ export const useDeviceStore = defineStore({
     async getMinMaxConsumption(startDate: string, endDate: string) {
       try {
 
-        const orgId = "hXR7sQI3FI" //TODO!: MUST TAKE THIS FROM THE USER'S ACCOUNT
         this.minMaxconsumptionApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ id: orgId, startDate, endDate }).toString();
+        const queryString = new URLSearchParams({ id: useUserStore().selectedOrganisation.objectId, startDate, endDate }).toString();
         const data = await useStoreFetchRequest(`/api/device/consumption/by/org?${queryString}`, 'GET');
 
         this.minMaxconsumptionApiState = ApiResponseState.SUCCESS;
@@ -299,9 +315,8 @@ export const useDeviceStore = defineStore({
     async getAllDevicesConsumptionTrend(startDate: string, endDate: string) {
       try {
 
-        const orgId = "hXR7sQI3FI"
         this.consumptionTrendsApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ id: orgId, startDate, endDate }).toString();
+        const queryString = new URLSearchParams({ id: useUserStore().selectedOrganisation.objectId, startDate, endDate }).toString();
         const data = await useStoreFetchRequest(`/api/device/consumption/all?${queryString}`, 'GET');
 
         this.consumptionTrendsApiState = ApiResponseState.SUCCESS;

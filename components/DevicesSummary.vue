@@ -66,7 +66,7 @@ const clusterSummaryChartData = ref([])
 
 onBeforeMount(() => {
   // TODO!: THIS MUST BE THE ORGANISATION GROUP INSTEAD OF USER GROUP
-  deviceStore.getUserDeviceGroup();
+  deviceStore.getOrgDeviceGroup();
 
 })
 

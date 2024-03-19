@@ -99,100 +99,17 @@ const deviceStore = useDeviceStore()
 
 
 onBeforeMount(() => {
-  deviceStore.getUserDeviceGroup();
+  deviceStore.getOrgDeviceGroup();
 })
 
-
-// SHEET CONTROL
-const isSheetDialogueOpen = ref(false)
-const handleOnSheetDialogOpen = (isOpen: boolean) => {
-  isSheetDialogueOpen.value = isOpen
-}
-// end of SHEET CONTROL
 
 // NEW CLUSTER DIALOG CONTROL
 const isClusterDialogueOpen = ref(false)
 const handleOnClusterDialogOpen = (isOpen: boolean) => {
   isClusterDialogueOpen.value = isOpen
 }
-// end of SHEET CONTROL
+// end of DIALOG CONTROL
 
-// CHART SETTTINGS
-const chart4Options = ref({
-
-  chart: {
-    type: 'area',
-    toolbar: {
-      show: false,
-    },
-    zoom: {
-      enabled: false,
-    },
-  },
-  series: [
-    {
-      name: 'Consumption',
-      data: generateRandomData(30), // Generate random data for the last 30 days
-    },
-  ],
-  dataLabels: {
-    enabled: false,
-  },
-  stroke: {
-    show: true,
-    curve: 'smooth',
-    lineCap: 'butt',
-    colors: undefined,
-    width: 2,
-  },
-
-  grid: {
-    show: false,
-    row: {
-      opacity: 0,
-    },
-  },
-  xaxis: {
-    type: 'datetime',
-  },
-  yaxis: {
-    show: false, // Hide the y-axis
-  },
-  tooltip: {
-    x: {
-      format: 'dd MMM yyyy',
-    },
-  },
-  fill: {
-    type: 'gradient',
-    gradient: {
-      shadeIntensity: 1,
-      opacityFrom: 0.7,
-      opacityTo: 0.9,
-      stops: [0, 100],
-    },
-  },
-  colors: ['#46DAE5'],
-  legend: {
-    show: false, // Hide the legend
-  },
-});
-
-// Function to generate random data for the last n days
-function generateRandomData(days: any) {
-  const currentDate = new Date();
-  const data = [];
-
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(currentDate);
-    date.setDate(currentDate.getDate() - i);
-    const consumption = Math.random() * 5; // Random consumption between 0 and 5
-    data.push({ x: date.getTime(), y: consumption });
-  }
-
-  return data;
-}
-// end of CHART SETTING
 
 // FORM SETTINGS
 const formSchema = toTypedSchema(z.object({

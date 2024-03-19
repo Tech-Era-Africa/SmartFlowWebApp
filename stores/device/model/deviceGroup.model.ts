@@ -6,11 +6,11 @@ export class DeviceGroupModel{
 
     static fromMap(json: any) {
         const deviceGroup: IDeviceGroup = {
-          createdAt : json.userDeviceGroup.createdAt,
-          createdBy : json.userDeviceGroup.createdBy,
-          devices : json.userDeviceGroup.devices,
-          name : json.userDeviceGroup.name,
-          objectId : json.userDeviceGroup.objectId,
+          createdAt : json.createdAt,
+          createdBy : json.createdBy,
+          devices : json.devices,
+          name : json.name,
+          objectId : json.objectId,
           devicesCount : json.devicesCount ?? 0
         
         };
