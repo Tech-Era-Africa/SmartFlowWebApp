@@ -12,21 +12,21 @@
                 <p class="text-gray-500 font-medium">Maximal Used</p>
                 <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
                 <template v-else>
-                    <p class="text-xl font-bold">{{useUseCubicToLitre(+option.max)}}L</p>
+                    <p class="text-xl font-bold">{{option.max.toFixed(2)}}k L</p>
                 </template>
             </div>
             <div class="flex justify-between items-center">
                 <p class="text-gray-500 font-medium">Minimal Used</p>
                 <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
                 <template v-else>
-                    <p class="text-xl font-bold">{{useUseCubicToLitre(+option.min)}}L</p>
+                    <p class="text-xl font-bold">{{option.min.toFixed(2)}}k L</p>
                 </template>
             </div>
             <div class="flex justify-between items-center">
                 <p class="text-gray-500 font-medium">Total Used</p>
                 <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
                 <template v-else>
-                    <p class="text-xl font-bold">{{useUseCubicToLitre(+option.sum)}}L</p>
+                    <p class="text-xl font-bold">{{option.sum.toFixed(2)}}k L</p>
                 </template>
 
             </div>

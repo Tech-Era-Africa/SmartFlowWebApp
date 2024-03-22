@@ -69,7 +69,7 @@ const chart4Options = ref({
         labels: {
             formatter: function (value: number) {
                 // Round the value to two decimal places
-                return `${value.toFixed(2)} L`;
+                return `${value.toFixed(2)}k L`;
             }
         }
     },

@@ -18,7 +18,7 @@
                     <!-- <Stat :option="{ title: 'Valve', value: 'Open' }"></Stat> -->
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Consumption', value: `${deviceStore.sumTotalConsumptionFromDevices()}L`, isLoading : deviceStore.isGettingDevices, hasError:deviceStore.failed_AllTotalConsumption }">
+                    <Stat :option="{ title: 'Total Consumption', value: `${deviceStore.sumTotalConsumptionFromDevices()}k L`, isLoading : deviceStore.isGettingDevices, hasError:deviceStore.failed_AllTotalConsumption }">
                     </Stat>
                 </div>
 
