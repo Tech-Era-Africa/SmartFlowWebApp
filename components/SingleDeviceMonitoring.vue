@@ -18,7 +18,7 @@
                     <Stat :option="{ title: 'Valve', value: option.device.valveIsOpen ? 'Open' : 'Closed' }"></Stat>
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Consumption', value: `${useUseCubicToLitre(option.device.lastTotalConsumption)}L` }">
+                    <Stat :option="{ title: 'Total Consumption', value: `${option.device.lastTotalConsumption.toFixed(2)}k L` }">
                     </Stat>
                 </div>
 
