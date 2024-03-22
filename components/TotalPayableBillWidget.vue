@@ -6,7 +6,7 @@
                 <!-- <p class="text-xs text-gray-400">Last Updated: 10mins ago</p> -->
             </div>
             <div class="dropdown dropdown-end dropdown-bottom">
-                <label tabindex="0" class="btn btn-ghost m-1">This Month
+                <label tabindex="0" class="btn btn-ghost m-1">
                     <!-- <Icon name="ion:caret-down-outline" /> -->
                 </label>
                 <!-- <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
@@ -27,10 +27,10 @@
     </div>
 </template>
 <script setup lang="ts">
-import type { IDevice } from '~/server/api/device/model/device.model';
 import { useBillStore } from '~/stores/bill/bill.store';
 import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
+import type { IDevice } from '~/stores/device/model/device.model';
 
 const props = defineProps({
     option: {

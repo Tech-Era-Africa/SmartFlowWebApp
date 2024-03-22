@@ -1,7 +1,7 @@
 <template>
     <NuxtLayout name="dashboard">
         <Header name="Devices"></Header>
-        <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0 h-[400px]">
+        <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0 min-h-[400px]">
             <div class="w-full flex h-full p-2 gap-4">
                 <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-5">
                     <div class="flex flex-row justify-between gap-2 items-center">
@@ -47,37 +47,54 @@
 
                     <!-- DEVICES -->
                     <template v-if="deviceStore.hasDevices">
-                        <Sheet :open="isSheetDialogueOpen" @update:open="handleOnSheetDialogOpen">
-                            <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
-                                <DeviceCard class="cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300" :option="{ device }" @click="openSheetDrawer(device)"
-                                    v-for="device in deviceStore.devices"></DeviceCard>
+                        <!-- TREND -->
+                        <section class="flex w-full gap-4">
+                            <div class="w-2/3">
+                                <WaterConsumptionChart :option="clusterConsumptionChart"></WaterConsumptionChart>
                             </div>
-                            <SheetContent class=" bg-white overflow-y-auto md:max-w-[600px] flex flex-col">
-                                <template v-if="deviceStore.selectedDevice.objectId">
-                                    <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }">
-                                    </SingleDeviceMonitoring>
-                                    <WaterConsumptionChart :option="consumptionChart"></WaterConsumptionChart>
-                                    <ConsumptionStats :option="consumptionStatOption">
-                                    </ConsumptionStats>
-                                    <!-- <TotalPayableBillWidget
-                                        :option="{ consumption: deviceStore.consumption, currency: 'GHC', device: deviceStore.selectedDevice }">
-                                        <div class="text-right">
-                                            <p class="text-xs text-gray-500">Consumption</p>
-                                            <p class="font-bold flex justify-end items-center gap-2"><span
-                                                    v-if="deviceStore.isGettingDeviceConsumption"
-                                                    class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
-                                useUseCubicToLitre(deviceStore.consumption)
-                            }}L</span>
-                                            </p>
-                                        </div>
-                                    </TotalPayableBillWidget> -->
-                                    <!-- <UsersTable :option="usersDataTableOption"></UsersTable>
+
+                            <TotalPayableBillWidget class="flex-1"
+                                :option="{ consumption: deviceStore.consumption, currency: 'GHC', device: deviceStore.selectedDevice }">
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500">Consumption</p>
+                                    <p class="font-bold flex justify-end items-center gap-2"><span
+                                            v-if="deviceStore.isGettingDeviceConsumption"
+                                            class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
+                                deviceStore.consumption
+                            }}k L</span>
+                                    </p>
+                                </div>
+                            </TotalPayableBillWidget>
+                        </section>
+                        <!-- end of TREND -->
+                        <!-- DEVICES -->
+                        <section>
+                            <h1 class="font-bold text-lg mb-5 ml-5">{{ 'Devices' }}</h1>
+                            <Sheet :open="isSheetDialogueOpen" @update:open="handleOnSheetDialogOpen">
+                                <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
+                                    <DeviceCard
+                                        class="cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300"
+                                        :option="{ device }" @click="openSheetDrawer(device)"
+                                        v-for="device in deviceStore.devices"></DeviceCard>
+                                </div>
+                                <SheetContent class=" bg-white overflow-y-auto md:max-w-[600px] flex flex-col">
+                                    <template v-if="deviceStore.selectedDevice.objectId">
+                                        <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }">
+                                        </SingleDeviceMonitoring>
+                                        <WaterConsumptionChart :option="consumptionChart"></WaterConsumptionChart>
+                                        <ConsumptionStats :option="consumptionStatOption">
+                                        </ConsumptionStats>
+
+                                        <!-- <UsersTable :option="usersDataTableOption"></UsersTable>
             <BillingTable :option="billingDataTableOption"></BillingTable> -->
-                                </template>
+                                    </template>
 
-                            </SheetContent>
+                                </SheetContent>
 
-                        </Sheet>
+                            </Sheet>
+                        </section>
+                        <!-- end of DEVICES -->
+
 
 
                     </template>
@@ -126,8 +143,13 @@ const billStore = useBillStore()
 const groupId = useRoute().params.id
 
 const consumptionStatOption = ref<{ deviceId: string, title?: string, isLoading?: boolean, min: number, max: number, sum: number }>({} as any) //!TODO:IMPELEMENT THIS PROPERLY
+const chartData = ref()
+const currentDate = new Date();
+const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
 onBeforeMount(() => {
+    chartData.value = deviceStore.getClusterConsumptionTrend(groupId.toString(), startOfMonth.toISOString(), endOfMonth.toISOString())
     deviceStore.getDevicesByGroup(groupId.toString());
 })
 
@@ -169,12 +191,21 @@ const consumptionChart = ref<IWaterConsumptionChart>({
     success: deviceStore.success_SelectedDeviceConsumptionTrend,
 })
 
+const clusterConsumptionChart = ref<IWaterConsumptionChart>({
+    title: "Cluster Consumption Trend",
+    chartSeries: deviceStore.selectedDeviceConsumptionTrend,
+    isLoading: deviceStore.loading_SelectedDeviceConsumptionTrend,
+    success: deviceStore.success_SelectedDeviceConsumptionTrend,
+})
+
 // Watch and load seleted device trends
 watchEffect(async () => {
-    // Update the device store
-    const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+     // Listens for when there is data in the chartData and sends it to the chart
+     if (chartData.value) {
+        clusterConsumptionChart.value.chartSeries = await chartData.value
+    }
+
     if (deviceStore.selectedDevice.objectId) {
 
         // Get chart data and update
