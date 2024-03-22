@@ -6,7 +6,7 @@
 
                 <div>
                     <p class="text-sm text-gray-500">{{ option.device.name }}</p>
-                    <h1 class="font-bold text-xl">{{ useUseCubicToLitre(option.device.lastTotalConsumption)}}L</h1>
+                    <h1 class="font-bold text-xl">{{ option.device.lastTotalConsumption.toFixed(2)}}k L</h1>
                     <div class="flex gap-2 justify-start items-center mt-2" v-if="!option.hideUpdateDate">
                         <Icon name="ic:baseline-update" class="text-blue-500"></Icon>
                         <p class="text-xs text-gray-500">{{useRelativeDateHuman(new Date(option.device.updatedAt))}}</p>
