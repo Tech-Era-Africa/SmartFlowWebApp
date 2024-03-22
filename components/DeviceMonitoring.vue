@@ -14,11 +14,11 @@
                     <Stat :option="{ title: 'Users', value: '1' }"></Stat>
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Bill', value: billingStore.totalBilling.toString(), isLoading:deviceStore.isGettingDevices, hasError:billingStore.failed_TotalBilling }"></Stat>
+                    <Stat :option="{ title: 'Total Bill', value: `GHC${totalBill}`, isLoading:deviceStore.isGettingDevices, hasError:billingStore.failed_TotalBilling }"></Stat>
                     <!-- <Stat :option="{ title: 'Valve', value: 'Open' }"></Stat> -->
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Consumption', value: `${deviceStore.sumTotalConsumptionFromDevices()}k L`, isLoading : deviceStore.isGettingDevices, hasError:deviceStore.failed_AllTotalConsumption }">
+                    <Stat :option="{ title: 'Total Consumption', value: `${totalConsumption}k L`, isLoading : deviceStore.isGettingDevices, hasError:deviceStore.failed_AllTotalConsumption }">
                     </Stat>
                 </div>
 
@@ -51,6 +51,9 @@ onBeforeMount(() => {
     deviceStore.getDevicesByOrg()
     billingStore.getTotalBilling()
 })
+
+const totalConsumption = computed(()=> deviceStore.sumTotalConsumptionFromDevices())
+const totalBill = computed(()=>billingStore.calculateTotalBill(totalConsumption.value).toFixed(2))
 
 const props = defineProps<{title?:string}>()
 
