@@ -3,7 +3,7 @@
         <div class="flex  justify-between items-center">
             <div>
                 <h1 class="font-bold text-lg">Total Payable Bill</h1>
-                <!-- <p class="text-xs text-gray-400">Last Updated: 10mins ago</p> -->
+                <p class="text-muted-foreground text-xs my-2">Period: {{useFormatDateHuman(new Date(option.startDate))}} - {{useFormatDateHuman(new Date(option.endDate))}}</p>
             </div>
             <div class="dropdown dropdown-end dropdown-bottom">
                 <label tabindex="0" class="btn btn-ghost m-1">
@@ -23,21 +23,28 @@
             </Stat>
 
         </div>
-        <Button @click="generateBill" :disabled="totalCurrentCharge() == 0" class=" mt-5">Generate Bill</Button>
+        <Dialog>
+            <DialogTrigger>
+                <Button @click="generateBill" :disabled="totalCurrentCharge() == 0" class="w-full mt-5">Calculate Bill</Button>
+            </DialogTrigger>
+            <DialogContent>
+                <div class="mt-4">
+                    <BillPreview :option="option"></BillPreview>
+                </div>
+                
+            </DialogContent>
+        </Dialog>
+
     </div>
 </template>
 <script setup lang="ts">
 import { useBillStore } from '~/stores/bill/bill.store';
+import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
-import type { IDevice } from '~/stores/device/model/device.model';
 
-const props = defineProps({
-    option: {
-        type: Object as () => { currency?: string, consumption:number, device:IDevice },
-        required: true
-    },
-})
+
+const props = defineProps<{option : IBillOptionDTO}>()
 
 const deviceStore = useDeviceStore()
 const controlStore = useControlStore()
@@ -45,23 +52,19 @@ const billStore = useBillStore()
 
 const formatAmount = (number: number) => new Intl.NumberFormat('en-GH', {
     style: 'currency',
-    currency: props.option.currency ?? 'GHS'
+    currency: 'GHS'
 }).format(number)
 
-const totalCurrentCharge = ()=>{
-   const bill = billStore.calculateTotalBill(props.option.consumption)
+const totalCurrentCharge = () => {
+    const bill = billStore.calculateTotalBill(props.option.totalConsumption)
 
-   const totalAmountPaid = billStore.paidBills.reduce((accumulator, currentValue:any) => {
-  return accumulator + currentValue.amount;
-}, 0)
-
-   return bill - totalAmountPaid
+    return bill
 }
 
-const generateBill = ()=>{
+const generateBill = () => {
     controlStore.openModal('billModal')
 
     //  Get the current water consumption
-    deviceStore.getCurrentDeviceConsumption(props.option.device.objectId)
+    // deviceStore.getCurrentDeviceConsumption(props.option.device.objectId)
 }
-</script>~/stores/device/model/device.model
+</script>

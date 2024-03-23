@@ -1,19 +1,19 @@
 <template>
     <div class="flex justify-between items-center">
         <div>
-            <h3 class="font-bold text-2xl">Water Bill</h3>
-            <div class="badge badge-accent">Preview</div>
-            <!-- <p class="text-sm text-gray-400">#223dssd</p> -->
+            <h3 class="font-bold text-2xl">{{ option.billTitle }}</h3>
+            <!-- <div class="badge badge-accent">Preview</div>
+            <p class="text-sm text-gray-400">#223dssd</p> -->
         </div>
 
         <div>
-            <p class="text-xs text-right">Month</p>
-            <h3 class="font-bold text-gray-600">{{ useFormatDateHuman(new Date(Date.now())) }}</h3>
+            <p class="text-xs text-right">Period</p>
+            <h3 class="text-muted-foreground font-bold text-xs">{{useFormatDateHuman(new Date(option.startDate))}} - {{useFormatDateHuman(new Date(option.endDate))}}</h3>
         </div>
 
     </div>
 
-    <div class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between">
+    <div class="w-full bg-blue-50 rounded-xl p-5 my-5 flex flex-col justify-between">
         <div class="w-40 mx-auto ">
             <img class="w-full h-full object-cover" src="/img/lorawan.png" />
         </div>
@@ -21,13 +21,11 @@
         <div class="flex justify-between items-center">
             <div>
                 <p class="text-sm text-gray-500">Name</p>
-                <h1 class="font-bold text-xl">{{ option.device.name }}</h1>
+                <h1 class="font-bold text-xl">{{ 'Device Name' }}</h1>
             </div>
             <div>
                 <p class="text-sm text-gray-500">Total Consumption</p>
-                <h1 class="font-bold text-xl text-right"><span v-if="deviceStore.isGettingDeviceConsumption"
-                        class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
-                            useUseCubicToLitre(deviceStore.consumption) }}L</span>
+                <h1 class="font-bold text-xl text-right">{{option.totalConsumption}}k L
                 </h1>
             </div>
         </div>
@@ -56,7 +54,7 @@
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>Consumption</p>
-            <p>{{ useUseCubicToLitre(0) }}L</p>
+            <p>{{ option.totalConsumption }}k L</p>
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>Water Charge</p>
@@ -82,43 +80,25 @@
             <p>Credit</p>
             <p>{{ useUseFormatCurrency(credit) }}</p>
         </div>
-        <div class="flex justify-between items-center text-xs">
+        <!-- <div class="flex justify-between items-center text-xs">
             <p>Previous Balance</p>
             <p>GHC0</p>
-        </div>
-        <div class="flex justify-between items-center text-lg font-bold">
+        </div> -->
+        <div class="flex justify-between items-center text-lg font-bold mt-4">
             <h1>Total Bill</h1>
             <h1>{{ useUseFormatCurrency(totalCurrentCharge()) }}</h1>
         </div>
 
     </div>
-    <div class="modal-action">
-        <form method="dialog" class="flex gap-4">
-            <span v-if="deviceStore.isGettingDeviceConsumption" class="loading loading-bars"></span>
-            <template v-else>
-                <div class="btn bg-black text-white hover:bg-black hover:text-white" @click="createBill">Create
-                    Invoice <span v-if="billStore.isCreatingBill" class="ml-2 loading loading-spinner"></span></div>
-            </template>
-
-            <div class="btn" @click="controlStore.closeModal(option.modalId)">Close</div>
-        </form>
-    </div>
+   
 </template>
 <script setup lang="ts">
-import type { IDevice } from '~/server/api/device/model/device.model';
 import { useBillStore } from '~/stores/bill/bill.store';
+import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 
-const props = defineProps({
-    option: {
-        type: Object as () => { device: IDevice, modalId:string },
-        required: true,
-        default : {
-            dynamic : false
-        }
-    },
-})
+const props = defineProps<{option: IBillOptionDTO}>()
 
 const deviceStore = useDeviceStore()
 const billStore = useBillStore()
@@ -126,19 +106,19 @@ const controlStore = useControlStore()
 const credit = ref(0)
 const totalBill = ref(0)
 
-const getBill = () => useWaterBillAlgo({ consumption: deviceStore.consumption })
+const getBill = () => useWaterBillAlgo({ consumption: props.option.totalConsumption })
 
 const totalCurrentCharge = () => {
-    const bill = billStore.calculateTotalBill(deviceStore.consumption)
+    const bill = billStore.calculateTotalBill(props.option.totalConsumption)
 
-    const totalAmountPaid = billStore.paidBills.reduce((accumulator, currentValue: any) => {
-        return accumulator + currentValue.amount;
-    }, 0)
+    // const totalAmountPaid = billStore.paidBills.reduce((accumulator, currentValue: any) => {
+    //     return accumulator + currentValue.amount;
+    // }, 0)
 
-    credit.value = totalAmountPaid
+    credit.value = 0
     totalBill.value = bill
 
-    return bill - totalAmountPaid
+    return bill
 }
 
 const createBill = () => billStore.createNewBill({
@@ -175,4 +155,4 @@ watch(billStore, (state) => {
 
 
 
-</script>~/stores/device/model/device.model
+</script>

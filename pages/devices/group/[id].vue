@@ -53,8 +53,7 @@
                                 <WaterConsumptionChart :option="clusterConsumptionChart"></WaterConsumptionChart>
                             </div>
 
-                            <TotalPayableBillWidget class="flex-1"
-                                :option="{ consumption: deviceStore.selectedClusterMinMaxConsumption.sum, currency: 'GHC', device: deviceStore.selectedDevice }">
+                            <TotalPayableBillWidget class="flex-1" :option="billWidgetOption">
                                 <div class="text-right">
                                     <p class="text-xs text-gray-500">Consumption</p>
                                     <p class="font-bold flex justify-end items-center gap-2"><span
@@ -133,6 +132,7 @@ import { useDeviceStore } from '~/stores/device/device.store';
 import { ArrowLeftCircle, Plus } from 'lucide-vue-next'
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 import type { IDevice } from '~/stores/device/model/device.model';
+import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 
 
 useHead({ title: "Devices" })
@@ -154,6 +154,9 @@ onBeforeMount(() => {
     deviceStore.getClusterMinMaxConsumption(groupId.toString(), startOfMonth.toISOString(), endOfMonth.toISOString());
 })
 
+
+// Handle the prop values for the Bill Widget
+const billWidgetOption = ref<IBillOptionDTO>({} as IBillOptionDTO)
 
 
 // SHEET CONTROL
@@ -199,6 +202,17 @@ const clusterConsumptionChart = ref<IWaterConsumptionChart>({
 
 // Watch and load seleted device trends
 watchEffect(async () => {
+
+    // Listen for cluster max min values and update billing widget
+    if (deviceStore.success_SelectedClusterMinMaxConsumption) {
+        billWidgetOption.value = {
+            billTitle: `${deviceStore.deviceGroupName} Bill`,
+            devices: deviceStore.devices,
+            totalConsumption: deviceStore.selectedClusterMinMaxConsumption.max,
+            startDate: startOfMonth.toISOString(),
+            endDate: endOfMonth.toISOString()
+        }
+    }
 
     // Listens for when there is data in the chartData and sends it to the chart
     if (chartData.value) {
