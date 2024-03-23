@@ -44,6 +44,11 @@ export const useDeviceStore = defineStore({
     selectedDeviceMinMaxConsumptionApiState: ApiResponseState.NULL,
     selectedDeviceMinMaxConsumptionApiFailure: { message: "" },
 
+     // Selected Cluster Min Max consumption
+     selectedClusterMinMaxConsumption: { min: 0, max: 0, sum: 0 },
+     selectedClusterMinMaxConsumptionApiState: ApiResponseState.NULL,
+     selectedClusterMinMaxConsumptionApiFailure: { message: "" },
+
     //NEW DEVICE
     newDeviceApiState: ApiResponseState.NULL,
     newDeviceApiFailure: { message: "" },
@@ -288,6 +293,31 @@ export const useDeviceStore = defineStore({
       } catch (error: any) {
         this.selectedDeviceMinMaxConsumptionApiFailure.message = error.message;
         this.selectedDeviceMinMaxConsumptionApiState = ApiResponseState.FAILED;
+      }
+    },
+
+    async getClusterMinMaxConsumption(clusterId:string,startDate: string, endDate: string) {
+      try {
+
+        this.selectedClusterMinMaxConsumptionApiState = ApiResponseState.LOADING;
+        const queryString = new URLSearchParams({ id: clusterId, startDate, endDate }).toString();
+        const data = await useStoreFetchRequest(`/api/device/consumption/by/cluster/sum?${queryString}`, 'GET');
+
+        this.selectedClusterMinMaxConsumptionApiState = ApiResponseState.SUCCESS;
+
+        // Assign data once successful
+        if ((data as any).success) {
+          this.selectedClusterMinMaxConsumption = {
+            max: (data as any).data[0].max_consumption_change,
+            min: (data as any).data[0].min_consumption_change,
+            sum: (data as any).data[0].sum_consumption_change
+          }
+        }
+
+
+      } catch (error: any) {
+        this.selectedClusterMinMaxConsumptionApiFailure.message = error.message;
+        this.selectedClusterMinMaxConsumptionApiState = ApiResponseState.FAILED;
       }
     },
 
@@ -542,6 +572,10 @@ export const useDeviceStore = defineStore({
     loading_SelectedDeviceMinMaxConsumption: (state) => state.selectedDeviceMinMaxConsumptionApiState === ApiResponseState.LOADING,
     failed_SelectedDeviceMinMaxConsumption: (state) => state.selectedDeviceMinMaxConsumptionApiState === ApiResponseState.FAILED,
     success_SelectedDeviceMinMaxConsumption: (state) => state.selectedDeviceMinMaxConsumptionApiState === ApiResponseState.SUCCESS,
+
+    loading_SelectedClusterMinMaxConsumption: (state) => state.selectedClusterMinMaxConsumptionApiState === ApiResponseState.LOADING,
+    failed_SelectedClusterMinMaxConsumption: (state) => state.selectedClusterMinMaxConsumptionApiState === ApiResponseState.FAILED,
+    success_SelectedClusterMinMaxConsumption: (state) => state.selectedClusterMinMaxConsumptionApiState === ApiResponseState.SUCCESS,
 
     isGettingDeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.LOADING,
     failed_DeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.FAILED,

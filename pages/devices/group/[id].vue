@@ -54,13 +54,13 @@
                             </div>
 
                             <TotalPayableBillWidget class="flex-1"
-                                :option="{ consumption: deviceStore.consumption, currency: 'GHC', device: deviceStore.selectedDevice }">
+                                :option="{ consumption: deviceStore.selectedClusterMinMaxConsumption.sum, currency: 'GHC', device: deviceStore.selectedDevice }">
                                 <div class="text-right">
                                     <p class="text-xs text-gray-500">Consumption</p>
                                     <p class="font-bold flex justify-end items-center gap-2"><span
-                                            v-if="deviceStore.isGettingDeviceConsumption"
+                                            v-if="deviceStore.loading_SelectedClusterMinMaxConsumption"
                                             class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
-                                deviceStore.consumption
+                                deviceStore.selectedClusterMinMaxConsumption.sum.toFixed(2)
                             }}k L</span>
                                     </p>
                                 </div>
@@ -151,6 +151,7 @@ const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 
 onBeforeMount(() => {
     chartData.value = deviceStore.getClusterConsumptionTrend(groupId.toString(), startOfMonth.toISOString(), endOfMonth.toISOString())
     deviceStore.getDevicesByGroup(groupId.toString());
+    deviceStore.getClusterMinMaxConsumption(groupId.toString(), startOfMonth.toISOString(), endOfMonth.toISOString());
 })
 
 
@@ -174,8 +175,6 @@ const handleNewDeviceDialogOpenUpdate = (state: boolean) => isNewDeviceDialogOpe
 
 const openSheetDrawer = async (device: IDevice) => {
     isSheetDialogueOpen.value = true
-
-
 
     deviceStore.selectDevice(device)
 
@@ -201,8 +200,8 @@ const clusterConsumptionChart = ref<IWaterConsumptionChart>({
 // Watch and load seleted device trends
 watchEffect(async () => {
 
-     // Listens for when there is data in the chartData and sends it to the chart
-     if (chartData.value) {
+    // Listens for when there is data in the chartData and sends it to the chart
+    if (chartData.value) {
         clusterConsumptionChart.value.chartSeries = await chartData.value
     }
 
