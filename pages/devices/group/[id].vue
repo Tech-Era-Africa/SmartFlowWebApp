@@ -59,7 +59,7 @@
                                     <p class="font-bold flex justify-end items-center gap-2"><span
                                             v-if="deviceStore.loading_SelectedClusterMinMaxConsumption"
                                             class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
-                                deviceStore.selectedClusterMinMaxConsumption.sum.toFixed(2)
+                                validStatNumber(deviceStore.selectedClusterMinMaxConsumption.sum).toFixed(2)
                             }}k L</span>
                                     </p>
                                 </div>
@@ -158,6 +158,7 @@ onBeforeMount(() => {
 // Handle the prop values for the Bill Widget
 const billWidgetOption = ref<IBillOptionDTO>({} as IBillOptionDTO)
 
+const validStatNumber = (num:number)=> num > 0 ? num : 0
 
 // SHEET CONTROL
 const isSheetDialogueOpen = ref(false)

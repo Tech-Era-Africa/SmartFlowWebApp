@@ -3,7 +3,7 @@
         <div class="flex  justify-between items-center">
             <div>
                 <h1 class="font-bold text-lg">Total Payable Bill</h1>
-                <p class="text-muted-foreground text-xs my-2">Period: {{useFormatDateHuman(new Date(option.startDate))}} - {{useFormatDateHuman(new Date(option.endDate))}}</p>
+                <p class="text-muted-foreground text-xs my-2">Period: {{useFormatDateHuman(new Date(option.startDate ?? Date.now()))}} - {{useFormatDateHuman(new Date(option.endDate ?? Date.now()))}}</p>
             </div>
             <div class="dropdown dropdown-end dropdown-bottom">
                 <label tabindex="0" class="btn btn-ghost m-1">
@@ -41,12 +41,8 @@
 import { useBillStore } from '~/stores/bill/bill.store';
 import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 import { useControlStore } from '~/stores/control/control.store';
-import { useDeviceStore } from '~/stores/device/device.store';
-
 
 const props = defineProps<{option : IBillOptionDTO}>()
-
-const deviceStore = useDeviceStore()
 const controlStore = useControlStore()
 const billStore = useBillStore()
 
@@ -56,7 +52,9 @@ const formatAmount = (number: number) => new Intl.NumberFormat('en-GH', {
 }).format(number)
 
 const totalCurrentCharge = () => {
-    const bill = billStore.calculateTotalBill(props.option.totalConsumption)
+
+
+    const bill = props.option.totalConsumption ? billStore.calculateTotalBill(props.option.totalConsumption) : 0
 
     return bill
 }
