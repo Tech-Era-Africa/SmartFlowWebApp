@@ -8,32 +8,30 @@
 
         <div>
             <p class="text-xs text-right">Period</p>
-            <h3 class="text-muted-foreground font-bold text-xs">{{useFormatDateHuman(new Date(option.startDate))}} - {{useFormatDateHuman(new Date(option.endDate))}}</h3>
+            <h3 class="text-muted-foreground font-bold text-xs">{{ useFormatDateHuman(new Date(option.startDate)) }} -
+                {{ useFormatDateHuman(new Date(option.endDate)) }}</h3>
         </div>
 
     </div>
 
-    <div class="w-full bg-blue-50 rounded-xl p-5 my-5 flex flex-col justify-between">
-        <div class="w-40 mx-auto ">
-            <img class="w-full h-full object-cover" src="/img/lorawan.png" />
+    <Collapsible v-model:open="isOpen" class="my-5">
+        <div class="rounded-md border border-blue-100 px-4 py-3 flex justify-between items-center w-full bg-blue-50">
+            <p class="font-bold">Devices <Badge variant="outline">{{ option.devices.length }}</Badge></p>
+            <CollapsibleTrigger as-child>
+                <Button variant="ghost" size="sm" class="w-9 p-0">
+                    <ChevronsUpDown class="h-4 w-4" />
+                </Button>
+            </CollapsibleTrigger>
         </div>
-
-        <div class="flex justify-between items-center">
-            <div>
-                <p class="text-sm text-gray-500">Name</p>
-                <h1 class="font-bold text-xl">{{ 'Device Name' }}</h1>
+        <CollapsibleContent class="space-y-2">
+            <div class="grid grid-cols-3 my-5 gap-4">
+                <DeviceCard v-for="device in option.devices" :option="{ device: device }"></DeviceCard>
             </div>
-            <div>
-                <p class="text-sm text-gray-500">Total Consumption</p>
-                <h1 class="font-bold text-xl text-right">{{option.totalConsumption}}k L
-                </h1>
-            </div>
-        </div>
+        </CollapsibleContent>
+    </Collapsible>
 
-    </div>
 
     <div class="flex flex-col gap-2">
-
         <div class="flex justify-between text-xs items-center">
             <p>Bill Type</p>
             <p>Domestic</p>
@@ -90,21 +88,23 @@
         </div>
 
     </div>
-   
+
 </template>
 <script setup lang="ts">
 import { useBillStore } from '~/stores/bill/bill.store';
 import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
+import { ChevronsUpDown } from 'lucide-vue-next'
 
-const props = defineProps<{option: IBillOptionDTO}>()
+const props = defineProps<{ option: IBillOptionDTO }>()
 
 const deviceStore = useDeviceStore()
 const billStore = useBillStore()
 const controlStore = useControlStore()
 const credit = ref(0)
 const totalBill = ref(0)
+const isOpen = ref(false)
 
 const getBill = () => useWaterBillAlgo({ consumption: props.option.totalConsumption })
 
