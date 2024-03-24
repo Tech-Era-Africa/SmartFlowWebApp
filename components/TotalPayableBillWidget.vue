@@ -23,8 +23,8 @@
             </Stat>
 
         </div>
-        <Dialog>
-            <DialogTrigger>
+        <Dialog :open="isModalOpen" @update:open="handleModalOpen">
+            <DialogTrigger >
                 <Button @click="generateBill" :disabled="totalCurrentCharge() == 0" class="w-full mt-5">Calculate Bill</Button>
             </DialogTrigger>
             <DialogContent>
@@ -64,5 +64,12 @@ const generateBill = () => {
 
     //  Get the current water consumption
     // deviceStore.getCurrentDeviceConsumption(props.option.device.objectId)
+}
+
+const isModalOpen = ref(false)
+const handleModalOpen = (isOpen:boolean)=>{
+
+
+    return props.option.totalConsumption > 0 ? isModalOpen.value = isOpen : isModalOpen.value = false
 }
 </script>
