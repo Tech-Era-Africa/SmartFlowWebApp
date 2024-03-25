@@ -52,7 +52,7 @@
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>Consumption</p>
-            <p>{{ option.totalConsumption }}k L</p>
+            <p>{{ validStatNumber(option.totalConsumption).toFixed(2) }}k L</p>
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>Water Charge</p>
@@ -107,6 +107,8 @@ const totalBill = ref(0)
 const isOpen = ref(false)
 
 const getBill = () => useWaterBillAlgo({ consumption: props.option.totalConsumption })
+
+const validStatNumber = (num:number)=> num > 0 ? num : 0
 
 const totalCurrentCharge = () => {
     const bill = billStore.calculateTotalBill(props.option.totalConsumption)

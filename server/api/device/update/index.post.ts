@@ -2,7 +2,7 @@ import { useApiFetch } from "~/composables/use_api_fetch";
 
 
 export default defineEventHandler(async (event) => {
-    const { eui, uid, totalConsumption, valveState } = await readBody(event)
+    const { eui, uid, totalConsumption, valveState, initial, timestamp } = await readBody(event)
 
     try {
 
@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
                 eui,
                 totalConsumption,
                 valveState,
+                initial
             }
         });
 
@@ -29,11 +30,12 @@ export default defineEventHandler(async (event) => {
         // Send entry to Influx db
         const baseUrl = useRuntimeConfig().INFLUX_SERVER_BASE_URL
         const influxData = {
+            "timestamp" : timestamp,
             "uid": uid,
             "orgId": deviceData.organisation.objectId,
             "deviceId": deviceData.objectId,
-            "consumptionChange": deviceData.lastConsumptionChange > 0 ? deviceData.lastConsumptionChange : 0.0000001, //?Influx throws an error when the value is 0, type needs to be a float of some kind
-            "allTimeConsumption": deviceData.lastTotalConsumption > 0 ? deviceData.lastTotalConsumption : 0.0000001, //?Influx throws an error when the value is 0, type needs to be a float of some kind
+            "consumptionChange": deviceData.lastConsumptionChange > 0.0000001 ? deviceData.lastConsumptionChange : 0.0000001, //?Influx throws an error when the value is 0, type needs to be a float of some kind
+            "allTimeConsumption": deviceData.lastTotalConsumption > 0.0000001 ? deviceData.lastTotalConsumption : 0.0000001, //?Influx throws an error when the value is 0, type needs to be a float of some kind
             "cost": 0.05,
             "clusterId": deviceData.group.objectId
         }
@@ -44,7 +46,7 @@ export default defineEventHandler(async (event) => {
         })
 
 
-        return { success: true, message: "Successfully updated device", data:influxRes }
+        return { success: true, message: "Successfully updated device", data: influxRes }
 
     } catch (error: any) {
         const responseData = (error as any)?.response?.data ?? null;
