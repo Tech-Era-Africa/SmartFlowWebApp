@@ -44,7 +44,6 @@ import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 import { useControlStore } from '~/stores/control/control.store';
 
 const props = defineProps<{option : IBillOptionDTO}>()
-const controlStore = useControlStore()
 const billStore = useBillStore()
 
 const formatAmount = (number: number) => new Intl.NumberFormat('en-GH', {
@@ -61,7 +60,7 @@ const totalCurrentCharge = () => {
 }
 
 const generateBill = () => {
-    controlStore.openModal('billModal')
+    // controlStore.openModal('billModal')
 
     //  Get the current water consumption
     // deviceStore.getCurrentDeviceConsumption(props.option.device.objectId)

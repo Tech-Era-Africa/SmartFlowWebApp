@@ -77,7 +77,7 @@
                                         v-for="device in deviceStore.devices"></DeviceCard>
                                 </div>
                                 <SheetContent class=" bg-white overflow-y-auto md:max-w-[600px] flex flex-col">
-                                    <template v-if="deviceStore.selectedDevice.objectId">
+                                    <template v-if="deviceStore.selectedDevice">
                                         <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }">
                                         </SingleDeviceMonitoring>
                                         <WaterConsumptionChart :option="consumptionChart"></WaterConsumptionChart>
@@ -158,16 +158,22 @@ onBeforeMount(() => {
 // Handle the prop values for the Bill Widget
 const billWidgetOption = ref<IBillOptionDTO>({} as IBillOptionDTO)
 
-const validStatNumber = (num:number)=> num > 0 ? num : 0
+const validStatNumber = (num: number) => num > 0 ? num : 0
 
 // SHEET CONTROL
 const isSheetDialogueOpen = ref(false)
+
 const handleOnSheetDialogOpen = (isOpen: boolean) => {
+
+    // If there's no seleted user do not open
+    if (deviceStore.selectedDevice) return isSheetDialogueOpen.value = false
+
+    // Open/Close sheet
     isSheetDialogueOpen.value = isOpen
 
     // Clear the selected device when the modal closes
     if (!isOpen) {
-        deviceStore.selectedDevice = {} as IDevice //!TODO: MIGHT NEED TO IMPLEMENT THIS PROPERLY
+        deviceStore.selectedDevice = null!
     }
 }
 // end of SHEET CONTROL
@@ -201,15 +207,41 @@ const clusterConsumptionChart = ref<IWaterConsumptionChart>({
     success: deviceStore.success_SelectedDeviceConsumptionTrend,
 })
 
+const prepareDeviceConsumptionData = async () => {
+
+    console.log("Selected device gotten: ")
+    // Get chart data and update
+    consumptionChart.value.chartSeries = await deviceStore.getDeviceConsumptionTrend(deviceStore.selectedDevice.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
+
+    // Get consumption stats
+    await deviceStore.getDeviceMinMaxConsumption(deviceStore.selectedDevice.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
+    if (deviceStore.success_SelectedDeviceMinMaxConsumption) {
+        consumptionStatOption.value = {
+            title: "Consumption Stats",
+            isLoading: deviceStore.isGettingDeviceMinMaxConsumption,
+            deviceId: deviceStore.selectedDevice.objectId,
+            min: deviceStore.selectedDeviceMinMaxConsumption.min,
+            max: deviceStore.selectedDeviceMinMaxConsumption.max,
+            sum: deviceStore.selectedDeviceMinMaxConsumption.sum,
+
+        }
+    }
+
+}
+
 // Watch and load seleted device trends
 watchEffect(async () => {
+
+    if(isSheetDialogueOpen){
+        prepareDeviceConsumptionData()
+    }
 
     // Listen for cluster max min values and update billing widget
     if (deviceStore.success_SelectedClusterMinMaxConsumption) {
         billWidgetOption.value = {
             billTitle: `${deviceStore.deviceGroupName} Bill`,
             devices: deviceStore.devices,
-            totalConsumption: deviceStore.selectedClusterMinMaxConsumption.max,
+            totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
             startDate: startOfMonth.toISOString(),
             endDate: endOfMonth.toISOString()
         }
@@ -220,25 +252,6 @@ watchEffect(async () => {
         clusterConsumptionChart.value.chartSeries = await chartData.value
     }
 
-    if (deviceStore.selectedDevice.objectId) {
-
-        // Get chart data and update
-        consumptionChart.value.chartSeries = await deviceStore.getDeviceConsumptionTrend(deviceStore.selectedDevice.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
-
-        // Get consumption stats
-        await deviceStore.getDeviceMinMaxConsumption(deviceStore.selectedDevice.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
-        if (deviceStore.success_SelectedDeviceMinMaxConsumption) {
-            consumptionStatOption.value = {
-                title: "Consumption Stats",
-                isLoading: deviceStore.isGettingDeviceMinMaxConsumption,
-                deviceId: deviceStore.selectedDevice.objectId,
-                min: deviceStore.selectedDeviceMinMaxConsumption.min,
-                max: deviceStore.selectedDeviceMinMaxConsumption.max,
-                sum: deviceStore.selectedDeviceMinMaxConsumption.sum,
-
-            }
-        }
-    }
 
 })
 

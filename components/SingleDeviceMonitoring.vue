@@ -31,6 +31,7 @@
                 <div>
                     <p class="text-sm text-gray-500">Name</p>
                     <h1 class="font-bold text-xl">{{ option.device.name }}</h1>
+                    <p class ="text-xs text-muted-foreground">{{ option.device.eui }}</p>
                 </div>
             </div>
         </div>
