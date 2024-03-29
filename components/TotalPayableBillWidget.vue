@@ -41,7 +41,6 @@
 <script setup lang="ts">
 import { useBillStore } from '~/stores/bill/bill.store';
 import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
-import { useControlStore } from '~/stores/control/control.store';
 
 const props = defineProps<{option : IBillOptionDTO}>()
 const billStore = useBillStore()
