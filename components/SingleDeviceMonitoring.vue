@@ -15,23 +15,26 @@
                 </div>
                 <div class="flex gap-2">
                     <Stat :option="{ title: 'Battery', value: `${option.device.battery}` }"></Stat>
-                    <Stat :option="{ title: 'Valve', value: option.device.valveIsOpen ? 'Open' : 'Closed' }"></Stat>
+                    <Stat :option="{ title: 'Valve', value: option.device.valveIsOpen ? 'Open' : 'Closed' }">
+                        <Switch :checked="option.device.valveIsOpen" class="my-2"/>
+                    </Stat>
                 </div>
                 <div class="flex gap-2">
-                    <Stat :option="{ title: 'Total Consumption', value: `${option.device.lastTotalConsumption.toFixed(2)}k L` }">
+                    <Stat
+                        :option="{ title: 'Total Consumption', value: `${option.device.lastTotalConsumption.toFixed(2)}k L` }">
                     </Stat>
                 </div>
 
             </div>
             <div class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between">
                 <div class="w-40 mx-auto ">
-                    <img class="w-full h-full object-cover" src="/img/lorawan.png"/>
+                    <img class="w-full h-full object-cover" src="/img/lorawan.png" />
                 </div>
 
                 <div>
                     <p class="text-sm text-gray-500">Name</p>
                     <h1 class="font-bold text-xl">{{ option.device.name }}</h1>
-                    <p class ="text-xs text-muted-foreground">{{ option.device.eui }}</p>
+                    <p class="text-xs text-muted-foreground">{{ option.device.eui }}</p>
                 </div>
             </div>
         </div>
