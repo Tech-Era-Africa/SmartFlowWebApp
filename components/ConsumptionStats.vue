@@ -3,20 +3,20 @@
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="font-bold text-lg">{{ option.title ?? 'Total Consumption' }}</h1>
-                <!-- <p class="text-xs text-gray-400">Updated 10mins ago</p> -->
+                <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p>
             </div>
             <DateRangePicker @handle-date-change="onDateChanged"></DateRangePicker>
         </div>
         <div class="mt-5 flex flex-col flex-1 justify-between">
             <div class="flex justify-between items-center">
-                <p class="text-gray-500 font-medium">Maximal Used</p>
+                <p class="text-gray-500 font-medium">Max Used</p>
                 <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
                 <template v-else>
                     <p class="text-xl font-bold">{{validStatNumber(option.max).toFixed(2)}}k L</p>
                 </template>
             </div>
             <div class="flex justify-between items-center">
-                <p class="text-gray-500 font-medium">Minimal Used</p>
+                <p class="text-gray-500 font-medium">Min Used</p>
                 <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
                 <template v-else>
                     <p class="text-xl font-bold">{{validStatNumber(option.min).toFixed(2)}}k L</p>
@@ -36,13 +36,12 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
 import { Loader2 } from 'lucide-vue-next'
-import { notNullish } from '@vueuse/core';
 
 const emits = defineEmits(['onDateChanged'])
 
-const props = defineProps({
+ defineProps({
     option: {
-        type: Object as PropType<{ title?:string, isLoading?:boolean, max:number, min:number, sum:number }>,
+        type: Object as PropType<{ title?:string, subtitle?:string, isLoading?:boolean, max:number, min:number, sum:number }>,
         required: true
     },
 })

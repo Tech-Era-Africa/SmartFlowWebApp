@@ -71,10 +71,11 @@ const handleWaterConsumptionStatsDateChanged = (date: { start: Date, end: Date }
     deviceStore.getMinMaxConsumption(date.start.toISOString(), date.end.toISOString())
 }
 
-const consumptionStatOption = ref<{ title?: string, isLoading?: boolean, min:number, max:number,sum:number }>({} as any) //!TODO:IMPELEMENT THIS PROPERLY
+const consumptionStatOption = ref<{ title?: string, isLoading?: boolean, min:number, max:number,sum:number, subtitle?:string }>({} as any) //!TODO:IMPELEMENT THIS PROPERLY
 
 const consumptionChart = ref<IWaterConsumptionChart>({
     title: "Total Water Consumption",
+    subtitle: "* For all devices",
     chartSeries: deviceStore.deviceConsumptionTrend,
     isLoading: deviceStore.isGettingConsumptionTrend,
     success: true,
@@ -88,6 +89,7 @@ watchEffect(() => {
 
     consumptionChart.value.isLoading = deviceStore.isGettingConsumptionTrend
     consumptionStatOption.value = {
+        subtitle: "* For all devices",
         isLoading : deviceStore.isGettingDeviceMinMaxConsumption,
         min : deviceStore.minMaxconsumption.min,
         max : deviceStore.minMaxconsumption.max,
