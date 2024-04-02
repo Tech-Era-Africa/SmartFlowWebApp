@@ -33,7 +33,7 @@
         </NuxtLink>
 
 
-        <NuxtLink to="/devices/group">
+        <NuxtLink to="/devices/group" v-if="deviceStore.devicesGroups.length>1">
           <div class="bg-gray-100 flex justify-center items-center px-5 rounded-xl cursor-pointer h-full">
             <p class="font-bold text-xl">+{{ deviceStore.devicesGroups.length - 1 }}</p>
           </div>
