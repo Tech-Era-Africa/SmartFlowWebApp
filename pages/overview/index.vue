@@ -10,7 +10,7 @@
                     <ConsumptionStats @on-date-changed="handleWaterConsumptionStatsDateChanged"
                         :option="consumptionStatOption" class="h-full">
                     </ConsumptionStats>
-                    <SmartCredit></SmartCredit>
+                    <!-- <SmartCredit></SmartCredit> -->
                 </div>
 
             </div>

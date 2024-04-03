@@ -16,7 +16,7 @@
                 <div class="flex gap-2">
                     <Stat :option="{ title: 'Battery', value: `${option.device.battery}` }"></Stat>
                     <Stat :option="{ title: 'Valve', value: option.device.valveIsOpen ? 'Open' : 'Closed' }">
-                        <Dialog>
+                        <Dialog :open="showValveUpdateModal" @update:open="handleModalUpdate">
                             <DialogTrigger>
                                 <Switch :checked="option.device.valveIsOpen" class="my-2" />
                             </DialogTrigger>
@@ -26,15 +26,13 @@
                                         <h1>{{ option.device.valveIsOpen ? 'Close' : 'Open' }} Valve</h1>
                                     </DialogTitle>
                                     <DialogDescription>
-                                        <p>Kindly be aware that it take an estimated <span class="font-bold text-primary">4 hours</span> for the valves on the
+                                        <p>Kindly be aware that it takes an estimated period for the valves on the
                                             devices to
-                                            be {{ option.device.valveIsOpen ? 'close' : 'open' }} once you trigger this
-                                            action. It is advised to factor this in your water management plan. This
-                                            update
-                                            cycle will improve over time. The status will update once this action is triggered</p>
+                                            be {{ option.device.valveIsOpen ? 'closed' : 'opened' }} once you trigger this
+                                            action. It is advised to factor this in your water management plan.</p>
                                     </DialogDescription>
                                 </DialogHeader>
-                                <Button>Proceed to {{ option.device.valveIsOpen ? 'close' : 'open' }} valve</Button>
+                                <Button :disabled="isUpdateValve" @click="proceedToUpdateValve">Proceed to {{ option.device.valveIsOpen ? 'close' : 'open' }} valve <Loader2 v-if="isUpdateValve" class="ml-2 animate-spin"></Loader2></Button>
                             </DialogContent>
                         </Dialog>
 
@@ -63,6 +61,7 @@
 </template>
 <script setup lang="ts">
 import type { DeviceCardOptionDTO } from '~/utils/dto/deviceCard.option.dto';
+import { Loader2 } from 'lucide-vue-next'
 
 defineProps({
     option: {
@@ -70,5 +69,24 @@ defineProps({
         required: true
     }
 })
+
+
+
+// MODAL SETTINGS
+const showValveUpdateModal = ref(false)
+const handleModalUpdate = (status:boolean)=>{
+    showValveUpdateModal.value = status
+}
+
+//! TO MOVE
+const isUpdateValve = ref(false)
+const proceedToUpdateValve = ()=>{
+isUpdateValve.value = true
+
+setTimeout(()=>{
+    isUpdateValve.value = false 
+    showValveUpdateModal.value = false
+}, 550)
+}
 
 </script>
