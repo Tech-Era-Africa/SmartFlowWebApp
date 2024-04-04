@@ -7,17 +7,7 @@
                 </div>
 
                 <div class="flex items-center justify-end">
-
-                    <div class="flex items-center space-x-6 sm:ml-5">
-                        <Avatar size="sm">
-                                <AvatarImage :src="userStore.currentUser?.avatarUrl!" alt="user avatar" />
-                                <AvatarFallback>UN</AvatarFallback>
-                            </Avatar>
-                            <div>
-                                <h1>{{ userStore.currentUser?.firstName }} {{ userStore.currentUser?.lastName }}</h1>
-                                <p class="text-xs text-muted-foreground">Super Admin</p>
-                            </div>
-                    </div>
+                    <UserNav></UserNav>
                 </div>
             </div>
         </header>
