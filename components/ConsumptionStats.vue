@@ -9,14 +9,14 @@
         </div>
         <div class="mt-5 flex flex-col flex-1 justify-between">
             <div class="flex justify-between items-center">
-                <p class="text-gray-500 font-medium">Max Used</p>
+                <p class="text-gray-500 font-medium">Highest Consumption</p>
                 <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
                 <template v-else>
                     <p class="text-xl font-bold">{{validStatNumber(option.max).toFixed(2)}}k L</p>
                 </template>
             </div>
             <div class="flex justify-between items-center">
-                <p class="text-gray-500 font-medium">Min Used</p>
+                <p class="text-gray-500 font-medium">Lowest Consumption</p>
                 <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
                 <template v-else>
                     <p class="text-xl font-bold">{{validStatNumber(option.min).toFixed(2)}}k L</p>
