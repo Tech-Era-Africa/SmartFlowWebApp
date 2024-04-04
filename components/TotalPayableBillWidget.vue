@@ -3,19 +3,54 @@
         <div class="flex  justify-between items-center">
             <div>
                 <h1 class="font-bold text-lg">Total Payable Bill</h1>
-                <p class="text-muted-foreground text-xs my-2">Period: {{useFormatDateHuman(new Date(option.startDate ?? Date.now()))}} - {{useFormatDateHuman(new Date(option.endDate ?? Date.now()))}}</p>
             </div>
-            <div class="dropdown dropdown-end dropdown-bottom">
-                <label tabindex="0" class="btn btn-ghost m-1">
-                    <!-- <Icon name="ion:caret-down-outline" /> -->
-                </label>
-                <!-- <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                    <li><a>This Month</a></li>
-                    <li><a>This Year</a></li>
-                </ul> -->
-            </div>
+            <DropdownMenu>
+                <DropdownMenuTrigger as-child class="flex gap-2 cursor-pointer">
+                    <Badge variant="outline" class="px-4 py-2 border-black border-dashed">
+                        <span>Commercial</span>
+                        <ChevronDown class="h-4 w-4" />
+                    </Badge>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent class="w-60 mr-5 mt-2 rounded-2xl border-none p-4">
+                    <DropdownMenuLabel>
+                        <h2>Bill Type</h2>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem class="flex justify-between"
+                        :class="{ 'bg-green-200': option.billTypeId == 'dom' }">
+                        <div class="flex items-center">
+                            <Home class="mr-2 h-4 w-4" />
+                            <span>Domestic</span>
+                        </div>
 
+                        <CircleCheckBig v-if="option.billTypeId == 'dom'" class="h-4 w-4" />
+                    </DropdownMenuItem>
+                    <DropdownMenuItem class="flex justify-between"
+                        :class="{ 'bg-green-200': option.billTypeId == 'rxc51QYu7l' }">
+                        <div class="flex items-center">
+                            <Building2 class="mr-2 h-4 w-4" />
+                            <span>Commercial</span>
+                        </div>
 
+                        <CircleCheckBig class="h-4 w-4" v-if="option.billTypeId == 'rxc51QYu7l'" />
+
+                    </DropdownMenuItem>
+                    <DropdownMenuItem class="flex justify-between"
+                        :class="{ 'bg-green-200': option.billTypeId == 'ind' }">
+                        <div class="flex items-center">
+                            <Factory class="mr-2 h-4 w-4" />
+                            <span>Industrial</span>
+                        </div>
+
+                        <CircleCheckBig class="h-4 w-4" v-if="option.billTypeId == 'ind'" />
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
+        <div class="flex gap-1 items-center text-muted-foreground">
+            <CalendarDays class="h-4 w-4 " />
+            <p class=" text-xs my-2">{{ useFormatDateHuman(new Date(option.startDate ??
+                            Date.now())) }} - {{ useFormatDateHuman(new Date(option.endDate ?? Date.now())) }}</p>
         </div>
         <div class="flex-1 flex flex-col lg:flex-row gap-2">
             <Stat :option="{ title: 'Amount', value: `${formatAmount(totalCurrentCharge())}`, clearBg: true }">
@@ -24,25 +59,27 @@
 
         </div>
         <Dialog :open="isModalOpen" @update:open="handleModalOpen">
-            <DialogTrigger >
-                <Button @click="generateBill" :disabled="totalCurrentCharge() == 0" class="w-full mt-5">Calculate Bill</Button>
+            <DialogTrigger>
+                <Button @click="generateBill" :disabled="totalCurrentCharge() == 0" class="w-full mt-5">Calculate
+                    Bill</Button>
             </DialogTrigger>
             <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
-                
+
                 <div class="mt-4">
                     <BillPreview :option="option"></BillPreview>
                 </div>
-                
+
             </DialogContent>
         </Dialog>
 
     </div>
 </template>
 <script setup lang="ts">
+import { Building2, CalendarDays, ChevronDown, CircleCheckBig, Factory, Home } from 'lucide-vue-next';
 import { useBillStore } from '~/stores/bill/bill.store';
 import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 
-const props = defineProps<{option : IBillOptionDTO}>()
+const props = defineProps<{ option: IBillOptionDTO }>()
 const billStore = useBillStore()
 
 const formatAmount = (number: number) => new Intl.NumberFormat('en-GH', {
@@ -66,7 +103,7 @@ const generateBill = () => {
 }
 
 const isModalOpen = ref(false)
-const handleModalOpen = (isOpen:boolean)=>{
+const handleModalOpen = (isOpen: boolean) => {
 
 
     return props.option.totalConsumption > 0 ? isModalOpen.value = isOpen : isModalOpen.value = false

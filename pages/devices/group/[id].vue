@@ -240,6 +240,7 @@ watchEffect(async () => {
     if (deviceStore.success_SelectedClusterMinMaxConsumption) {
         billWidgetOption.value = {
             billTitle: `${deviceStore.deviceGroupName} Bill`,
+            billTypeId : "rxc51QYu7l", //!TODO!: MAKE DYNAMIC
             devices: deviceStore.devices,
             totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
             startDate: startOfMonth.toISOString(),
