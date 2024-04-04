@@ -16,7 +16,8 @@
 
     <Collapsible v-model:open="isOpen" class="my-5">
         <div class="rounded-md border border-blue-100 px-4 py-3 flex justify-between items-center w-full bg-blue-50">
-            <p class="font-bold">Devices <Badge variant="outline">{{ option.devices.length }}</Badge></p>
+            <p class="font-bold">Devices <Badge variant="outline">{{ option.devices.length }}</Badge>
+            </p>
             <CollapsibleTrigger as-child>
                 <Button variant="ghost" size="sm" class="w-9 p-0">
                     <ChevronsUpDown class="h-4 w-4" />
@@ -34,17 +35,7 @@
     <div class="flex flex-col gap-2">
         <div class="flex justify-between text-xs items-center">
             <p>Bill Type</p>
-            <p>Domestic</p>
-            <!-- <div class="dropdown dropdown-end dropdown-bottom">
-                        <label tabindex="" class="btn btn-outline">Domestic
-                            <Icon name="ion:caret-down-outline" />
-                        </label>
-                        <ul tabindex="" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                            <li><a>Domestic</a></li>
-                            <li><a>Commercial</a></li>
-                            <li><a>Industrial</a></li>
-                        </ul>
-                    </div> -->
+            <p>{{ getBill.billType }}</p>
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>Bill Date</p>
@@ -56,19 +47,19 @@
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>Water Charge</p>
-            <p>{{ useUseFormatCurrency(getBill().waterCharge) }}</p>
+            <p>{{ useUseFormatCurrency(getBill.waterCharge) }}</p>
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>1% Fire Fighting</p>
-            <p>{{ useUseFormatCurrency(getBill().firefighting) }}</p>
+            <p>{{ useUseFormatCurrency(getBill.firefighting) }}</p>
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>2% Rural Water</p>
-            <p>{{ useUseFormatCurrency(getBill().ruralWater) }}</p>
+            <p>{{ useUseFormatCurrency(getBill.ruralWater) }}</p>
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>Service Charge</p>
-            <p>{{ useUseFormatCurrency(getBill().serviceCharge) }}</p>
+            <p>{{ useUseFormatCurrency(getBill.serviceCharge) }}</p>
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>Current Charges</p>
@@ -106,9 +97,16 @@ const credit = ref(0)
 const totalBill = ref(0)
 const isOpen = ref(false)
 
-const getBill = () => useWaterBillAlgo({ consumption: props.option.totalConsumption })
+// TODO!: MAKE THIS A BETTER TYPE
+const billType: any = {
+    "sa": 'DOMESTIC',
+    "rxc51QYu7l": 'COMMERCIAL',
+    "ds": 'INDUSTRIAL'
+}
 
-const validStatNumber = (num:number)=> num > 0 ? num : 0
+const getBill = computed(()=>useWaterBillAlgo({ consumption: props.option.totalConsumption, type: billType[props.option.billTypeId] ?? 'DOMESTIC' }))
+
+const validStatNumber = (num: number) => num > 0 ? num : 0
 
 const totalCurrentCharge = () => {
     const bill = billStore.calculateTotalBill(props.option.totalConsumption)
@@ -127,10 +125,10 @@ const createBill = () => billStore.createNewBill({
     bill: {
         currency: 'GHC',
         amount: totalCurrentCharge(),
-        fireCharge: getBill().firefighting,
-        ruralCharge: getBill().ruralWater,
-        serviceCharge: getBill().serviceCharge,
-        waterCharge: getBill().waterCharge,
+        fireCharge: getBill.value.firefighting,
+        ruralCharge: getBill.value.ruralWater,
+        serviceCharge: getBill.value.serviceCharge,
+        waterCharge: getBill.value.waterCharge,
         createdAt: "",
         objectId: "",
         status: {} as any,

@@ -26,7 +26,8 @@ export const useWaterBillAlgo = (options: IWaterBillAlgoOptions) => {
       waterCharge: waterCharge + (waterCharge * surcharge.fireFighting) + (waterCharge * surcharge.ruralWater),
       firefighting: waterCharge * surcharge.fireFighting,
       ruralWater : waterCharge * surcharge.ruralWater,
-      serviceCharge
+      serviceCharge,
+      billType : options.type
     };
   }
 
@@ -38,6 +39,7 @@ export const useWaterBillAlgo = (options: IWaterBillAlgoOptions) => {
       firefighting: waterCharge * surcharge.fireFighting,
       ruralWater : waterCharge * surcharge.ruralWater,
       serviceCharge,
+      billType : options.type
     }
   }
 
@@ -45,7 +47,8 @@ export const useWaterBillAlgo = (options: IWaterBillAlgoOptions) => {
     waterCharge: 0,
     firefighting: 0,
     ruralWater : 0,
-    serviceCharge
+    serviceCharge,
+    billType : options.type
   };
 };
 
