@@ -188,7 +188,7 @@ export const useDeviceStore = defineStore({
 
       try {
         this.getDevicesApiState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ id: "hXR7sQI3FI" }).toString(); //TODO!: Must dynamically pass this
+        const queryString = new URLSearchParams({ id: useUserStore().selectedOrganisation.objectId }).toString(); 
         const data = await useStoreFetchRequest(`/api/device/by/org?${queryString}`, 'GET');
         this.devices = (data as any).map((data: any) => DeviceModel.fromMap(data))
         this.getDevicesApiState = ApiResponseState.SUCCESS;
