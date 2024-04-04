@@ -36,6 +36,10 @@ export const useAuthStore = defineStore({
         this.loginState = ApiResponseState.FAILED;
       }
     },
+
+    logoutUser(){
+      useUserStore().clearUserToken()
+    }
   },
 
   getters:{

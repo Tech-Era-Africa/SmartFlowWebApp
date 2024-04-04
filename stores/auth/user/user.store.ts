@@ -39,6 +39,11 @@ export const useUserStore = defineStore('user', {
       console.log("Current user token set")
     },
 
+    clearUserToken(){
+      useCookie('WF_UT').value = null
+      console.log("Current user token cleared")
+    },
+
     async getCurrentUser() {
 
       if (this.token) {
