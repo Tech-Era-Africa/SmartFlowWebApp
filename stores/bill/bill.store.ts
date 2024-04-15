@@ -118,10 +118,10 @@ export const useBillStore = defineStore({
       }
     },
 
-    calculateTotalBill(consumption: number) {
-      if(consumption == 0) return 0;
+    calculateTotalBill(option:IWaterBillAlgoOptions) {
+      if(option.consumption == 0) return 0;
 
-      const bill = useWaterBillAlgo({ consumption: consumption ?? 0 })
+      const bill = useWaterBillAlgo(option)
 
       return bill.firefighting + bill.ruralWater + bill.serviceCharge + bill.waterCharge
     }

@@ -14,28 +14,10 @@
 
     </div>
 
-    <Collapsible v-model:open="isOpen" class="my-5">
-        <div class="rounded-md border border-blue-100 px-4 py-3 flex justify-between items-center w-full bg-blue-50">
-            <p class="font-bold">Devices <Badge variant="outline">{{ option.devices.length }}</Badge>
-            </p>
-            <CollapsibleTrigger as-child>
-                <Button variant="ghost" size="sm" class="w-9 p-0">
-                    <ChevronsUpDown class="h-4 w-4" />
-                </Button>
-            </CollapsibleTrigger>
-        </div>
-        <CollapsibleContent class="space-y-2">
-            <div class="grid grid-cols-3 my-5 gap-4">
-                <DeviceCard v-for="device in option.devices" :option="{ device: device }"></DeviceCard>
-            </div>
-        </CollapsibleContent>
-    </Collapsible>
-
-
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 mt-5">
         <div class="flex justify-between text-xs items-center">
             <p>Bill Type</p>
-            <p>{{ getBill.billType }}</p>
+            <Badge class="border-dashed rounded-sm border-primary text-primary" variant="outline">{{ billTypeTitle }}</Badge>
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>Bill Date</p>
@@ -77,8 +59,42 @@
             <h1>Total Bill</h1>
             <h1>{{ useUseFormatCurrency(totalCurrentCharge()) }}</h1>
         </div>
-
     </div>
+
+    <Collapsible v-model:open="isOpen" class="my-5">
+        <div class="rounded-md border border-blue-100 px-4 py-3 flex justify-between items-center w-full bg-blue-50">
+            <p class="font-bold">Devices <Badge variant="outline">{{ option.devices.length }}</Badge>
+            </p>
+            <CollapsibleTrigger as-child>
+                <Button variant="ghost" size="sm" class="w-9 p-0">
+                    <ChevronsUpDown class="h-4 w-4" />
+                </Button>
+            </CollapsibleTrigger>
+        </div>
+        <CollapsibleContent class="space-y-2">
+            <div class="grid grid-cols-3 my-5 gap-4">
+                <DeviceCard v-for="device in option.devices" :option="{ device: device }"></DeviceCard>
+            </div>
+        </CollapsibleContent>
+    </Collapsible>
+
+    <Collapsible v-model:open="isOpen" class="my-5">
+        <div class="rounded-md border border-blue-100 px-4 py-3 flex justify-between items-center w-full bg-blue-50">
+            <p class="font-bold">Billing History</p>
+            <CollapsibleTrigger as-child>
+                <Button variant="ghost" size="sm" class="w-9 p-0">
+                    <ChevronsUpDown class="h-4 w-4" />
+                </Button>
+            </CollapsibleTrigger>
+        </div>
+        <CollapsibleContent class="space-y-2">
+            <div class="grid grid-cols-3 my-5 gap-4">
+                <DeviceCard v-for="device in option.devices" :option="{ device: device }"></DeviceCard>
+            </div>
+        </CollapsibleContent>
+    </Collapsible>
+
+    <Button class="mt-4 w-full">Generate Bill</Button>
 
 </template>
 <script setup lang="ts">
@@ -87,6 +103,7 @@ import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import { ChevronsUpDown } from 'lucide-vue-next'
+import { BillType } from '~/utils/class/billType.class';
 
 const props = defineProps<{ option: IBillOptionDTO }>()
 
@@ -97,19 +114,14 @@ const credit = ref(0)
 const totalBill = ref(0)
 const isOpen = ref(false)
 
-// TODO!: MAKE THIS A BETTER TYPE
-const billType: any = {
-    "sa": 'DOMESTIC',
-    "rxc51QYu7l": 'COMMERCIAL',
-    "ds": 'INDUSTRIAL'
-}
 
-const getBill = computed(()=>useWaterBillAlgo({ consumption: props.option.totalConsumption, type: billType[props.option.billTypeId] ?? 'DOMESTIC' }))
+const getBill = computed(()=>useWaterBillAlgo({ consumption: props.option.totalConsumption, type: props.option.billTypeId}))
 
+const billTypeTitle = computed(()=> BillType.getName(props.option.billTypeId))
 const validStatNumber = (num: number) => num > 0 ? num : 0
 
 const totalCurrentCharge = () => {
-    const bill = billStore.calculateTotalBill(props.option.totalConsumption)
+    const bill = billStore.calculateTotalBill({consumption : props.option.totalConsumption,  type: props.option.billTypeId})
 
     // const totalAmountPaid = billStore.paidBills.reduce((accumulator, currentValue: any) => {
     //     return accumulator + currentValue.amount;

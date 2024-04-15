@@ -1,4 +1,4 @@
-import type { User } from "~/server/api/auth/user/user.model";
+import type { User } from "~/stores/auth/user/model/user.model";
 import { useUserStore } from "~/stores/auth/user/user.store";
 
 

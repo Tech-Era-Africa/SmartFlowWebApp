@@ -1,56 +1,15 @@
 <template>
     <div class="w-full min-h-[100px] bg-[#E5FFE4] rounded-xl p-5 flex flex-col gap-2">
-        <div class="flex  justify-between items-center">
+        <div class="flex flex-col items-start">
             <div>
                 <h1 class="font-bold text-lg">Total Payable Bill</h1>
             </div>
-            <DropdownMenu>
-                <DropdownMenuTrigger as-child class="flex gap-2 cursor-pointer">
-                    <Badge variant="outline" class="px-4 py-2 border-black border-dashed">
-                        <span>Commercial</span>
-                        <ChevronDown class="h-4 w-4" />
-                    </Badge>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent class="w-60 mr-5 mt-2 rounded-2xl border-none p-4">
-                    <DropdownMenuLabel>
-                        <h2>Bill Type</h2>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem class="flex justify-between"
-                        :class="{ 'bg-green-200': option.billTypeId == 'dom' }">
-                        <div class="flex items-center">
-                            <Home class="mr-2 h-4 w-4" />
-                            <span>Domestic</span>
-                        </div>
 
-                        <CircleCheckBig v-if="option.billTypeId == 'dom'" class="h-4 w-4" />
-                    </DropdownMenuItem>
-                    <DropdownMenuItem class="flex justify-between"
-                        :class="{ 'bg-green-200': option.billTypeId == 'rxc51QYu7l' }">
-                        <div class="flex items-center">
-                            <Building2 class="mr-2 h-4 w-4" />
-                            <span>Commercial</span>
-                        </div>
-
-                        <CircleCheckBig class="h-4 w-4" v-if="option.billTypeId == 'rxc51QYu7l'" />
-
-                    </DropdownMenuItem>
-                    <DropdownMenuItem class="flex justify-between"
-                        :class="{ 'bg-green-200': option.billTypeId == 'ind' }">
-                        <div class="flex items-center">
-                            <Factory class="mr-2 h-4 w-4" />
-                            <span>Industrial</span>
-                        </div>
-
-                        <CircleCheckBig class="h-4 w-4" v-if="option.billTypeId == 'ind'" />
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
         </div>
         <div class="flex gap-1 items-center text-muted-foreground">
             <CalendarDays class="h-4 w-4 " />
             <p class=" text-xs my-2">{{ useFormatDateHuman(new Date(option.startDate ??
-                            Date.now())) }} - {{ useFormatDateHuman(new Date(option.endDate ?? Date.now())) }}</p>
+                Date.now())) }} - {{ useFormatDateHuman(new Date(option.endDate ?? Date.now())) }}</p>
         </div>
         <div class="flex-1 flex flex-col lg:flex-row gap-2">
             <Stat :option="{ title: 'Amount', value: `${formatAmount(totalCurrentCharge())}`, clearBg: true }">
@@ -58,6 +17,53 @@
             </Stat>
 
         </div>
+        <Select @update:model-value="handleSelectChange">
+
+            <SelectTrigger as-child class="flex gap-2 cursor-pointer">
+                <Badge variant="outline" class="px-4 py-2 border-none">
+                    <span>{{ billTypeTitle }}</span>
+                    <ChevronDown class="h-4 w-4" />
+                </Badge>
+            </SelectTrigger>
+            <SelectContent class="mr-5 mt-2 rounded-2xl border-none p-2">
+                <SelectGroup class="space-y-2">
+                    <SelectLabel>
+                        <h2>Bill Type</h2>
+                    </SelectLabel>
+                    <SelectSeparator />
+                    <SelectItem :value="BillType.getId('DOMESTIC')!"
+                        :class="{ 'bg-green-200': option.billTypeId == BillType.getId('DOMESTIC') }">
+                        <div class="flex justify-between w-full ">
+                            <div class="flex items-center">
+                                <Home class="mr-2 h-4 w-4" />
+                                <span>Domestic</span>
+                            </div>
+
+                        </div>
+                    </SelectItem>
+                    <SelectItem :value="BillType.getId('COMMERCIAL')!"
+                        :class="{ 'bg-green-200': option.billTypeId == BillType.getId('COMMERCIAL') }">
+                        <div class="flex justify-between w-full ">
+                            <div class="flex items-center">
+                                <Building2 class="mr-2 h-4 w-4" />
+                                <span>Commercial</span>
+                            </div>
+
+                        </div>
+                    </SelectItem>
+                    <SelectItem :value="BillType.getId('INDUSTRIAL')!"
+                        :class="{ 'bg-green-200': option.billTypeId == BillType.getId('INDUSTRIAL') }">
+                        <div class="flex justify-between w-full flex-row">
+                            <div class="flex items-center">
+                                <Factory class="mr-2 h-4 w-4" />
+                                <span>Industrial</span>
+                            </div>
+                        </div>
+                    </SelectItem>
+                </SelectGroup>
+
+            </SelectContent>
+        </Select>
         <Dialog :open="isModalOpen" @update:open="handleModalOpen">
             <DialogTrigger>
                 <Button @click="generateBill" :disabled="totalCurrentCharge() == 0" class="w-full mt-5">Calculate
@@ -78,6 +84,7 @@
 import { Building2, CalendarDays, ChevronDown, CircleCheckBig, Factory, Home } from 'lucide-vue-next';
 import { useBillStore } from '~/stores/bill/bill.store';
 import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
+import { BillType } from '~/utils/class/billType.class';
 
 const props = defineProps<{ option: IBillOptionDTO }>()
 const billStore = useBillStore()
@@ -87,11 +94,14 @@ const formatAmount = (number: number) => new Intl.NumberFormat('en-GH', {
     currency: 'GHS'
 }).format(number)
 
+
+const billTypeTitle = computed(() => BillType.getName(props.option.billTypeId))
+const handleSelectChange = (item: string) => {
+    props.option.billTypeId = item
+}
+
 const totalCurrentCharge = () => {
-
-
-    const bill = props.option.totalConsumption ? billStore.calculateTotalBill(props.option.totalConsumption) : 0
-
+    const bill = props.option.totalConsumption ? billStore.calculateTotalBill({ consumption: props.option.totalConsumption, type: props.option.billTypeId }) : 0
     return bill
 }
 

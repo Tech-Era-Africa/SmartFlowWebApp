@@ -53,7 +53,7 @@ onBeforeMount(() => {
 })
 
 const totalConsumption = computed(()=> deviceStore.sumTotalConsumptionFromDevices())
-const totalBill = computed(()=>billingStore.calculateTotalBill(totalConsumption.value).toFixed(2))
+const totalBill = computed(()=>billingStore.calculateTotalBill({consumption:totalConsumption.value}).toFixed(2))
 
 const props = defineProps<{title?:string}>()
 
