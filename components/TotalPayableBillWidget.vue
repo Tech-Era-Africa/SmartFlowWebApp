@@ -69,7 +69,7 @@
                 <Button @click="generateBill" :disabled="totalCurrentCharge() == 0" class="w-full mt-5">Calculate
                     Bill</Button>
             </DialogTrigger>
-            <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
+            <DialogContent class="sm:max-h-[95vh] sm:max-w-[45vw] overflow-y-auto">
 
                 <div class="mt-4">
                     <BillPreview :option="option"></BillPreview>

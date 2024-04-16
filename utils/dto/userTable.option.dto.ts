@@ -1,4 +1,5 @@
-import type { User, UserModel } from "~/server/api/auth/user/user.model";
+import type { User } from "~/stores/auth/user/model/user.model";
+
 
 
 export interface UserTableOptionDTO{

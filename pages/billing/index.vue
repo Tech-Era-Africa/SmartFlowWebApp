@@ -44,7 +44,7 @@ useHead({title : "Water Billing"})
 const usersDataTableOption = ref<UserTableOptionDTO>({
     title: 'Billing History',
             users : [
-                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin", orgId : "Org A"}).user
+                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"}).user
             ] as User[],
             columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
 } as UserTableOptionDTO);

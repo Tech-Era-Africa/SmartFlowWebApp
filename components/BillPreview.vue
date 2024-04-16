@@ -78,7 +78,7 @@
         </CollapsibleContent>
     </Collapsible>
 
-    <Collapsible v-model:open="isOpen" class="my-5">
+    <Collapsible v-model:open="isBillsOpen" class="my-5">
         <div class="rounded-md border border-blue-100 px-4 py-3 flex justify-between items-center w-full bg-blue-50">
             <p class="font-bold">Billing History</p>
             <CollapsibleTrigger as-child>
@@ -88,9 +88,7 @@
             </CollapsibleTrigger>
         </div>
         <CollapsibleContent class="space-y-2">
-            <div class="grid grid-cols-3 my-5 gap-4">
-                <DeviceCard v-for="device in option.devices" :option="{ device: device }"></DeviceCard>
-            </div>
+         <BillingTable :option="usersDataTableOption"></BillingTable>
         </CollapsibleContent>
     </Collapsible>
 
@@ -104,6 +102,8 @@ import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import { ChevronsUpDown } from 'lucide-vue-next'
 import { BillType } from '~/utils/class/billType.class';
+import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
+import { UserModel, type User } from '~/stores/auth/user/model/user.model';
 
 const props = defineProps<{ option: IBillOptionDTO }>()
 
@@ -113,6 +113,8 @@ const controlStore = useControlStore()
 const credit = ref(0)
 const totalBill = ref(0)
 const isOpen = ref(false)
+const isBillsOpen = ref(false)
+
 
 
 const getBill = computed(()=>useWaterBillAlgo({ consumption: props.option.totalConsumption, type: props.option.billTypeId}))
@@ -151,6 +153,15 @@ const createBill = () => billStore.createNewBill({
     devices: [deviceStore.selectedDevice],
 
 })
+
+const usersDataTableOption = ref<UserTableOptionDTO>({
+   
+            users : [
+                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"}).user
+            ] as User[],
+            columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
+} as UserTableOptionDTO);
+
 
 
 
