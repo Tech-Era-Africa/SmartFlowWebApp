@@ -92,7 +92,7 @@
         </CollapsibleContent>
     </Collapsible>
 
-    <Button class="mt-4 w-full">Generate Bill</Button>
+    <Button class="mt-4 w-full" @click="createBill" :disabled="billStore.isCreatingBill"><span>Generate Bill</span><Loader2 v-if="billStore.isCreatingBill" class="animate-spin ml-2" :size="16"></Loader2></Button>
 
 </template>
 <script setup lang="ts">
@@ -100,7 +100,7 @@ import { useBillStore } from '~/stores/bill/bill.store';
 import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 import { useControlStore } from '~/stores/control/control.store';
 import { useDeviceStore } from '~/stores/device/device.store';
-import { ChevronsUpDown } from 'lucide-vue-next'
+import { ChevronsUpDown, Loader2 } from 'lucide-vue-next'
 import { BillType } from '~/utils/class/billType.class';
 import type { UserTableOptionDTO } from '~/utils/dto/userTable.option.dto';
 import { UserModel, type User } from '~/stores/auth/user/model/user.model';
@@ -143,14 +143,15 @@ const createBill = () => billStore.createNewBill({
         ruralCharge: getBill.value.ruralWater,
         serviceCharge: getBill.value.serviceCharge,
         waterCharge: getBill.value.waterCharge,
-        createdAt: "",
         objectId: "",
-        status: {} as any,
-        billType: {} as any,
-        updatedAt: ""
+        status: "", //Handled in store
+        billType: props.option.billTypeId,
+        clusterId : props.option.clusterId,
+        createdBy : "", //Handled in store
+        orgId : "", //Handled in store
 
     },
-    devices: [deviceStore.selectedDevice],
+    deviceIds: props.option.devices.map((device)=>device.objectId),
 
 })
 
@@ -167,8 +168,7 @@ const usersDataTableOption = ref<UserTableOptionDTO>({
 
 watch(billStore, (state) => {
     if (state.success_CreatingBill) {
-        controlStore.toggleBillModal() //Closes it if opened
-        return controlStore.toggleBillSuccessModal()
+       return alert("Successfully created bill")
 
     }
     if (state.failed_CreatingBill) {

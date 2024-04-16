@@ -66,7 +66,7 @@
         </Select>
         <Dialog :open="isModalOpen" @update:open="handleModalOpen">
             <DialogTrigger>
-                <Button @click="generateBill" :disabled="totalCurrentCharge() == 0" class="w-full mt-5">Calculate
+                <Button :disabled="totalCurrentCharge() == 0" class="w-full mt-5">Calculate
                     Bill</Button>
             </DialogTrigger>
             <DialogContent class="sm:max-h-[95vh] sm:max-w-[45vw] overflow-y-auto">
@@ -87,6 +87,7 @@ import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 import { BillType } from '~/utils/class/billType.class';
 
 const props = defineProps<{ option: IBillOptionDTO }>()
+
 const billStore = useBillStore()
 
 const formatAmount = (number: number) => new Intl.NumberFormat('en-GH', {
@@ -95,7 +96,10 @@ const formatAmount = (number: number) => new Intl.NumberFormat('en-GH', {
 }).format(number)
 
 
-const billTypeTitle = computed(() => BillType.getName(props.option.billTypeId))
+
+
+
+const billTypeTitle = computed(() => BillType.getName(props.option.billTypeId)) //Default to commercial
 const handleSelectChange = (item: string) => {
     props.option.billTypeId = item
 }
@@ -105,16 +109,8 @@ const totalCurrentCharge = () => {
     return bill
 }
 
-const generateBill = () => {
-    // controlStore.openModal('billModal')
-
-    //  Get the current water consumption
-    // deviceStore.getCurrentDeviceConsumption(props.option.device.objectId)
-}
-
 const isModalOpen = ref(false)
 const handleModalOpen = (isOpen: boolean) => {
-
 
     return props.option.totalConsumption > 0 ? isModalOpen.value = isOpen : isModalOpen.value = false
 }

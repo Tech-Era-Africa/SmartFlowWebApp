@@ -12,7 +12,9 @@ export const useWaterBillAlgo = (options: IWaterBillAlgoOptions) => {
     ruralWater: 0.02,
   };
 
-  const serviceCharge = 25
+  const gwServiceCharge = 10
+  const fee = 15
+  const serviceCharge = gwServiceCharge + fee
 
 
   if (!options.type) options.type = BillType.getId('DOMESTIC'); //defaults to DOMESTIC

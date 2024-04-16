@@ -1,23 +1,26 @@
 import {useApiFetch} from "~/composables/use_api_fetch";
-import { IBillOption } from "../../../stores/bill/model/bill.model";
+import { type IBillOption } from "../../../stores/bill/model/bill.model";
 
 
-export default defineEventHandler((event) => new Promise(async (resolve, reject) => {
+export default defineEventHandler(async (event) => {
 
        const billOption: IBillOption = await readBody(event)
         
     try {
+
         const res= await useApiFetch('functions/generateBillWithDeviceConsumptions', {
             method : "POST",
             data:{
-                ...billOption.bill, deviceIds : billOption.devices.map(device=> device.objectId)
+                ...billOption.bill, deviceIds : billOption.deviceIds
             }
           });
 
-       return resolve(res.data.result)
+       return res.data.result;
 
     } catch (error:any) {
-        console.log(error.response.data)
-        return reject(error)
+        const responseData = (error as any)?.response?.data ?? null;
+        const errorMessage = (error as any)?.message ?? "Unknown error occurred";
+
+        return { success: false, error: responseData, message: errorMessage };
     }
-}))
+})

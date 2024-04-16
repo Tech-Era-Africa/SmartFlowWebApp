@@ -156,7 +156,7 @@ onBeforeMount(() => {
 
 
 // Handle the prop values for the Bill Widget
-const billWidgetOption = ref<IBillOptionDTO>({} as IBillOptionDTO)
+const billWidgetOption = ref<IBillOptionDTO>({billTypeId : "rxc51QYu7l"} as IBillOptionDTO) //TODO!: THIS NEEDS TO BE DONE WELL
 
 const validStatNumber = (num: number) => num > 0 ? num : 0
 
@@ -208,8 +208,6 @@ const clusterConsumptionChart = ref<IWaterConsumptionChart>({
 })
 
 const prepareDeviceConsumptionData = async () => {
-
-    console.log("Selected device gotten: ")
     // Get chart data and update
     consumptionChart.value.chartSeries = await deviceStore.getDeviceConsumptionTrend(deviceStore.selectedDevice.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
 
@@ -240,8 +238,9 @@ watchEffect(async () => {
     if (deviceStore.success_SelectedClusterMinMaxConsumption) {
         billWidgetOption.value = {
             billTitle: `${deviceStore.deviceGroupName} Bill`,
-            billTypeId : "rxc51QYu7l", //!TODO!: MAKE DYNAMIC
+            billTypeId : "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
             devices: deviceStore.devices,
+            clusterId : groupId.toString(),
             totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
             startDate: startOfMonth.toISOString(),
             endDate: endOfMonth.toISOString()

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import type { IBill, IBillOption } from '~/stores/bill/model/bill.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
+import { useUserStore } from '../auth/user/user.store';
 
 export const useBillStore = defineStore({
   id: 'billStore',
@@ -10,9 +11,9 @@ export const useBillStore = defineStore({
     createdBill: {} as IBill,
 
     // ACCOUNT CREDITS
-    accountCredit : 0,
-    accountCreditState : ApiResponseState.NULL,
-    accountCreditFailure: {message : ""},
+    accountCredit: 0,
+    accountCreditState: ApiResponseState.NULL,
+    accountCreditFailure: { message: "" },
 
     // GET BILL
     fetchBillApiState: ApiResponseState.NULL,
@@ -25,31 +26,37 @@ export const useBillStore = defineStore({
     paidBills: [],
 
     // TOTAL BILLING
-    totalBillingApiState : ApiResponseState.NULL,
-    totalBilling : 0,
-    totalBillingFailure : {message : ""},
+    totalBillingApiState: ApiResponseState.NULL,
+    totalBilling: 0,
+    totalBillingFailure: { message: "" },
   }),
   actions: {
 
-    async createNewBill(bill: IBillOption) {
+    async createNewBill(billOption: IBillOption) {
       try {
         this.billApiState = ApiResponseState.LOADING;
-        const data = await useStoreFetchRequest("/api/bill", 'POST', bill);
+
+        // Update eith essential data
+        billOption.bill.orgId = useUserStore().organisations[0].objectId //Organisation
+        billOption.bill.createdBy = useUserStore().currentUser!.objectId //Current user
+        billOption.bill.status = "h9Eb9xqyjq" //Defaults to unpaid
+
+        const data = await useStoreFetchRequest("/api/bill", 'POST', billOption);
         this.billApiState = ApiResponseState.SUCCESS;
         this.createdBill = data as any;
-        console.log("Success generating bill: ", data)
-
+        
       } catch (error: any) {
         this.billApiFailure.message = error.message;
         this.billApiState = ApiResponseState.FAILED;
       }
+
     },
 
     async getAccountCredit() {
       try {
 
         this.accountCreditState = ApiResponseState.LOADING;
-        const queryString = new URLSearchParams({ id : "hXR7sQI3FI" }).toString();
+        const queryString = new URLSearchParams({ id: useUserStore().organisations[0].objectId }).toString();
         const data = await useStoreFetchRequest(`/api/credit/by/org?${queryString}`, 'GET');
 
         console.log("CREDIT STUFF: ", data)
@@ -104,7 +111,7 @@ export const useBillStore = defineStore({
       }
     },
 
-    async getTotalBilling(){
+    async getTotalBilling() {
       try {
         this.totalBillingApiState = ApiResponseState.LOADING;
         const data = await useStoreFetchRequest("/api/bill/all", 'GET');
@@ -118,8 +125,8 @@ export const useBillStore = defineStore({
       }
     },
 
-    calculateTotalBill(option:IWaterBillAlgoOptions) {
-      if(option.consumption == 0) return 0;
+    calculateTotalBill(option: IWaterBillAlgoOptions) {
+      if (option.consumption == 0) return 0;
 
       const bill = useWaterBillAlgo(option)
 
@@ -138,9 +145,9 @@ export const useBillStore = defineStore({
     hasBill: (state) => state.fetchBillApiState === ApiResponseState.SUCCESS && state.bill,
 
     // ACCOUNT CREDIT
-    loading_AccountCredit : (state) => state.accountCreditState === ApiResponseState.LOADING,
-    success_AccountCredit : (state) => state.accountCreditState === ApiResponseState.SUCCESS,
-    failed_AccountCredit : (state) => state.accountCreditState === ApiResponseState.FAILED,
+    loading_AccountCredit: (state) => state.accountCreditState === ApiResponseState.LOADING,
+    success_AccountCredit: (state) => state.accountCreditState === ApiResponseState.SUCCESS,
+    failed_AccountCredit: (state) => state.accountCreditState === ApiResponseState.FAILED,
 
     // TOTAL BILLING
     isLoading_TotalBilling: (state) => state.totalBillingApiState === ApiResponseState.LOADING,

@@ -21,9 +21,12 @@ export class BillModel {
         serviceCharge : 0,
         updatedAt : "",
         waterCharge : 0,
-        status : {objectId : ""},
+        status : "",
         createdAt : "",
-        billType : {objectId : ""}
+        billType : "",
+        createdBy : "",
+        orgId : "",
+        clusterId : ""
   
       };
   
@@ -32,6 +35,7 @@ export class BillModel {
   
     static fromMap(json:any) {
       const bill: IBill = {
+
         objectId:json.objectId,
         currency : json.currency,
         amount : json.amount,
@@ -43,6 +47,9 @@ export class BillModel {
         billType : json.billType,
         createdAt : json.createdAt,
         updatedAt : json.updatedAt,
+        clusterId : json.cluster.objectId,
+        orgId : json.organisation.objectId,
+        createdBy : json.createdBy.objectId
   
       };
   
@@ -57,17 +64,20 @@ export class BillModel {
     ruralCharge: number;
     serviceCharge: number;
     currency: string;
-    status: IObject;
-    createdAt: string;
-    updatedAt: string;
-    billType:IObject;
+    status: string;
+    createdAt?: string;
+    updatedAt?: string;
+    billType:string;
     objectId: string;
+    createdBy:string;
+    orgId:string;
+    clusterId:string;
   
   }
 
   export interface IBillOption {
     bill : IBill,
-    devices: IDevice[]
+    deviceIds: string[]
   
   }
 
