@@ -1,29 +1,71 @@
 <template>
     <div class="flex justify-between items-center">
         <div class="flex flex-col gap-4 w-full">
-            <div class="mx-auto">
+            <div class="flex justify-end gap-5">
+                <DropdownMenu>
+                    <DropdownMenuTrigger as-child>
+                        <Button variant="outline" size="icon">
+                            <Share2 class="w-4 h-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent class="w-56 border-none mr-8">
+                        <DropdownMenuLabel>Share</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem>
+                                <Copy class="mr-2 h-4 w-4" />
+                                <span>Copy Link</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <File class="mr-2 h-4 w-4" />
+                                <span>Export as PDF</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+
+            </div>
+            <NuxtLink to="/" class="mx-auto">
                 <Logo class="h-16"></Logo>
-            </div>
-            
+            </NuxtLink>
             <div class="flex gap-4 items-center justify-between">
-               
                 <div>
-                    <p class="text-black font-bold text-xs">Bill ID</p>
-                    <p class="text-gray-500 font-bold text-xs">{{ option.bill.objectId }}</p>
+                    <p class="text-black font-bold text-xs">Cluster</p>
+
+                    <h1 class="text-3xl font-extrabold">{{ 'Big Ben' }}</h1>
                 </div>
+                <div class="flex gap-2">
+                    <Badge class="border-dashed rounded-sm border-primary text-primary" variant="outline">{{ 'Bill Type'
+                        }}
+
+                    </Badge>
+                    <Badge class=" border-primary text-primary" variant="outline">{{ 'Status' }}</Badge>
+                </div>
+            </div>
+
+            <div class="flex gap-4 items-center justify-between">
                 <div>
-                    <p class="text-black font-bold text-xs">Period</p>
-                    <p class="text-gray-500 font-bold text-xs">Nov 2023 - Dec 2023</p>
+                    <UserFullAvatar firstname="Ashesi" lastname=""></UserFullAvatar>
                 </div>
+
+                <div class="flex gap-4 items-center ">
+                    <div>
+                        <p class="text-black font-bold text-xs">Bill ID</p>
+                        <p class="text-gray-500 font-bold text-xs">{{ option.bill.objectId }}</p>
+                    </div>
+                    <div>
+                        <p class="text-black font-bold text-xs">Period</p>
+                        <p class="text-gray-500 font-bold text-xs">Nov 2023 - Dec 2023</p>
+                    </div>
+                </div>
+
 
             </div>
 
 
 
-            <div class="flex gap-2">
-                <Badge class="badge">{{'Status' }}</Badge>
-                <Badge class="badge badge-default">{{ 'Name'}}</Badge>
-            </div>
+
         </div>
 
         <!-- <div>
@@ -32,7 +74,10 @@
         </div> -->
 
     </div>
+    <Separator class="space-y-20" />
+    <section class="rounded-xl h-[250px] bg-lime-50">
 
+    </section>
     <!-- <div v-for="device in option.devices" class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between">
         <div class="w-40 mx-auto ">
             <img class="w-full h-full object-cover" src="/img/lorawan.png" />
@@ -64,7 +109,7 @@
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Consumption</p>
-                <p>{{  useUseCubicToLitre(0) }}L</p>
+                <p>{{ useUseCubicToLitre(0) }}L</p>
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Water Charge</p>
@@ -92,12 +137,12 @@
             </div>
 
             <div class="flex justify-between items-center text-lg font-bold">
-            <h1>Total Bill</h1>
-            <h1>{{ useUseFormatCurrency(option.bill.amount ) }}</h1>
-        </div>
+                <h1>Total Bill</h1>
+                <h1>{{ useUseFormatCurrency(option.bill.amount) }}</h1>
+            </div>
 
         </div>
-        <Button v-if="!isPaid" @click="payBill" class="btn bg-green-600 text-white hover:bg-green-600 hover:text-white">Pay Bill <span v-if="paymentStore.isInitPayment"
+        <Button v-if="!isPaid" @click="payBill">Pay Bill <span v-if="paymentStore.isInitPayment"
                 class="ml-2 loading loading-spinner"></span></Button>
     </template>
 </template>
@@ -107,6 +152,7 @@
 import { BillType } from '~/utils/class/billType.class';
 import { usePaymentStore } from '~/stores/payment/payment.store';
 import type { IBillOption } from '~/stores/bill/model/bill.model';
+import { Copy, Download, File, Share2 } from 'lucide-vue-next';
 
 
 const paymentStore = usePaymentStore()
@@ -118,21 +164,21 @@ const props = defineProps({
     },
 })
 
-const payBill = async() => {
+const payBill = async () => {
     //Fistt check if another bill has been created latest to this and prompt the user to go for that one instead
-   const res =  await paymentStore.initPayment({
-        amount : 1 * 100,
-        email : "ronaldnettey360@gmail.com",
-        billId : props.option.bill.objectId
+    const res = await paymentStore.initPayment({
+        amount: 1 * 100,
+        email: "ronaldnettey360@gmail.com",
+        billId: props.option.bill.objectId
     })
 
     // // Open the new page in a new tab/window
-    navigateTo(res.data.authorization_url,{external:true})
-   
+    navigateTo(res.data.authorization_url, { external: true })
+
 
 }
 
-const isPaid = computed(()=> props.option.bill.status == 'vcDFmQoFkD')
+const isPaid = computed(() => props.option.bill.status == 'vcDFmQoFkD')
 
 
 
