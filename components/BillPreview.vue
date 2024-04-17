@@ -17,7 +17,8 @@
     <div class="flex flex-col gap-2 mt-5">
         <div class="flex justify-between text-xs items-center">
             <p>Bill Type</p>
-            <Badge class="border-dashed rounded-sm border-primary text-primary" variant="outline">{{ billTypeTitle }}</Badge>
+            <Badge class="border-dashed rounded-sm border-primary text-primary" variant="outline">{{ billTypeTitle }}
+            </Badge>
         </div>
         <div class="flex justify-between items-center text-xs">
             <p>Bill Date</p>
@@ -88,11 +89,14 @@
             </CollapsibleTrigger>
         </div>
         <CollapsibleContent class="space-y-2">
-         <BillingTable :option="usersDataTableOption"></BillingTable>
+            <BillingTable :option="usersDataTableOption"></BillingTable>
         </CollapsibleContent>
     </Collapsible>
 
-    <Button class="mt-4 w-full" @click="createBill" :disabled="billStore.isCreatingBill"><span>Generate Bill</span><Loader2 v-if="billStore.isCreatingBill" class="animate-spin ml-2" :size="16"></Loader2></Button>
+    <Button class="mt-4 w-full" @click="createBill" :disabled="billStore.isCreatingBill"><span>Create Bill
+            Invoice</span>
+        <Loader2 v-if="billStore.isCreatingBill" class="animate-spin ml-2" :size="16"></Loader2>
+    </Button>
 
 </template>
 <script setup lang="ts">
@@ -117,13 +121,13 @@ const isBillsOpen = ref(false)
 
 
 
-const getBill = computed(()=>useWaterBillAlgo({ consumption: props.option.totalConsumption, type: props.option.billTypeId}))
+const getBill = computed(() => useWaterBillAlgo({ consumption: props.option.totalConsumption, type: props.option.billTypeId }))
 
-const billTypeTitle = computed(()=> BillType.getName(props.option.billTypeId))
+const billTypeTitle = computed(() => BillType.getName(props.option.billTypeId))
 const validStatNumber = (num: number) => num > 0 ? num : 0
 
 const totalCurrentCharge = () => {
-    const bill = billStore.calculateTotalBill({consumption : props.option.totalConsumption,  type: props.option.billTypeId})
+    const bill = billStore.calculateTotalBill({ consumption: props.option.totalConsumption, type: props.option.billTypeId })
 
     // const totalAmountPaid = billStore.paidBills.reduce((accumulator, currentValue: any) => {
     //     return accumulator + currentValue.amount;
@@ -135,46 +139,46 @@ const totalCurrentCharge = () => {
     return bill
 }
 
-const createBill = () => billStore.createNewBill({
-    bill: {
-        currency: 'GHC',
-        amount: totalCurrentCharge(),
-        fireCharge: getBill.value.firefighting,
-        ruralCharge: getBill.value.ruralWater,
-        serviceCharge: getBill.value.serviceCharge,
-        waterCharge: getBill.value.waterCharge,
-        objectId: "",
-        status: "", //Handled in store
-        billType: props.option.billTypeId,
-        clusterId : props.option.clusterId,
-        createdBy : "", //Handled in store
-        orgId : "", //Handled in store
+const createBill = async () => {
+    await billStore.createNewBill({
+        bill: {
+            currency: 'GHC',
+            amount: totalCurrentCharge(),
+            fireCharge: getBill.value.firefighting,
+            ruralCharge: getBill.value.ruralWater,
+            serviceCharge: getBill.value.serviceCharge,
+            waterCharge: getBill.value.waterCharge,
+            objectId: "",
+            status: "", //Handled in store
+            billType: props.option.billTypeId,
+            clusterId: props.option.clusterId,
+            createdBy: "", //Handled in store
+            orgId: "", //Handled in store
 
-    },
-    deviceIds: props.option.devices.map((device)=>device.objectId),
+        },
+        deviceIds: props.option.devices.map((device) => device.objectId),
 
-})
+    })
+
+
+    if (billStore.success_CreatingBill) {
+        // Navigate to bill invoice page
+        useRouter().push(`/billing/invoice/${billStore.createdBill.objectId}`)
+        return;
+    }
+
+    if (billStore.failed_CreatingBill) {
+        return alert("Failed to create bill invoice")
+    }
+}
 
 const usersDataTableOption = ref<UserTableOptionDTO>({
-   
-            users : [
-                new UserModel( {firstName : "Ronald", lastName : "Nettey", email : "ronaldnettey360@gmail.com", objectId : "1", phoneNumber : "+233558474469", role : "Admin"}).user
-            ] as User[],
-            columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
+
+    users: [
+        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" }).user
+    ] as User[],
+    columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
 } as UserTableOptionDTO);
-
-
-
-
-watch(billStore, (state) => {
-    if (state.success_CreatingBill) {
-       return alert("Successfully created bill")
-
-    }
-    if (state.failed_CreatingBill) {
-        return alert("Failed to create bill")
-    }
-})
 
 
 
