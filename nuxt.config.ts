@@ -50,6 +50,7 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/api/**': { cors: true },
+    '/billing/invoice/**': { ssr: true },
     '/': { redirect: '/overview' },
   },
   imports: {

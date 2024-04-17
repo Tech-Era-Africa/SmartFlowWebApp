@@ -1,8 +1,12 @@
 <template>
     <div class="flex justify-between items-center">
         <div class="flex flex-col gap-4 w-full">
+            <div class="mx-auto">
+                <Logo class="h-16"></Logo>
+            </div>
+            
             <div class="flex gap-4 items-center justify-between">
-                <Logo class="h-7"></Logo>
+               
                 <div>
                     <p class="text-black font-bold text-xs">Bill ID</p>
                     <p class="text-gray-500 font-bold text-xs">{{ option.bill.objectId }}</p>
@@ -17,9 +21,8 @@
 
 
             <div class="flex gap-2">
-                <div class="badge" :class="Status.getColor(option.bill.status.objectId)">{{
-                    Status.getName(option.bill.status.objectId) }}</div>
-                <div class="badge badge-default">{{ BillType.getName(option.bill.billType.objectId) }}</div>
+                <Badge class="badge">{{'Status' }}</Badge>
+                <Badge class="badge badge-default">{{ 'Name'}}</Badge>
             </div>
         </div>
 
@@ -30,7 +33,7 @@
 
     </div>
 
-    <div v-for="device in option.devices" class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between">
+    <!-- <div v-for="device in option.devices" class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between">
         <div class="w-40 mx-auto ">
             <img class="w-full h-full object-cover" src="/img/lorawan.png" />
         </div>
@@ -48,7 +51,7 @@
             </div>
         </div>
 
-    </div>
+    </div> -->
     <template v-if="!option">
         <span class="loading loading-spinner"></span>
     </template>
@@ -57,7 +60,7 @@
 
             <div class="flex justify-between items-center text-xs">
                 <p>Bill Date</p>
-                <p>{{ useFormatDateHuman(new Date(option.bill.createdAt)) }}</p>
+                <p>{{ useFormatDateHuman(new Date(option.bill.createdAt ?? '')) }}</p>
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Consumption</p>
@@ -94,14 +97,13 @@
         </div>
 
         </div>
-        <div v-if="!isPaid" @click="payBill" class="btn bg-green-600 text-white hover:bg-green-600 hover:text-white">Pay Bill <span v-if="paymentStore.isInitPayment"
-                class="ml-2 loading loading-spinner"></span></div>
+        <Button v-if="!isPaid" @click="payBill" class="btn bg-green-600 text-white hover:bg-green-600 hover:text-white">Pay Bill <span v-if="paymentStore.isInitPayment"
+                class="ml-2 loading loading-spinner"></span></Button>
     </template>
 </template>
 
 <script setup lang="ts">
 
-import { Status } from '~/utils/class/status.class';
 import { BillType } from '~/utils/class/billType.class';
 import { usePaymentStore } from '~/stores/payment/payment.store';
 import type { IBillOption } from '~/stores/bill/model/bill.model';
@@ -125,11 +127,12 @@ const payBill = async() => {
     })
 
     // // Open the new page in a new tab/window
-    window.location.href = res.data.authorization_url
+    navigateTo(res.data.authorization_url,{external:true})
+   
 
 }
 
-const isPaid = computed(()=> props.option.bill.status.objectId == 'vcDFmQoFkD')
+const isPaid = computed(()=> props.option.bill.status == 'vcDFmQoFkD')
 
 
 

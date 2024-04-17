@@ -1,5 +1,5 @@
 <template>
-    <div class="w-screen h-screen bg-pageBg relative">
+    <div class="w-screen h-screen bg-pageBg bg-blue-50 relative">
 
         <template v-if="billStore.isFetchingBill">
 
@@ -16,7 +16,7 @@
 
 
             </div>
-            <div class="lg:w-1/3 mx-auto p-8 flex flex-col gap-5 bg-white absolute left-0 right-0 top-11 rounded-lg">
+            <div class="lg:w-2/5 mx-auto p-8 flex flex-col gap-5 bg-white absolute left-0 right-0 top-11 rounded-lg">
                 <template v-if="billStore.hasBill">
                     <Bill :option="billStore.bill"></Bill>
                 </template>
@@ -54,9 +54,9 @@
 
 import { useBillStore } from '~/stores/bill/bill.store';
 
-definePageMeta({ middleware: 'auth' })
+// definePageMeta({ middleware: 'auth' })
 useHead({
-    title: `Bill - ${useRoute().params.id}`
+    title: `Bill Invoice - ${useRoute().params.id}`
 })
 
 
