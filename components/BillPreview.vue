@@ -144,6 +144,7 @@ const createBill = async () => {
         bill: {
             currency: 'GHC',
             amount: totalCurrentCharge(),
+            totalConsumption : props.option.totalConsumption,
             fireCharge: getBill.value.firefighting,
             ruralCharge: getBill.value.ruralWater,
             serviceCharge: getBill.value.serviceCharge,

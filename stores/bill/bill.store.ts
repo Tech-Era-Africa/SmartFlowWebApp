@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { IBill, IBillOption } from '~/stores/bill/model/bill.model';
+import { BillModel, type IBill, type IBillOption } from '~/stores/bill/model/bill.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 import { useUserStore } from '../auth/user/user.store';
 
@@ -18,7 +18,7 @@ export const useBillStore = defineStore({
     // GET BILL
     fetchBillApiState: ApiResponseState.NULL,
     fetchBillApiFailure: { message: "" },
-    bill: {} as IBillOption,
+    bill: {} as IBill,
 
     // PAID BILL
     paidBillApiState: ApiResponseState.NULL,
@@ -59,8 +59,6 @@ export const useBillStore = defineStore({
         const queryString = new URLSearchParams({ id: useUserStore().organisations[0].objectId }).toString();
         const data = await useStoreFetchRequest(`/api/credit/by/org?${queryString}`, 'GET');
 
-        console.log("CREDIT STUFF: ", data)
-
         this.accountCreditState = ApiResponseState.SUCCESS;
         this.accountCredit = data as any;
 
@@ -70,6 +68,7 @@ export const useBillStore = defineStore({
       }
     },
 
+    // !DEPRECATED
     async getBillWithDevice(billId: string) {
       try {
         if (!billId) throw Error("Bill id required")
@@ -83,9 +82,32 @@ export const useBillStore = defineStore({
         this.fetchBillApiState = ApiResponseState.SUCCESS;
         this.bill = data.data
 
-        console.log(this.bill)
+      } catch (error: any) {
+        this.fetchBillApiFailure.message = error.message;
+        this.fetchBillApiState = ApiResponseState.FAILED;
+      }
+    },
+
+    async getBillInvoice(billId: string) {
+      try {
+        if (!billId) throw Error("Bill id required")
+
+        this.fetchBillApiState = ApiResponseState.LOADING;
+        
+        const data: any = await useStoreFetchRequest(`/api/bill/${billId}`, 'GET');
+
+        // Throw error exception
+        if (!data.success) throw data.error
+
+        console.log(data.data)
+
+        this.fetchBillApiState = ApiResponseState.SUCCESS;
+        this.bill = BillModel.fromMap(data.data)
+
+     
 
       } catch (error: any) {
+        console.log(error)
         this.fetchBillApiFailure.message = error.message;
         this.fetchBillApiState = ApiResponseState.FAILED;
       }

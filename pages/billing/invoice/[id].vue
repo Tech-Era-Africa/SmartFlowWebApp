@@ -4,7 +4,9 @@
         <template v-if="billStore.isFetchingBill">
 
             <div class="w-full h-full flex flex-col gap-12 justify-center items-center">
-                <Logo></Logo>
+                <div class="w-1/5">
+                    <Logo></Logo>
+                </div>
                 <p class="text-gray-500  flex flex-col items-center gap-5">Fetching the bill <span
                         class="loading loading-infinity text-blue-500"></span></p>
             </div>
@@ -18,6 +20,7 @@
             </div>
             <div class="lg:w-2/5 mx-auto p-8 flex flex-col gap-5 bg-white absolute left-0 right-0 top-11 rounded-lg">
                 <template v-if="billStore.hasBill">
+                    
                     <Bill :option="billStore.bill"></Bill>
                 </template>
                 <template v-else>
@@ -54,20 +57,24 @@
 
 import { useBillStore } from '~/stores/bill/bill.store';
 
+// Get the url paramter
+const { id } = useRoute().params;
+
 // definePageMeta({ middleware: 'auth' })
 useHead({
-    title: `Bill Invoice - ${useRoute().params.id}`
+    title: `Bill Invoice - ${id}`
 })
 
 
 const billStore = useBillStore()
 
+onBeforeMount(async ()=> {
+    // Trigger bill fetching
+await billStore.getBillInvoice(id.toString())
+})
 
-// Get the url paramter
-const { id } = useRoute().params;
 
-// Trigger bill fetching
-await billStore.getBillWithDevice(id as string)
+
 
 
 

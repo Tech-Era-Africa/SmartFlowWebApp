@@ -41,7 +41,7 @@ export class UserModel {
 
     };
 
-    return new UserModel(user);
+    return user;
   }
 }
 

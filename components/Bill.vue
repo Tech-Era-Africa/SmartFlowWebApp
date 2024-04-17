@@ -1,7 +1,11 @@
 <template>
     <div class="flex justify-between items-center">
+
         <div class="flex flex-col gap-4 w-full">
-            <div class="flex justify-end gap-5">
+
+            <div class="flex justify-between items-center ">
+
+                <p class="text-muted-foreground text-xs">INVOICE</p>
                 <DropdownMenu>
                     <DropdownMenuTrigger as-child>
                         <Button variant="outline" size="icon">
@@ -27,39 +31,36 @@
 
             </div>
             <NuxtLink to="/" class="mx-auto">
-                <Logo class="h-16"></Logo>
-            </NuxtLink>
+                    <Logo class="h-12"></Logo>
+                </NuxtLink>
+
+
             <div class="flex gap-4 items-center justify-between">
                 <div>
                     <p class="text-black font-bold text-xs">Cluster</p>
 
-                    <h1 class="text-3xl font-extrabold">{{ 'Big Ben' }}</h1>
+                    <h1 class="text-3xl font-extrabold">{{ option.cluster.name }}</h1>
                 </div>
                 <div class="flex gap-2">
-                    <Badge class="border-dashed rounded-sm border-primary text-primary" variant="outline">{{ 'Bill Type'
-                        }}
+                    <Badge class="border-dashed rounded-sm border-primary text-primary" variant="outline">{{
+                    option.billType.name
+                }}
 
                     </Badge>
-                    <Badge class=" border-primary text-primary" variant="outline">{{ 'Status' }}</Badge>
+                    <Badge class=" border-primary text-primary" variant="outline">{{ option.status.name }}</Badge>
                 </div>
             </div>
 
             <div class="flex gap-4 items-center justify-between">
+
                 <div>
-                    <UserFullAvatar firstname="Ashesi" lastname=""></UserFullAvatar>
+                    <p class="text-black font-bold text-xs">Bill ID</p>
+                    <p class="text-gray-500 font-bold text-xs">#{{ option.objectId }}</p>
                 </div>
-
-                <div class="flex gap-4 items-center ">
-                    <div>
-                        <p class="text-black font-bold text-xs">Bill ID</p>
-                        <p class="text-gray-500 font-bold text-xs">{{ option.bill.objectId }}</p>
-                    </div>
-                    <div>
-                        <p class="text-black font-bold text-xs">Period</p>
-                        <p class="text-gray-500 font-bold text-xs">Nov 2023 - Dec 2023</p>
-                    </div>
+                <div>
+                    <p class="text-black font-bold text-xs">Period</p>
+                    <p class="text-gray-500 font-bold text-xs">Nov 2023 - Dec 2023</p>
                 </div>
-
 
             </div>
 
@@ -70,7 +71,7 @@
 
         <!-- <div>
             <p class="text-xs text-right">Month</p>
-            <h3 class="font-bold text-gray-600">{{ useFormatDateHuman(new Date(option.bill.createdAt)) }}</h3>
+            <h3 class="font-bold text-gray-600">{{ useFormatDateHuman(new Date(option.createdAt)) }}</h3>
         </div> -->
 
     </div>
@@ -104,8 +105,35 @@
         <div class="flex flex-col gap-4">
 
             <div class="flex justify-between items-center text-xs">
+                <p>Organisation</p>
+                <div class="flex items-center gap-2">
+                    <Avatar size="sm" style="width:20px; height: 20px">
+                        <AvatarImage :src="option.organisation.avatarUrl ?? ''" alt="organisation avatar" />
+                        <AvatarFallback>DD</AvatarFallback>
+                    </Avatar>
+
+                    <p class="text-xs font-bold">{{ option.organisation.name }}</p>
+
+                </div>
+
+            </div>
+
+            <div class="flex justify-between items-center text-xs">
+                <p>Created By</p>
+                <div class="flex items-center gap-2">
+                    <Avatar size="sm" style="width:20px; height: 20px">
+                        <AvatarImage :src="option.createdBy.avatarUrl ?? ''" alt="created by avatar" />
+                        <AvatarFallback>DD</AvatarFallback>
+                    </Avatar>
+
+                    <p class="text-xs font-bold">{{ option.createdBy.firstName }} {{ option.createdBy.lastName }}</p>
+
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center text-xs">
                 <p>Bill Date</p>
-                <p>{{ useFormatDateHuman(new Date(option.bill.createdAt ?? '')) }}</p>
+                <p>{{ useFormatDateHuman(new Date(option.createdAt ?? '')) }}</p>
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Consumption</p>
@@ -113,23 +141,23 @@
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Water Charge</p>
-                <p>{{ useUseFormatCurrency(option.bill.waterCharge ?? 0) }}</p>
+                <p>{{ useUseFormatCurrency(option.waterCharge ?? 0) }}</p>
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>1% Fire Fighting</p>
-                <p>{{ useUseFormatCurrency(option.bill.fireCharge ?? 0) }}</p>
+                <p>{{ useUseFormatCurrency(option.fireCharge ?? 0) }}</p>
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>2% Rural Water</p>
-                <p>{{ useUseFormatCurrency(option.bill.ruralCharge ?? 0) }}</p>
+                <p>{{ useUseFormatCurrency(option.ruralCharge ?? 0) }}</p>
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Service Charge</p>
-                <p>{{ useUseFormatCurrency(option.bill.serviceCharge ?? 0) }}</p>
+                <p>{{ useUseFormatCurrency(option.serviceCharge ?? 0) }}</p>
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Current Charges</p>
-                <p>{{ useUseFormatCurrency(option.bill.amount ?? 0) }}</p>
+                <p>{{ useUseFormatCurrency(option.amount ?? 0) }}</p>
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Previous Balance</p>
@@ -138,7 +166,7 @@
 
             <div class="flex justify-between items-center text-lg font-bold">
                 <h1>Total Bill</h1>
-                <h1>{{ useUseFormatCurrency(option.bill.amount) }}</h1>
+                <h1>{{ useUseFormatCurrency(option.amount) }}</h1>
             </div>
 
         </div>
@@ -151,7 +179,7 @@
 
 import { BillType } from '~/utils/class/billType.class';
 import { usePaymentStore } from '~/stores/payment/payment.store';
-import type { IBillOption } from '~/stores/bill/model/bill.model';
+import type { IBill, IBillOption } from '~/stores/bill/model/bill.model';
 import { Copy, Download, File, Share2 } from 'lucide-vue-next';
 
 
@@ -159,7 +187,7 @@ const paymentStore = usePaymentStore()
 
 const props = defineProps({
     option: {
-        type: Object as () => IBillOption,
+        type: Object as () => IBill,
         required: true
     },
 })
@@ -169,7 +197,7 @@ const payBill = async () => {
     const res = await paymentStore.initPayment({
         amount: 1 * 100,
         email: "ronaldnettey360@gmail.com",
-        billId: props.option.bill.objectId
+        billId: props.option.objectId
     })
 
     // // Open the new page in a new tab/window
@@ -178,7 +206,7 @@ const payBill = async () => {
 
 }
 
-const isPaid = computed(() => props.option.bill.status == 'vcDFmQoFkD')
+const isPaid = computed(() => props.option.status.objectId == 'vcDFmQoFkD')
 
 
 
