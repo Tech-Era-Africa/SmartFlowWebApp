@@ -27,7 +27,7 @@ export const useAuthStore = defineStore({
         useUserStore().setUserToken((data as any).sessionToken) //TODO!: Give the data repsonse a type
 
         // Setup user data 
-        useUserStore().currentUser = UserModel.fromMap(data).user
+        useUserStore().currentUser = UserModel.fromMap(data)
         console.log(useUserStore().currentUser)
         this.loginState = ApiResponseState.SUCCESS;
 

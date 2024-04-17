@@ -137,7 +137,7 @@
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Consumption</p>
-                <p>{{ useUseCubicToLitre(0) }}L</p>
+                <p>{{ option.totalConsumption ?? 0 }}k L</p>
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Water Charge</p>
