@@ -76,8 +76,8 @@
 
     </div>
     <Separator class="space-y-20" />
-    <section class="rounded-xl h-[250px] bg-lime-50">
-
+    <section class="rounded-xl h-[250px] bg-lime-50 mb-10">
+        <WaterConsumptionChart :option="clusterConsumptionChart"></WaterConsumptionChart>
     </section>
     <!-- <div v-for="device in option.devices" class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between">
         <div class="w-40 mx-auto ">
@@ -137,7 +137,7 @@
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Consumption</p>
-                <p>{{ option.totalConsumption ?? 0 }}k L</p>
+                <p>{{ Math.ceil(option.totalConsumption ?? 0) }}k L</p>
             </div>
             <div class="flex justify-between items-center text-xs">
                 <p>Water Charge</p>
@@ -181,9 +181,12 @@ import { BillType } from '~/utils/class/billType.class';
 import { usePaymentStore } from '~/stores/payment/payment.store';
 import type { IBill, IBillOption } from '~/stores/bill/model/bill.model';
 import { Copy, Download, File, Share2 } from 'lucide-vue-next';
+import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
+import { useDeviceStore } from '~/stores/device/device.store';
 
 
 const paymentStore = usePaymentStore()
+const deviceStore = useDeviceStore()
 
 const props = defineProps({
     option: {
@@ -191,6 +194,18 @@ const props = defineProps({
         required: true
     },
 })
+
+const clusterConsumptionChart = ref<IWaterConsumptionChart>({
+    title: "Consumption Trend",
+    chartSeries: deviceStore.selectedDeviceConsumptionTrend,
+    isLoading: deviceStore.loading_SelectedDeviceConsumptionTrend,
+    success: deviceStore.success_SelectedDeviceConsumptionTrend,
+})
+
+const currentDate = new Date();
+const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+clusterConsumptionChart.value.chartSeries = await deviceStore.getClusterConsumptionTrend(props.option.cluster.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
 
 const payBill = async () => {
     //Fistt check if another bill has been created latest to this and prompt the user to go for that one instead

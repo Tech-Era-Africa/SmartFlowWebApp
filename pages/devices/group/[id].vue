@@ -48,7 +48,7 @@
                     <!-- DEVICES -->
                     <template v-if="deviceStore.hasDevices">
                         <!-- TREND -->
-                        <section class="flex w-full gap-4">
+                        <section class="flex w-full gap-4 mb-10">
                             <div class="w-2/3">
                                 <WaterConsumptionChart :option="clusterConsumptionChart"></WaterConsumptionChart>
                             </div>

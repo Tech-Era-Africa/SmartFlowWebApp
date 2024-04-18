@@ -5,7 +5,7 @@
                 <h1 class="font-bold text-lg">{{ option.title ?? 'Water Consumption' }}</h1>
                 <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p>
             </div>
-            <DateRangePicker @handle-date-change="onDateChanged"></DateRangePicker>
+            <!-- <DateRangePicker @handle-date-change="onDateChanged"></DateRangePicker> -->
 
         </div>
         <div v-if="option.isLoading" class="w-full h-full">

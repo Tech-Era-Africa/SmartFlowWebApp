@@ -54,7 +54,7 @@ export const useUserStore = defineStore('user', {
           const data = await useStoreFetchRequest(`/api/auth/user/current?${queryString}`, 'GET');
 
           //DATA
-          this.currentUser = UserModel.fromMap(data).user
+          this.currentUser = UserModel.fromMap(data)
 
           // Get the user's organisations
           // TODO!: MUST HANDLE ERROR CASES HERE
@@ -89,7 +89,7 @@ export const useUserStore = defineStore('user', {
 
         // Data
         this.apiState = ApiResponseState.SUCCESS;
-        this.users = (data as any).results.map((usersJson: User) => UserModel.fromMap(usersJson).user)
+        this.users = (data as any).results.map((usersJson: User) => UserModel.fromMap(usersJson))
 
       } catch (error) {
         // Handle login error
