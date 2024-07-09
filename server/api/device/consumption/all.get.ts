@@ -5,6 +5,7 @@ export default defineEventHandler((event) => new Promise(async (resolve, reject)
     const queryParams = getQuery(event);
         const {id, startDate, endDate} = queryParams;
 
+        console.log("Gettting")
         
     try {
         // Check for the availability of a user id

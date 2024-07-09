@@ -15,6 +15,7 @@
 
             </div>
             <div class="w-full h-96 flex flex-col lg:flex-row   p-2 gap-4">
+               
                 <div class="w-full lg:w-3/5 h-full">
                     <WaterConsumptionChart :option="consumptionChart"
                         @on-date-changed="handleWaterConsumptionChartDateChanged">

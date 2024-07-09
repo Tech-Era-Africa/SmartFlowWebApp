@@ -5,6 +5,29 @@
                 <h1 class="font-bold text-lg">{{ option.title ?? 'Water Consumption' }}</h1>
                 <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p>
             </div>
+            <div class="flex gap-2 items-center">
+                <Select :model-value="trendPeriod" @update:model-value="onDateChanged($event)">
+                    <SelectTrigger class="w-[180px]">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectItem value="week">
+                                This Week
+                            </SelectItem>
+                            <SelectItem value="month">
+                                This Month
+                            </SelectItem>
+                            <SelectItem value="year">
+                                This Year
+                            </SelectItem>
+                            <SelectItem value="custom">
+                                Custom
+                            </SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+            </div>
             <!-- <DateRangePicker @handle-date-change="onDateChanged"></DateRangePicker> -->
 
         </div>
@@ -32,8 +55,40 @@ const props = defineProps({
     },
 })
 
-const onDateChanged = (date: any) => {
-    emits('onDateChanged', date)
+const trendPeriod = ref('month')
+
+const onDateChanged = (period: string) => {
+    const currentDate = new Date();
+    let startDate: Date;
+    let endDate: Date;
+
+    switch (period) {
+        case 'month':
+            trendPeriod.value = period
+            startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            break;
+        case 'week':
+            trendPeriod.value = period
+            const firstDayOfWeek = currentDate.getDate() - currentDate.getDay(); // Assuming Sunday is the first day of the week
+            startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstDayOfWeek);
+            endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstDayOfWeek + 6);
+            break;
+        case 'year':
+            trendPeriod.value = period
+            startDate = new Date(currentDate.getFullYear(), 0, 1);
+            endDate = new Date(currentDate.getFullYear(), 11, 31);
+            break;
+        default:
+            // Default to month if period is not recognized
+            startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    }
+
+    emits('onDateChanged', {
+        start: startDate,
+        end: endDate
+    });
 }
 
 
