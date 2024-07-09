@@ -16,7 +16,7 @@
                 </CardDescription>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">This month</p>
+                <p class="text-sm text-muted-foreground">This year</p>
               </div>
 
             </CardHeader>
@@ -72,12 +72,12 @@ onBeforeMount(() => {
 
 watchEffect(() => {
   const currentDate = new Date();
-  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  const startDate = new Date(currentDate.getFullYear(), 0, 1);
+  const endDate = new Date(currentDate.getFullYear(), 11, 31);
 
   // Get the consumption trend once the groups have been loaded
   if (deviceStore.success_DevicesGroup && deviceStore.devicesGroups.length > 0) {
-    deviceStore.getDeviceSummaryConsumptionTrend(deviceStore.devicesGroups[0].objectId, startOfMonth.toISOString(), endOfMonth.toISOString());
+    deviceStore.getDeviceSummaryConsumptionTrend(deviceStore.devicesGroups[0].objectId, startDate.toISOString(), endDate.toISOString());
   }
 
 })

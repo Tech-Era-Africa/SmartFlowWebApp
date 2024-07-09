@@ -21,9 +21,9 @@
                             <SelectItem value="year">
                                 This Year
                             </SelectItem>
-                            <SelectItem value="custom">
+                            <!-- <SelectItem value="custom">
                                 Custom
-                            </SelectItem>
+                            </SelectItem> -->
                         </SelectGroup>
                     </SelectContent>
                 </Select>
@@ -55,7 +55,7 @@ const props = defineProps({
     },
 })
 
-const trendPeriod = ref('month')
+const trendPeriod = ref('year')
 
 const onDateChanged = (period: string) => {
     const currentDate = new Date();

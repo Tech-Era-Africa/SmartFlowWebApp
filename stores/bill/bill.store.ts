@@ -29,6 +29,17 @@ export const useBillStore = defineStore({
     totalBillingApiState: ApiResponseState.NULL,
     totalBilling: 0,
     totalBillingFailure: { message: "" },
+
+    // BILLING WIDGET
+    billingWidget:{
+      billTitle: "Bill",
+      billTypeId : "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
+      devices: [] as any[],
+      clusterId : "",
+      totalConsumption: 0,
+      startDate: new Date(new Date().getFullYear(), 0, 1).toISOString(),
+      endDate: new Date(new Date().getFullYear(), 11, 31).toISOString(),
+  }
   }),
   actions: {
 
@@ -66,6 +77,11 @@ export const useBillStore = defineStore({
         this.accountCreditFailure.message = error.message;
         this.accountCreditState = ApiResponseState.FAILED;
       }
+    },
+
+    // TODO!: DO THIS PROPERLY
+    async updateBillData(billData:any){
+      this.billingWidget = billData
     },
 
     // !DEPRECATED

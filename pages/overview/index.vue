@@ -15,7 +15,7 @@
 
             </div>
             <div class="w-full h-96 flex flex-col lg:flex-row   p-2 gap-4">
-               
+
                 <div class="w-full lg:w-3/5 h-full">
                     <WaterConsumptionChart :option="consumptionChart"
                         @on-date-changed="handleWaterConsumptionChartDateChanged">
@@ -56,11 +56,11 @@ const billingStore = useBillStore()
 onBeforeMount(() => {
     // TODO!: MOVE THIS TO THE STORE
     const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const startDate = new Date(currentDate.getFullYear(), 0, 1);
+    const endDate = new Date(currentDate.getFullYear(), 11, 31);
 
-    deviceStore.getAllDevicesConsumptionTrend(startOfMonth.toISOString(), endOfMonth.toISOString())
-    deviceStore.getMinMaxConsumption(startOfMonth.toISOString(), endOfMonth.toISOString())
+    deviceStore.getAllDevicesConsumptionTrend(startDate.toISOString(), endDate.toISOString())
+    deviceStore.getMinMaxConsumption(startDate.toISOString(), endDate.toISOString())
 
 })
 
@@ -72,7 +72,7 @@ const handleWaterConsumptionStatsDateChanged = (date: { start: Date, end: Date }
     deviceStore.getMinMaxConsumption(date.start.toISOString(), date.end.toISOString())
 }
 
-const consumptionStatOption = ref<{ title?: string, isLoading?: boolean, min:number, max:number,sum:number, subtitle?:string }>({} as any) //!TODO:IMPELEMENT THIS PROPERLY
+const consumptionStatOption = ref<{ title?: string, isLoading?: boolean, min: number, max: number, sum: number, subtitle?: string }>({} as any) //!TODO:IMPELEMENT THIS PROPERLY
 
 const consumptionChart = ref<IWaterConsumptionChart>({
     title: "Total Water Consumption",
@@ -91,11 +91,11 @@ watchEffect(() => {
     consumptionChart.value.isLoading = deviceStore.isGettingConsumptionTrend
     consumptionStatOption.value = {
         subtitle: "* For all devices",
-        isLoading : deviceStore.isGettingDeviceMinMaxConsumption,
-        min : deviceStore.minMaxconsumption.min,
-        max : deviceStore.minMaxconsumption.max,
-        sum : deviceStore.minMaxconsumption.sum,
-        
+        isLoading: deviceStore.isGettingDeviceMinMaxConsumption,
+        min: deviceStore.minMaxconsumption.min,
+        max: deviceStore.minMaxconsumption.max,
+        sum: deviceStore.minMaxconsumption.sum,
+
     }
 })
 

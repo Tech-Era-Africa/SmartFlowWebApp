@@ -50,7 +50,8 @@
                         <!-- TREND -->
                         <section class="flex w-full gap-4 mb-10">
                             <div class="w-2/3">
-                                <WaterConsumptionChart :option="clusterConsumptionChart"></WaterConsumptionChart>
+                                <WaterConsumptionChart :option="clusterConsumptionChart"
+                                    @on-date-changed="handleWaterConsumptionChartDateChanged"></WaterConsumptionChart>
                             </div>
 
                             <TotalPayableBillWidget class="flex-1" :option="billWidgetOption">
@@ -145,18 +146,45 @@ const groupId = useRoute().params.id
 const consumptionStatOption = ref<{ deviceId: string, title?: string, isLoading?: boolean, min: number, max: number, sum: number }>({} as any) //!TODO:IMPELEMENT THIS PROPERLY
 const chartData = ref()
 const currentDate = new Date();
-const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+const startDate = new Date(currentDate.getFullYear(), 0, 1);
+const endDate = new Date(currentDate.getFullYear(), 11, 31);
 
 onBeforeMount(() => {
-    chartData.value = deviceStore.getClusterConsumptionTrend(groupId.toString(), startOfMonth.toISOString(), endOfMonth.toISOString())
+    chartData.value = deviceStore.getClusterConsumptionTrend(groupId.toString(), startDate.toISOString(), endDate.toISOString())
     deviceStore.getDevicesByGroup(groupId.toString());
-    deviceStore.getClusterMinMaxConsumption(groupId.toString(), startOfMonth.toISOString(), endOfMonth.toISOString());
+    deviceStore.getClusterMinMaxConsumption(groupId.toString(), startDate.toISOString(), endDate.toISOString());
+
+    billStore.updateBillData({
+        billTitle: `${deviceStore.deviceGroupName} Bill`,
+        billTypeId: "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
+        devices: deviceStore.devices,
+        clusterId: groupId.toString(),
+        totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString()
+    })
 })
+
+const handleWaterConsumptionChartDateChanged = (date: { start: Date, end: Date }) => {
+    chartData.value = deviceStore.getClusterConsumptionTrend(groupId.toString(), date.start.toISOString(), date.end.toISOString())
+
+    // Recalculate the bill
+    deviceStore.getClusterMinMaxConsumption(groupId.toString(), date.start.toISOString(), date.end.toISOString())
+
+    billStore.updateBillData({
+        billTitle: `${deviceStore.deviceGroupName} Bill`,
+        billTypeId: "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
+        devices: deviceStore.devices,
+        clusterId: groupId.toString(),
+        totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
+        startDate: date.start.toISOString(),
+        endDate: date.end.toISOString()
+    })
+}
 
 
 // Handle the prop values for the Bill Widget
-const billWidgetOption = ref<IBillOptionDTO>({billTypeId : "rxc51QYu7l"} as IBillOptionDTO) //TODO!: THIS NEEDS TO BE DONE WELL
+const billWidgetOption = ref<IBillOptionDTO>({ billTypeId: "rxc51QYu7l" } as IBillOptionDTO) //TODO!: THIS NEEDS TO BE DONE WELL
 
 const validStatNumber = (num: number) => num > 0 ? num : 0
 
@@ -209,10 +237,10 @@ const clusterConsumptionChart = ref<IWaterConsumptionChart>({
 
 const prepareDeviceConsumptionData = async () => {
     // Get chart data and update
-    consumptionChart.value.chartSeries = await deviceStore.getDeviceConsumptionTrend(deviceStore.selectedDevice.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
+    consumptionChart.value.chartSeries = await deviceStore.getDeviceConsumptionTrend(deviceStore.selectedDevice.objectId, startDate.toISOString(), endDate.toISOString())
 
     // Get consumption stats
-    await deviceStore.getDeviceMinMaxConsumption(deviceStore.selectedDevice.objectId, startOfMonth.toISOString(), endOfMonth.toISOString())
+    await deviceStore.getDeviceMinMaxConsumption(deviceStore.selectedDevice.objectId, startDate.toISOString(), endDate.toISOString())
     if (deviceStore.success_SelectedDeviceMinMaxConsumption) {
         consumptionStatOption.value = {
             title: "Consumption Stats",
@@ -230,7 +258,7 @@ const prepareDeviceConsumptionData = async () => {
 // Watch and load seleted device trends
 watchEffect(async () => {
 
-    if(isSheetDialogueOpen){
+    if (isSheetDialogueOpen) {
         prepareDeviceConsumptionData()
     }
 
@@ -238,12 +266,12 @@ watchEffect(async () => {
     if (deviceStore.success_SelectedClusterMinMaxConsumption) {
         billWidgetOption.value = {
             billTitle: `${deviceStore.deviceGroupName} Bill`,
-            billTypeId : "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
+            billTypeId: "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
             devices: deviceStore.devices,
-            clusterId : groupId.toString(),
+            clusterId: groupId.toString(),
             totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
-            startDate: startOfMonth.toISOString(),
-            endDate: endOfMonth.toISOString()
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString()
         }
     }
 
