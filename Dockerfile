@@ -1,3 +1,4 @@
+
 # Use the official lightweight Node.js 18 image.
 # https://hub.docker.com/_/node
 FROM node:19-alpine
@@ -7,6 +8,7 @@ WORKDIR /usr/src/app
 
 # Install app dependencies
 COPY package*.json ./
+RUN npm install -D rollup oxc-parser
 RUN npm install
 
 # Bundle app source
@@ -18,5 +20,5 @@ RUN npm run build
 # Expose the port
 EXPOSE 3000
 
-# Start the app
-CMD [ "yarn", "dev" ]
+# Command to run the application
+CMD ["node", ".output/server/index.mjs"]
