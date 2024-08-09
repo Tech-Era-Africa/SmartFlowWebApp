@@ -1,7 +1,7 @@
 <template>
     <NuxtLayout name="dashboard">
         <Header name="Overview"></Header>
-        <section class="flex flex-col gap-4 absolute top-16 z-10 mx-2  lg:mx-8 left-0 right-0">
+        <section class="flex flex-col gap-4 absolute top-32 z-10 mx-2  lg:mx-8 left-0 right-0">
             <div class="w-full flex flex-col lg:flex-row  p-2 gap-4">
                 <div class="w-full  lg:w-3/5 h-full">
                     <DeviceMonitoring title="All Devices"></DeviceMonitoring>

@@ -65,6 +65,7 @@
                     </div>
                     <p class="mt-4 text-xs font-medium text-gray-500">© {{ new Date(Date.now()).getFullYear() }} Smart
                         Flow</p>
+                        <p class="text-muted-foreground text-xs mt-5">v.0.1.10</p>
                 </div>
             </div>
         </div>
