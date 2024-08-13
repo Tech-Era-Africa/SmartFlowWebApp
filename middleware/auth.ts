@@ -10,9 +10,4 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   }
 
-  // Navigate to new org page if there are no orgs
-  if (userStore.organisations.length == 0) {
-    return await navigateTo({ path: '/org/new', replace: true })
-  }
-
 })

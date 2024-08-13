@@ -12,6 +12,7 @@ export const useUserStore = defineStore('user', {
     apiFailure: { message: "" },
     users: [] as User[],
     currentUser: {} as User | null,
+    currentUserApiState: ApiResponseState.NULL,
     token: useCookie('WF_UT', { maxAge: 60 * 60 }).value ?? "", //Cookie set for an hour
 
     // INVITE NEW USER
@@ -39,44 +40,46 @@ export const useUserStore = defineStore('user', {
       console.log("Current user token set")
     },
 
-    clearUserToken(){
+    clearUserToken() {
       useCookie('WF_UT').value = null
       console.log("Current user token cleared")
     },
 
     async getCurrentUser() {
-
-      if (this.token) {
+      return new Promise<any>(async (resolve, reject) => {
         try {
-          //GET CURRENT USER
-          // SERVER LOGIC
-          const queryString = new URLSearchParams({ token: this.token }).toString();
-          const data = await useStoreFetchRequest(`/api/auth/user/current?${queryString}`, 'GET');
 
-          //DATA
-          this.currentUser = UserModel.fromMap(data)
+          if (this.token) {
+              //GET CURRENT USER
+              // SERVER LOGIC
+              const data = await $fetch(`${useRuntimeConfig().public.API_BASE_URL}/auth/current/user`, {
+                method: 'GET',
+                headers:{
+                  "Authorization" : `Bearer ${this.token}`
+                }
+              });
 
-          // Get the user's organisations
-          // TODO!: MUST HANDLE ERROR CASES HERE
-          await this.getUserOrganisations()
 
-          // Check if there is a successful organisation and set a default
-          if (this.success_UserOrganisations && this.organisations.length > 0) {
-            // Select a default organisation
-            this.selectedOrganisation = this.organisations[0]
-            return;
+              // Success
+              this.currentUserApiState = ApiResponseState.SUCCESS;
+              this.currentUser = UserModel.fromMap((data as any))
+
+              
+              return resolve(this.currentUser);
+
           }
 
-        } catch (e) {
-          // CLEAR ANY EXISTING USER DATA
+          // No token areas
+          console.log("NO TOKEN FOUND")
           this.currentUser = null;
-          
+          return resolve(this.currentUser);
         }
-        return;
-      }
-
-      // No token areas
-      console.log("NO TOKEN FOUND")
+        catch (error) {
+          console.log(error)
+          this.currentUserApiState = ApiResponseState.FAILED;
+          return reject('Internal Server error! Could not get current user');
+        }
+      })
     },
 
     async getAllUsers() {

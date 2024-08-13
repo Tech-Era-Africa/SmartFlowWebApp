@@ -31,14 +31,6 @@
             </div>
 
         </section>
-        <!-- <Drawer drawerId = "deviceDrawer">
-           <SingleDeviceMonitoring></SingleDeviceMonitoring>
-           <WaterConsumptionChart></WaterConsumptionChart>
-           <ConsumptionStats></ConsumptionStats>
-           <TotalPayableBillWidget></TotalPayableBillWidget>
-           <UsersTable :option="usersDataTableOption"></UsersTable>
-
-        </Drawer> -->
     </NuxtLayout>
 </template>
 
