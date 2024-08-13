@@ -17,32 +17,37 @@ export const useAuthStore = defineStore({
     async loginWithEmail(cred: LoginDTO) {
       try {
         this.loginState = ApiResponseState.LOADING;
-        const data = await useStoreFetchRequest('/api/auth/login', 'POST', {
-          email: cred.email,
-          password: cred.password
+
+        const data = await $fetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/auth/login`, {
+          method: 'POST',
+          body: {
+            email: cred.email,
+            password: cred.password,
+          }
         });
-        this.loginState = ApiResponseState.SUCCESS;
 
         // Set user token
-        useUserStore().setUserToken((data as any).sessionToken) //TODO!: Give the data repsonse a type
+        useUserStore().setUserToken(data.access_token);
 
-        // Setup user data 
-        useUserStore().currentUser = UserModel.fromMap(data)
-        console.log(useUserStore().currentUser)
         this.loginState = ApiResponseState.SUCCESS;
 
       } catch (error: any) {
-        this.loginFailure.message = error.message;
+        // Check if error.response exists, meaning it's a server response error
+        if (error.response) {
+          this.loginFailure.message = error.response._data.message || 'An unexpected error occurred.';
+        } else {
+          this.loginFailure.message = 'An unexpected error occurred.';
+        }
         this.loginState = ApiResponseState.FAILED;
       }
     },
 
-    logoutUser(){
+    logoutUser() {
       useUserStore().clearUserToken()
     }
   },
 
-  getters:{
+  getters: {
     isLoggingUserIn: (state) => state.loginState === ApiResponseState.LOADING,
     failed_LoginUser: (state) => state.loginState === ApiResponseState.FAILED,
     success_LoginUser: (state) => state.loginState === ApiResponseState.SUCCESS,

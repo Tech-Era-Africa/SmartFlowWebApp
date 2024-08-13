@@ -70,6 +70,7 @@ export const useUserStore = defineStore('user', {
         } catch (e) {
           // CLEAR ANY EXISTING USER DATA
           this.currentUser = null;
+          
         }
         return;
       }
