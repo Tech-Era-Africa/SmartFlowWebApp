@@ -347,6 +347,7 @@ export const useDeviceStore = defineStore({
 
         this.consumptionTrendsApiState = ApiResponseState.LOADING;
         const queryString = new URLSearchParams({ id: useUserStore().selectedOrganisation.objectId, startDate, endDate }).toString();
+        
         const data = await useStoreFetchRequest(`/api/device/consumption/all?${queryString}`, 'GET');
 
         this.consumptionTrendsApiState = ApiResponseState.SUCCESS;

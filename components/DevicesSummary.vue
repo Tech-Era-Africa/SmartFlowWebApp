@@ -1,9 +1,11 @@
 <template>
   <div class="w-full max-h-[340px] h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
-    <div class="flex  justify-between items-center">
+    <div class="flex flex-col items-start  justify-between">
       <h1 class="font-bold text-lg">Device Clusters</h1>
+      <p class="text-foreground-muted text-xs text-gray-400 flex items-center gap-2"><Info :size="14"></Info> Your grouped devices. Eg. Apartment 1</p>
+ 
     </div>
-    <div class="flex gap-2 justify-between">
+    <div class="flex gap-2 flex-grow">
       <template v-if="deviceStore.hasGroupDevices">
         <NuxtLink :to="`/devices/group/${deviceStore.devicesGroups[0].objectId}`" class="w-full">
           <Card class="overflow-hidden h-full cursor-pointer flex-1">
@@ -46,7 +48,7 @@
       </template>
 
       <template v-else>
-        <div>
+        <div class="flex flex-grow bg-blue-50 items-center justify-center">
           <p>No Cluster</p>
         </div>
       </template>
@@ -59,6 +61,7 @@
 
 <script setup lang="ts">
 import { useDeviceStore } from '~/stores/device/device.store';
+import { Info } from 'lucide-vue-next'
 
 
 const deviceStore = useDeviceStore()
