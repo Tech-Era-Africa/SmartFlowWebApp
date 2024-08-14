@@ -7,7 +7,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
      // If the current user does not exist get it
      if (!userStore.successCurrentUser){
-        console.log("USER NOT SIGNED IN!")
         await userStore.getCurrentUser();
         return;
     }
