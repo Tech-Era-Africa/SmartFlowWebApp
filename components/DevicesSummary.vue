@@ -2,8 +2,10 @@
   <div class="w-full max-h-[340px] h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
     <div class="flex flex-col items-start  justify-between">
       <h1 class="font-bold text-lg">Device Clusters</h1>
-      <p class="text-foreground-muted text-xs text-gray-400 flex items-center gap-2"><Info :size="14"></Info> Your grouped devices. Eg. Apartment 1</p>
- 
+      <p class="text-foreground-muted text-xs text-gray-400 flex items-center gap-2">
+        <Info :size="14"></Info> Your grouped devices. Eg. Apartment 1
+      </p>
+
     </div>
     <div class="flex gap-2 flex-grow">
       <template v-if="deviceStore.hasGroupDevices">
@@ -14,7 +16,7 @@
                 <CardTitle>{{ deviceStore.devicesGroups[0].name }}</CardTitle>
                 <CardDescription>
                   <Badge class="mt-2" variant="outline">{{ deviceStore.devicesGroups[0].devicesCount }} Device{{
-        deviceStore.devicesGroups[0].devicesCount! >= 2 ? 's' : '' }}</Badge>
+          deviceStore.devicesGroups[0].devicesCount! >= 2 ? 's' : '' }}</Badge>
                 </CardDescription>
               </div>
               <div>
@@ -35,7 +37,7 @@
         </NuxtLink>
 
 
-        <NuxtLink to="/devices/group" v-if="deviceStore.devicesGroups.length>1">
+        <NuxtLink to="/devices/group" v-if="deviceStore.devicesGroups.length > 1">
           <div class="bg-gray-100 flex justify-center items-center px-5 rounded-xl cursor-pointer h-full">
             <p class="font-bold text-xl">+{{ deviceStore.devicesGroups.length - 1 }}</p>
           </div>
@@ -43,7 +45,7 @@
 
       </template>
 
-      <template v-else-if="deviceStore.loading_DevicesGroup">
+      <template v-else-if="pending">
         <Skeleton class="h-[340px]" />
       </template>
 
@@ -61,17 +63,14 @@
 
 <script setup lang="ts">
 import { useDeviceStore } from '~/stores/device/device.store';
+import { type IDeviceGroup } from '~/stores/device/model/deviceGroup.model';
 import { Info } from 'lucide-vue-next'
 
 
 const deviceStore = useDeviceStore()
-const clusterSummaryChartData = ref([])
 
-onBeforeMount(() => {
-  // TODO!: THIS MUST BE THE ORGANISATION GROUP INSTEAD OF USER GROUP
-  deviceStore.getOrgDeviceGroup();
-
-})
+// Load the devices from the organisation
+const { pending, status, data, error } = useAsyncData<IDeviceGroup[]>('deviceGroup', () => deviceStore.getOrgDeviceGroup(), { lazy: true })
 
 watchEffect(() => {
   const currentDate = new Date();
