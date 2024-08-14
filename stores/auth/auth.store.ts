@@ -17,10 +17,10 @@ export const useAuthStore = defineStore({
     async loginWithEmail(cred: LoginDTO) {
       try {
         this.loginState = ApiResponseState.LOADING;
-
+    
         const data = await $fetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/auth/login`, {
-          method: 'POST',
-          body: {
+          method : 'POST',
+          body :{
             email: cred.email,
             password: cred.password,
           }
@@ -29,15 +29,13 @@ export const useAuthStore = defineStore({
         // Set user token
         useUserStore().setUserToken(data.access_token);
 
+        // Refresh to trigger getting current user from here
+        useRouter().go(0)
+    
         this.loginState = ApiResponseState.SUCCESS;
-
+    
       } catch (error: any) {
-        // Check if error.response exists, meaning it's a server response error
-        if (error.response) {
-          this.loginFailure.message = error.response._data.message || 'An unexpected error occurred.';
-        } else {
-          this.loginFailure.message = 'An unexpected error occurred.';
-        }
+        this.loginFailure.message = error.message || 'An unexpected error occurred.';
         this.loginState = ApiResponseState.FAILED;
       }
     },

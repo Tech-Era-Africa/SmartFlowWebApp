@@ -1,5 +1,30 @@
 <template>
-    <NuxtLayout name="dashboard">
+    <section v-if="userStore.loading_UserOrganisations" class="w-screen h-screen overflow-hidden p-10 ">
+        <div class="flex gap-5 h-full">
+            <div class="w-1/4 h-full flex flex-col gap-5 p-10 bg-gray-50">
+                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
+                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
+                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
+                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
+                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
+                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
+                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
+            </div>
+            <div class="flex flex-col gap-5 w-full">
+                <div class="flex gap-5 w-full h-full">
+                    <div class="w-full h-full flex flex-col gap-5 bg-gray-50 p-10">
+                        <Skeleton class="w-full h-full bg-blue-50"></Skeleton>
+                        <Skeleton class="w-full h-full bg-blue-50"></Skeleton>
+                    </div>
+                    <Skeleton class="w-full h-full bg-blue-50"></Skeleton>
+                </div>
+                
+                <Skeleton class="w-full h-full bg-blue-50"></Skeleton>
+            </div>
+        </div>
+        
+    </section>
+    <NuxtLayout name="dashboard" v-else>
         <Header name="Overview"></Header>
         <section class="flex flex-col gap-4 absolute top-16 z-10 mx-2  lg:mx-8 left-0 right-0">
             <div class="w-full flex flex-col lg:flex-row  p-2 gap-4">
@@ -35,15 +60,16 @@
 </template>
 
 <script setup lang="ts">
-import { useBillStore } from '~/stores/bill/bill.store';
 import { useDeviceStore } from '~/stores/device/device.store';
+import { useUserStore } from '~/stores/auth/user/user.store';
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
 useHead({ title: "Overview" })
-definePageMeta({ middleware: 'auth' })
+definePageMeta({ middleware: 'check-org' })
 
 const deviceStore = useDeviceStore()
-const billingStore = useBillStore()
+const userStore = useUserStore()
+
 
 onBeforeMount(() => {
     // TODO!: MOVE THIS TO THE STORE

@@ -60,7 +60,7 @@ import { useBillStore } from '~/stores/bill/bill.store';
 // Get the url paramter
 const { id } = useRoute().params;
 
-// definePageMeta({ middleware: 'auth' })
+// 
 useHead({
     title: `Bill Invoice - ${id}`
 })

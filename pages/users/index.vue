@@ -18,13 +18,13 @@
 </template>
 <script setup lang="ts">
 import type { Row, Table } from '@tanstack/vue-table';
-import type { User } from '~/server/api/auth/user/model/user.model';
 import { userColumns } from '~/stores/auth/user/columns/user.column';
+import type { User } from '~/stores/auth/user/model/user.model';
 import { useUserStore } from '~/stores/auth/user/user.store';
 
 
 useHead({ title: "Users" })
-definePageMeta({ middleware: 'auth' })
+
 
 const userStore = useUserStore()
 const users = ([] as User[])

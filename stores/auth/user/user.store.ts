@@ -63,8 +63,6 @@ export const useUserStore = defineStore('user', {
               // Success
               this.currentUserApiState = ApiResponseState.SUCCESS;
               this.currentUser = UserModel.fromMap((data as any))
-
-              
               return resolve(this.currentUser);
 
           }
@@ -103,23 +101,48 @@ export const useUserStore = defineStore('user', {
     },
 
     async getUserOrganisations() {
+      return new Promise<IOrganisation[]>(async (resolve, reject) => {
+        try {
+          this.apiUserOrganisationState = ApiResponseState.LOADING;
 
-      try {
-        this.apiUserOrganisationState = ApiResponseState.LOADING;
+          // SERVER LOGIC
+          const { data, error } = await useFetch(`${useRuntimeConfig().public.API_BASE_URL}/org`, {
+            method: 'GET',
+            headers:{
+             "Authorization": `Bearer ${this.token}`
+            }
+          });
+          // end of SERVER LOGIC
 
-        // SERVER LOGIC
-        const queryString = new URLSearchParams({ userId: this.currentUser?.objectId! }).toString();
-        const data = await useStoreFetchRequest(`/api/auth/user/organisation?${queryString}`, 'GET')
-        // end of SERVER LOGIC
+           // Handle errors
+           if (error?.value) {
+            this.apiUserOrganisationState = ApiResponseState.FAILED;
+            return resolve([]); // Resolve with empty array on failure
+          } else if (error?.value) {
+            return reject(error.value.data.error || 'Server error! Could not fetch organisations');
+          }
 
-        // Data
-        this.apiUserOrganisationState = ApiResponseState.SUCCESS;
-        this.organisations = data as IOrganisation[]
 
-      } catch (error) {
-        // Handle login error
-        this.apiUserOrganisationFailure.message = 'Server error! Could not load user organisations';
-        this.apiUserOrganisationState = ApiResponseState.FAILED;
+          // Data
+          this.organisations = (data as any)
+          
+          this.apiUserOrganisationState = ApiResponseState.SUCCESS;
+
+          return resolve(this.organisations)
+
+        } catch (error) {
+          // Handle login error
+          this.apiUserOrganisationFailure.message = 'Server error! Could not load user organisations';
+          this.apiUserOrganisationState = ApiResponseState.FAILED;
+          reject(error); 
+        }
+      })
+
+    },
+
+    setCurrentUserOrg(){
+      if(this.organisations.length > 0){
+        this.selectedOrganisation = this.organisations[0]
       }
     },
 
@@ -243,6 +266,10 @@ export const useUserStore = defineStore('user', {
     failed: (state) => state.apiState == ApiResponseState.FAILED,
     success: (state) => state.apiState == ApiResponseState.SUCCESS,
 
+    // CURRENT USER
+    failedCurrentUser: (state) => state.currentUserApiState == ApiResponseState.FAILED,
+    successCurrentUser: (state) => state.currentUserApiState == ApiResponseState.SUCCESS,
+    isLoadingCurrentUser: (state) => state.currentUserApiState == ApiResponseState.LOADING,
 
     // NEW INVITE
     isInvitingNewUser: (state) => state.apiInviteNewUserState == ApiResponseState.LOADING,

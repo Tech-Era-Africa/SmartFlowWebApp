@@ -5,7 +5,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     const userStore = useUserStore()
 
     // If the current user exists navigate to the dashboard
-    if (userStore.currentUser?.objectId != null) {
+    if (userStore.successCurrentUser) {
         return await navigateTo({ path: '/overview', replace: true })
 
     }

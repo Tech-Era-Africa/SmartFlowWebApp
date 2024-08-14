@@ -93,7 +93,7 @@ import { Loader2 } from 'lucide-vue-next'
 
 
 useHead({ title: "Devices" })
-definePageMeta({ middleware: 'auth' })
+
 
 const deviceStore = useDeviceStore()
 

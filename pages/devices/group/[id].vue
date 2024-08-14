@@ -137,7 +137,7 @@ import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 
 
 useHead({ title: "Devices" })
-definePageMeta({ middleware: 'auth' })
+
 
 const deviceStore = useDeviceStore()
 const billStore = useBillStore()

@@ -38,7 +38,7 @@
 import { UserModel, type User } from '~/stores/auth/user/model/user.model';
 import {type UserTableOptionDTO} from '~/utils/dto/userTable.option.dto';
 
-definePageMeta({ middleware: 'auth' })
+
 useHead({title : "Water Billing"})
 
 const usersDataTableOption = ref<UserTableOptionDTO>({
