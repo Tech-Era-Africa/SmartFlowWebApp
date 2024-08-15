@@ -71,16 +71,16 @@ const deviceStore = useDeviceStore()
 const userStore = useUserStore()
 
 
-onBeforeMount(() => {
-    // TODO!: MOVE THIS TO THE STORE
-    const currentDate = new Date();
-    const startDate = new Date(currentDate.getFullYear(), 0, 1);
-    const endDate = new Date(currentDate.getFullYear(), 11, 31);
+// onBeforeMount(() => {
+//     // TODO!: MOVE THIS TO THE STORE
+//     const currentDate = new Date();
+//     const startDate = new Date(currentDate.getFullYear(), 0, 1);
+//     const endDate = new Date(currentDate.getFullYear(), 11, 31);
 
-    deviceStore.getAllDevicesConsumptionTrend(startDate.toISOString(), endDate.toISOString())
-    deviceStore.getMinMaxConsumption(startDate.toISOString(), endDate.toISOString())
+//     deviceStore.getAllDevicesConsumptionTrend(startDate.toISOString(), endDate.toISOString())
+//     deviceStore.getMinMaxConsumption(startDate.toISOString(), endDate.toISOString())
 
-})
+// })
 
 const handleWaterConsumptionChartDateChanged = (date: { start: Date, end: Date }) => {
     deviceStore.getAllDevicesConsumptionTrend(date.start.toISOString(), date.end.toISOString())

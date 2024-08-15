@@ -1,5 +1,6 @@
 <template>
-    <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
+     <AreaChart :data="data" index="name" :categories="['total', 'predicted']" />
+    <div v-if="false" class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex  justify-between items-center">
             <h1 class="font-bold text-lg">{{ title ?? 'Device Monitoring' }}</h1>
             <!-- <button class="btn">
@@ -41,16 +42,32 @@ import { useUserStore } from '~/stores/auth/user/user.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import { Loader2 } from 'lucide-vue-next'
 import { useBillStore } from '~/stores/bill/bill.store';
+import { type IDevice } from '~/stores/device/model/device.model';
+
+const data = [
+  { name: 'Jan', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
+  { name: 'Feb', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
+  { name: 'Mar', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
+  { name: 'Apr', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
+  { name: 'May', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
+  { name: 'Jun', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
+  { name: 'Jul', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
+]
 
 
 const deviceStore = useDeviceStore();
 const userStore = useUserStore();
 const billingStore = useBillStore();
 
-onBeforeMount(() => {
-    deviceStore.getDevicesByOrg()
-    billingStore.getTotalBilling()
-})
+// Load the devices from the organisation
+useAsyncData<IDevice[]>('devices', () => deviceStore.getDevicesByOrg(), { lazy: true })
+
+
+
+// onBeforeMount(() => {
+//     deviceStore.getDevicesByOrg()
+//     billingStore.getTotalBilling()
+// })
 
 const totalConsumption = computed(()=> deviceStore.sumTotalConsumptionFromDevices())
 const totalBill = computed(()=>billingStore.calculateTotalBill({consumption:totalConsumption.value}).toFixed(2))
