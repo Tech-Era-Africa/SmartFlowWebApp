@@ -7,11 +7,11 @@
                 <Icon name="material-symbols:calendar-month-outline" />
             </button>
         </div>
-        <ClientOnly>
+        <!-- <ClientOnly>
             <apexchart :key="chart4Options.series" height="100%" width="100%" :options="chart4Options"
                 :series="chart4Options.series">
             </apexchart>
-        </ClientOnly>
+        </ClientOnly> -->
     </div>
 </template>
 

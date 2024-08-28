@@ -1,11 +1,12 @@
 <template>
-    <div class="w-full max-h-[340px] h-full bg-white rounded-xl p-5 flex flex-col gap-2">
+    <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="font-bold text-lg">{{ option.title ?? 'Water Consumption' }}</h1>
                 <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p>
             </div>
             <div class="flex gap-2 items-center">
+                <Badge variant="outline">Munchies</Badge>
                 <Select :model-value="trendPeriod" @update:model-value="onDateChanged($event)">
                     <SelectTrigger class="w-[180px]">
                         <SelectValue />
@@ -35,7 +36,7 @@
             <Skeleton class="h-full" />
         </div>
         <template v-else>
-            <apexchart :key="chart4Options.series" height="100%" width="100%" :options="chart4Options"
+            <apexchart :key="chart4Options.series" height="85%" width="100%" :options="chart4Options"
                 :series="chart4Options.series">
             </apexchart>
         </template>

@@ -9,8 +9,8 @@
             </CardDescription>
         </CardHeader>
         <CardContent class="p-2 w-[150px]">
-            <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
-            </apexchart>
+            <!-- <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
+            </apexchart> -->
         </CardContent>
     </Card>
 </template>

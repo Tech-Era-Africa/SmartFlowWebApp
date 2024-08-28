@@ -1,8 +1,8 @@
 <template>
-     <div class="w-full min-h-[200px] bg-white rounded-xl p-5 flex flex-col gap-2">
+     <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex justify-between items-center">
             <div>
-                <h1 class="font-bold text-lg">{{ option.title ?? 'Total Consumption' }}</h1>
+                <h1 class="font-bold text-lg">{{ option.title ?? 'Consumption Insights' }}</h1>
                 <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p>
             </div>
             <div class="flex gap-2 items-center">
@@ -30,30 +30,117 @@
             </div>
             <!-- <DateRangePicker @handle-date-change="onDateChanged"></DateRangePicker> -->
         </div>
-        <div class="mt-5 flex flex-col flex-1 justify-between">
-            <div class="flex justify-between items-center">
-                <p class="text-gray-500 font-medium">Highest Consumption</p>
-                <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
-                <template v-else>
-                    <p class="text-xl font-bold">{{validStatNumber(option.max).toFixed(2)}}k L</p>
-                </template>
-            </div>
-            <div class="flex justify-between items-center">
-                <p class="text-gray-500 font-medium">Lowest Consumption</p>
-                <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
-                <template v-else>
-                    <p class="text-xl font-bold">{{validStatNumber(option.min).toFixed(2)}}k L</p>
-                </template>
-            </div>
-            <div class="flex justify-between items-center">
-                <p class="text-gray-500 font-medium">Total Used</p>
-                <Loader2 class="animate-spin" v-if="option.isLoading" :size="15" ></Loader2>
-                <template v-else>
-                    <p class="text-xl font-bold">{{validStatNumber(option.sum).toFixed(2)}}k L</p>
-                </template>
-
-            </div>
+        <div class="grid gap-4 md:grid-cols-2">
+            <Card class="shadow-none">
+              <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle class="text-sm font-medium">
+                  Water Used
+                </CardTitle>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  class="h-4 w-4 text-muted-foreground"
+                >
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+              </CardHeader>
+              <CardContent>
+                <div class="text-lg font-bold">
+                  234L
+                </div>
+                <p class="text-xs text-muted-foreground">
+                  +201 since yesterday
+                </p>
+              </CardContent>
+            </Card>
+            <Card class="shadow-none">
+              <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle class="text-sm font-medium">
+                  Estimated Bill
+                </CardTitle>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  class="h-4 w-4 text-muted-foreground"
+                >
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+              </CardHeader>
+              <CardContent>
+                <div class="text-lg font-bold">
+                  GHC243
+                </div>
+                <p class="text-xs text-muted-foreground">
+                  +Ghc50 since yesterday
+                </p>
+              </CardContent>
+            </Card>
+            <Card class="shadow-none">
+              <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle class="text-sm font-medium">
+                  Peak Usage
+                </CardTitle>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  class="h-4 w-4 text-muted-foreground"
+                >
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+              </CardHeader>
+              <CardContent>
+                <div class="text-lg font-bold">
+                  12th March
+                </div>
+                <p class="text-xs text-muted-foreground">
+                  Date
+                </p>
+              </CardContent>
+            </Card>
+            <Card class="shadow-none">
+              <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle class="text-sm font-medium">
+                  Peak Usage
+                </CardTitle>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  class="h-4 w-4 text-muted-foreground"
+                >
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+              </CardHeader>
+              <CardContent>
+                <div class="text-lg font-bold">
+                  Akonnor
+                </div>
+                <p class="text-xs text-muted-foreground">
+                  Group
+                </p>
+              </CardContent>
+            </Card>
         </div>
+        
      </div>
 </template>
 <script setup lang="ts">

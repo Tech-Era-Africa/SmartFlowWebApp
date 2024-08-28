@@ -1,11 +1,11 @@
 <template>
   <NuxtLayout name="dashboard">
-    <Header name="Devices"></Header>
+    <Header name="Device Blocks"></Header>
     <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0">
       <div class="w-full flex  p-2 gap-4">
         <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
           <div class="flex flex-row justify-between gap-2items-center">
-            <h1 class="font-bold text-lg">Clusters</h1>
+            <!-- <h1 class="font-bold text-lg">Blocks</h1> -->
 
           </div>
 
@@ -88,19 +88,19 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { Loader2 } from 'lucide-vue-next'
+import type { IDeviceGroup } from '~/stores/device/model/deviceGroup.model';
 
 
 
 
-useHead({ title: "Devices" })
+useHead({ title: "Device Blocks" })
 
 
 const deviceStore = useDeviceStore()
 
 
-onBeforeMount(() => {
-  deviceStore.getOrgDeviceGroup();
-})
+// Load the devices clusters
+useAsyncData<IDeviceGroup[]>('deviceGroup', () => deviceStore.getOrgDeviceGroup(), { lazy: true })
 
 
 // NEW CLUSTER DIALOG CONTROL

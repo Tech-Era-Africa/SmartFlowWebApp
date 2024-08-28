@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full max-h-[340px] h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
+  <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
     <div class="flex flex-col items-start  justify-between">
-      <h1 class="font-bold text-lg">Device Clusters</h1>
+      <h1 class="font-bold text-lg">Device Blocks</h1>
       <p class="text-foreground-muted text-xs text-gray-400 flex items-center gap-2">
         <Info :size="14"></Info> Your grouped devices. Eg. Apartment 1
       </p>
@@ -30,14 +30,8 @@
               </div>
               <template v-else>
 
-                <p v-if="status != 'success'" class="text-foreground-muted text-xs">Could not load data</p>
-
-                <p v-else-if="data?.length == 0" class="text-foreground-muted text-xs">No data</p>
-
-                <ClientOnly v-else>
-                  <pre>{{ chartIsReady }}</pre>
-                  <apexchart v-if="chartIsReady" :key="chartOptions.series" :options="chartOptions"
-                    :series="chartOptions.series">
+                <ClientOnly>
+                  <apexchart v-if="chartIsReady" :key="chartOptions.series" :options="chartOptions" :series="chartOptions.series">
                   </apexchart>
                 </ClientOnly>
               </template>
@@ -54,7 +48,7 @@
 
       </template>
 
-      <template v-else-if="pending">
+      <template v-else-if="deviceStore.loading_DevicesGroup">
         <Skeleton class="h-[340px]" />
       </template>
 
@@ -152,147 +146,29 @@ const chartOptions = ref({
 const chartIsReady = ref(false)
 
 // Load the devices from the organisation
-const { pending, status, data, error } = useAsyncData<IDeviceGroup[]>('deviceGroup', () => deviceStore.getOrgDeviceGroup(), { lazy: true })
+useAsyncData<any>('deviceGroup', () => deviceStore.getOrgDeviceGroup(), { lazy: true })
 
-
-const currentDate = new Date();
-const startDate = new Date(currentDate.getFullYear(), 0, 1);
-const endDate = new Date(currentDate.getFullYear(), 11, 31);
-
-// Get the consumption trend once the groups have been loaded
-if (status.value == 'success' && data.value && data.value.length > 0) {
-  const { status: trend_status, data: trend_data } = useAsyncData<any[]>('deviceGroupTrendData', () => deviceStore.getDeviceSummaryConsumptionTrend(data.value![0].objectId, startDate.toISOString(), endDate.toISOString()), { lazy: false })
-  if (trend_status.value == 'success') {
-    console.log("SOMETIMES THIS THING JUST GOES NUTS")
-    chartOptions.value.series = trend_data.value as any
-    chartIsReady.value = true
+// Fetch data based on device groups
+watchEffect(() => {
+  if (deviceStore.devicesGroups.length > 0) {
+    const currentDate = new Date();
+    const startDate = new Date(currentDate.getFullYear(), 0, 1);
+    const endDate = new Date(currentDate.getFullYear(), 11, 31);
+    deviceStore.getDeviceSummaryConsumptionTrend(
+      deviceStore.devicesGroups[0].objectId, 
+      startDate.toISOString(), 
+      endDate.toISOString()
+    );
   }
+});
 
-}
-
-
-
-
-// CHART SETTTINGS
-// const chart4Options = ref({
-
-//   chart: {
-//     type: 'area',
-//     toolbar: {
-//       show: false,
-//     },
-//     zoom: {
-//       enabled: false,
-//     },
-//   },
-//   series: [
-//     {
-//       name: 'Consumption',
-//       data: [],
-//     },
-//   ],
-//   dataLabels: {
-//     enabled: false,
-//   },
-//   stroke: {
-//     show: true,
-//     curve: 'smooth',
-//     lineCap: 'butt',
-//     colors: undefined,
-//     width: 2,
-//   },
-
-//   grid: {
-//     show: false,
-//     row: {
-//       opacity: 0,
-//     },
-//   },
-//   xaxis: {
-//     type: 'datetime',
-//     show: false,
-//     labels: {
-//       show: false,
-//     },
-//   },
-//   yaxis: {
-//     show: false, // Hide the y-axis
-//     labels: {
-//       show: false,
-//       formatter: function (value: number) {
-//         // Round the value to two decimal places
-//         return `${value.toFixed(2)} L`;
-//       }
-//     }
-//   },
-//   tooltip: {
-//     x: {
-//       format: 'dd MMM yyyy',
-//     },
-//     y: {
-//       formatter: function (value: any) {
-//         // Round the value to two decimal places
-//         return `${value.toFixed(2)} L`;
-//       }
-//     }
-//   },
-//   fill: {
-//     type: 'gradient',
-//     gradient: {
-//       shadeIntensity: 1,
-//       opacityFrom: 0.7,
-//       opacityTo: 0.9,
-//       stops: [0, 100],
-//     },
-//   },
-//   colors: ['#46DAE5'],
-//   legend: {
-//     show: false, // Hide the legend
-//   },
-// });
-
-// // Function to generate random data for the last n days
-// function generateRandomData(days: any) {
-//   const currentDate = new Date();
-//   const data = [];
-
-//   for (let i = days - 1; i >= 0; i--) {
-//     const date = new Date(currentDate);
-//     date.setDate(currentDate.getDate() - i);
-//     const consumption = Math.random() * 5; // Random consumption between 0 and 5
-//     data.push({ x: date.getTime(), y: consumption });
-//   }
-
-//   return data;
-// }
-// end of CHART SETTING
-
-
-// Used to watch for changes and update the charts 
-// Compute the series based on the store data
-// const series = computed(() => {
-//   if (deviceStore.success_TotalConsumptionByCluster) {
-//     return deviceStore.summaryClusterConsumptionTrend
-//   }
-//   return []
-// })
-
-// // Watch for changes in the computed series
-// watch(series, (newSeries) => {
-
-//   if (newSeries.length > 0) {
-//     chart4Options.value.series = newSeries
-//   }
-// }, { immediate: true })
-
-// watchEffect(() => {
-//   console.log("TRIGGERED")
-//   if (deviceStore.success_TotalConsumptionByCluster) {
-//     console.log("LOADED CHAR")
-//     chart4Options.value.series = deviceStore.summaryClusterConsumptionTrend
-//   }
-
-// })
+// Handle the response and update the chart
+watchEffect(() => {
+  if (deviceStore.success_TotalConsumptionByCluster) {
+    chartIsReady.value = true;
+    chartOptions.value.series = deviceStore.summaryClusterConsumptionTrend;
+  }
+});
 
 
 </script>

@@ -10,9 +10,11 @@
                                 <ArrowLeftCircle></ArrowLeftCircle>
                             </Button>
                             <div>
-                                <h1 class="text-sm">Cluster</h1>
+
                                 <Skeleton v-if="deviceStore.isGettingDevices" class="w-500 h-10 rounded-lg"></Skeleton>
                                 <template v-else>
+                                    <Badge class="rounded-sm border-none outline-none bg-blue-50 text-blue-600">
+                                        Apartment</Badge>
                                     <h1 class="text-3xl font-extrabold">{{
                                 deviceStore.deviceGroupName }}</h1>
                                 </template>
@@ -149,21 +151,42 @@ const currentDate = new Date();
 const startDate = new Date(currentDate.getFullYear(), 0, 1);
 const endDate = new Date(currentDate.getFullYear(), 11, 31);
 
-onBeforeMount(() => {
-    chartData.value = deviceStore.getClusterConsumptionTrend(groupId.toString(), startDate.toISOString(), endDate.toISOString())
-    deviceStore.getDevicesByGroup(groupId.toString());
-    deviceStore.getClusterMinMaxConsumption(groupId.toString(), startDate.toISOString(), endDate.toISOString());
 
-    billStore.updateBillData({
-        billTitle: `${deviceStore.deviceGroupName} Bill`,
-        billTypeId: "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
-        devices: deviceStore.devices,
-        clusterId: groupId.toString(),
-        totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString()
-    })
-})
+
+// Load the devices by group
+useAsyncData<any>('devicesGroup', () => Promise.all(
+    [
+        deviceStore.getDevicesByGroup(groupId.toString()),
+        deviceStore.getClusterConsumptionTrend(groupId.toString(), startDate.toISOString(), endDate.toISOString()),
+        deviceStore.getClusterMinMaxConsumption(groupId.toString(), startDate.toISOString(), endDate.toISOString()),
+        billStore.updateBillData({
+            billTitle: `${deviceStore.deviceGroupName} Bill`,
+            billTypeId: "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
+            devices: deviceStore.devices,
+            clusterId: groupId.toString(),
+            totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString()
+        })
+
+    ]
+), { lazy: true })
+
+// onBeforeMount(() => {
+//     chartData.value = deviceStore.getClusterConsumptionTrend(groupId.toString(), startDate.toISOString(), endDate.toISOString())
+//     // deviceStore.getDevicesByGroup(groupId.toString());
+//     deviceStore.getClusterMinMaxConsumption(groupId.toString(), startDate.toISOString(), endDate.toISOString());
+
+//     billStore.updateBillData({
+//         billTitle: `${deviceStore.deviceGroupName} Bill`,
+//         billTypeId: "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
+//         devices: deviceStore.devices,
+//         clusterId: groupId.toString(),
+//         totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
+//         startDate: startDate.toISOString(),
+//         endDate: endDate.toISOString()
+//     })
+// })
 
 const handleWaterConsumptionChartDateChanged = (date: { start: Date, end: Date }) => {
     chartData.value = deviceStore.getClusterConsumptionTrend(groupId.toString(), date.start.toISOString(), date.end.toISOString())
@@ -282,6 +305,13 @@ watchEffect(async () => {
 
 
 })
+
+// Handle the response and update the chart
+watchEffect(() => {
+  if (deviceStore.success_TotalConsumptionByCluster) {
+    clusterConsumptionChart.value.chartSeries = deviceStore.summaryClusterConsumptionTrend;
+  }
+});
 
 
 
