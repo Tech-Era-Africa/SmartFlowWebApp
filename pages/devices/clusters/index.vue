@@ -100,7 +100,7 @@ const deviceStore = useDeviceStore()
 
 
 // Load the devices clusters
-useAsyncData<IDeviceGroup[]>('deviceGroup', () => deviceStore.getOrgDeviceGroup(), { lazy: true })
+const { refresh } = useAsyncData<IDeviceGroup[]>('deviceGroup', () => deviceStore.getOrgDeviceGroup(), { lazy: true })
 
 
 // NEW CLUSTER DIALOG CONTROL
@@ -127,6 +127,9 @@ const onFormSubmit = handleSubmit(async (values) => {
   if (deviceStore.success_DevicesGroup) {
     // Close modal
     isClusterDialogueOpen.value = false;
+
+    // Refresh the device groups
+    await refresh()
 
     return;
   }
