@@ -20,7 +20,7 @@
                 </CardDescription>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">This year</p>
+                <PeriodFacetedFilter></PeriodFacetedFilter>
               </div>
 
             </CardHeader>

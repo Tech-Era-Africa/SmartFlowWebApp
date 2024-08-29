@@ -1,28 +1,17 @@
 <template>
-    <section v-if="userStore.loading_UserOrganisations" class="w-screen h-screen overflow-hidden p-10 ">
-        <div class="flex gap-5 h-full">
-            <div class="w-1/4 h-full flex flex-col gap-5 p-10 bg-gray-50">
-                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
-                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
-                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
-                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
-                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
-                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
-                <Skeleton class="w-full h-full  bg-blue-50"></Skeleton>
+    <section v-if="userStore.loading_UserOrganisations" class="w-screen h-screen overflow-hidden p-6 bg-gray-100">
+        <div class="flex flex-col lg:flex-row gap-6 h-full animate-pulse">
+            <div class="w-full lg:w-1/4 h-full flex flex-col gap-4">
+                <div v-for="i in 7" :key="i" class="w-full h-20 bg-white rounded-lg shadow-sm"></div>
             </div>
-            <div class="flex flex-col gap-5 w-full">
-                <div class="flex gap-5 w-full h-full">
-                    <div class="w-full h-full flex flex-col gap-5 bg-gray-50 p-10">
-                        <Skeleton class="w-full h-full bg-blue-50"></Skeleton>
-                        <Skeleton class="w-full h-full bg-blue-50"></Skeleton>
-                    </div>
-                    <Skeleton class="w-full h-full bg-blue-50"></Skeleton>
+            <div class="flex flex-col gap-6 w-full lg:w-3/4">
+                <div class="flex flex-col lg:flex-row gap-6 w-full h-1/2">
+                    <div class="w-full lg:w-2/3 h-full bg-white rounded-lg shadow-sm"></div>
+                    <div class="w-full lg:w-1/3 h-full bg-white rounded-lg shadow-sm"></div>
                 </div>
-
-                <Skeleton class="w-full h-full bg-blue-50"></Skeleton>
+                <div class="w-full h-1/2 bg-white rounded-lg shadow-sm"></div>
             </div>
         </div>
-
     </section>
     <NuxtLayout name="dashboard" v-else>
         <Header name="Overview"></Header>

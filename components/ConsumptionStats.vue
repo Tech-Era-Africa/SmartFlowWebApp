@@ -3,34 +3,28 @@
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="font-bold text-lg">{{ option.title ?? 'Consumption Insights' }}</h1>
-                <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p>
+                <!-- <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p> -->
             </div>
             <div class="flex gap-2 items-center">
-                <Select :model-value="trendPeriod" @update:model-value="onDateChanged($event)">
-                    <SelectTrigger class="w-[180px]">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectItem value="week">
-                                This Week
-                            </SelectItem>
-                            <SelectItem value="month">
-                                This Month
-                            </SelectItem>
-                            <SelectItem value="year">
-                                This Year
-                            </SelectItem>
-                            <!-- <SelectItem value="custom">
-                                Custom
-                            </SelectItem> -->
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
+                <PeriodFacetedFilter @onDateChanged="onDateChanged"></PeriodFacetedFilter>
             </div>
             <!-- <DateRangePicker @handle-date-change="onDateChanged"></DateRangePicker> -->
         </div>
-        <div class="grid gap-4 md:grid-cols-2">
+        <div v-if="isLoading" class="grid gap-4 md:grid-cols-2">
+            <Card v-for="i in 4" :key="i" class="shadow-none">
+                <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle class="text-sm font-medium">
+                        <Skeleton class="h-4 w-24" />
+                    </CardTitle>
+                    <Skeleton class="h-4 w-4 rounded-full" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton class="h-6 w-16 mb-2" />
+                    <Skeleton class="h-4 w-32" />
+                </CardContent>
+            </Card>
+        </div>
+        <div v-else class="grid gap-4 md:grid-cols-2">
             <Card class="shadow-none">
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle class="text-sm font-medium">
@@ -51,10 +45,10 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  234L
+                  {{ stats.waterUsed }}L
                 </div>
                 <p class="text-xs text-muted-foreground">
-                  +201 since yesterday
+                  {{ stats.waterUsedChange }} since yesterday
                 </p>
               </CardContent>
             </Card>
@@ -78,17 +72,17 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  GHC243
+                  GHC{{ stats.estimatedBill }}
                 </div>
                 <p class="text-xs text-muted-foreground">
-                  +Ghc50 since yesterday
+                  {{ stats.estimatedBillChange }} since yesterday
                 </p>
               </CardContent>
             </Card>
             <Card class="shadow-none">
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle class="text-sm font-medium">
-                  Peak Usage
+                  Peak Usage Date
                 </CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +99,7 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  12th March
+                  {{ stats.peakUsageDate }}
                 </div>
                 <p class="text-xs text-muted-foreground">
                   Date
@@ -115,7 +109,7 @@
             <Card class="shadow-none">
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle class="text-sm font-medium">
-                  Peak Usage
+                  Peak Usage Group
                 </CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -132,7 +126,7 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  Akonnor
+                  {{ stats.peakUsageGroup }}
                 </div>
                 <p class="text-xs text-muted-foreground">
                   Group
@@ -146,10 +140,11 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
 import { Loader2 } from 'lucide-vue-next'
+import { ref, onMounted } from 'vue';
 
 const emits = defineEmits(['onDateChanged'])
 
- defineProps({
+defineProps({
     option: {
         type: Object as PropType<{ title?:string, subtitle?:string, isLoading?:boolean, max:number, min:number, sum:number }>,
         required: true
@@ -159,6 +154,31 @@ const emits = defineEmits(['onDateChanged'])
 const validStatNumber = (num:number)=> num > 0 ? num : 0
 
 const trendPeriod = ref('year')
+const isLoading = ref(true)
+const stats = ref({
+    waterUsed: '0',
+    waterUsedChange: '+0',
+    estimatedBill: '0',
+    estimatedBillChange: '+0',
+    peakUsageDate: '',
+    peakUsageGroup: ''
+})
+
+const fetchStats = () => {
+    isLoading.value = true
+    // Simulating API call
+    setTimeout(() => {
+        stats.value = {
+            waterUsed: '234',
+            waterUsedChange: '+201',
+            estimatedBill: '243',
+            estimatedBillChange: '+50',
+            peakUsageDate: '12th March',
+            peakUsageGroup: 'Akonnor'
+        }
+        isLoading.value = false
+    }, 1500)
+}
 
 const onDateChanged = (period: string) => {
     const currentDate = new Date();
@@ -192,9 +212,12 @@ const onDateChanged = (period: string) => {
         start: startDate,
         end: endDate
     });
+
+    fetchStats()
 }
 
-
-
+onMounted(() => {
+    fetchStats()
+})
 
 </script>
