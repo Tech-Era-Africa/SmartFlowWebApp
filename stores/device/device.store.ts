@@ -95,12 +95,27 @@ export const useDeviceStore = defineStore({
     async addNewDeviceCluster(name: string) {
       try {
         this.newClusterApiState = ApiResponseState.LOADING;
-        const data = await useStoreFetchRequest('/api/device/cluster', 'POST', { name, createdBy: useUserStore().currentUser?.objectId!, orgId: useUserStore().selectedOrganisation.objectId });
+        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/device/cluster/create`, {
+          method: 'POST',
+          headers: {
+            "Authorization": `Bearer ${useUserStore().token}`
+          },
+          body: { 
+            name, 
+            createdBy: useUserStore().currentUser?.objectId!, 
+            orgId: useUserStore().selectedOrganisation.objectId 
+          }
+        });
+
+        if (error.value) {
+          throw new Error(error.value.data?.error || 'Failed to create device cluster')
+        }
+
         this.newClusterApiState = ApiResponseState.SUCCESS;
         this.devicesGroups.push(DeviceGroupModel.fromMap({
-          userDeviceGroup: data,
+          userDeviceGroup: data.value,
           devicesCount: 0
-        }))
+        }));
 
         // Reset
         setTimeout(() => {

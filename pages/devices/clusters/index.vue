@@ -12,7 +12,7 @@
           <!-- DEVICES -->
           <template v-if="deviceStore.hasGroupDevices">
             <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-3 grid gap-2">
-              <NuxtLink :to="`/devices/group/${group.objectId}`" v-for="group in deviceStore.devicesGroups">
+              <NuxtLink :to="`/devices/clusters/${group.objectId}`" v-for="group in deviceStore.devicesGroups">
                 <DeviceClusterCard :option="{devicesCount : group.devicesCount ?? 0, id : group.objectId, name : group.name}"></DeviceClusterCard>
               </NuxtLink>
 
