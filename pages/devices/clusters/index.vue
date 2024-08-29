@@ -1,6 +1,6 @@
 <template>
   <NuxtLayout name="dashboard">
-    <Header name="Device Blocks"></Header>
+    <Header name="Clusters"></Header>
     <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0">
       <div class="w-full flex  p-2 gap-4">
         <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
@@ -93,7 +93,7 @@ import type { IDeviceGroup } from '~/stores/device/model/deviceGroup.model';
 
 
 
-useHead({ title: "Device Blocks" })
+useHead({ title: "Clusters" })
 
 
 const deviceStore = useDeviceStore()

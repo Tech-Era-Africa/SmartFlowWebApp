@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
     <div class="flex flex-col items-start  justify-between">
-      <h1 class="font-bold text-lg">Device Blocks</h1>
+      <h1 class="font-bold text-lg">Clusters</h1>
       <p class="text-foreground-muted text-xs text-gray-400 flex items-center gap-2">
         <Info :size="14"></Info> Your grouped devices. Eg. Apartment 1
       </p>
