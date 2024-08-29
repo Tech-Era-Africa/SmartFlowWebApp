@@ -9,9 +9,4 @@ useHead({
   }
 })
 
-<<<<<<< HEAD
- 
-=======
-
->>>>>>> staging
 </script> 
