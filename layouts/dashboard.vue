@@ -1,12 +1,16 @@
 <template>
-  <section class="w-screen h-screen relative overflow-hidden m-0 p-0 flex ">
+  <section class="w-screen h-screen relative overflow-hidden m-0 p-0 flex">
     <SideBar></SideBar>
     <section class="absolute z-40 md:hidden">
       <BottomNav></BottomNav>
     </section>
     <section class="flex-1 overflow-y-auto relative bg-blue-100 bg-opacity-10">
-      <div class="p-5 bg-orange-100 text-xs text-muted-foreground">
-        <p>Sytem currently undergoing maintenance. Some features may appear broken but do bare with us, these will be resolved very soon. Estimated Completion Date: 31st Aug, 2024 </p>
+      <div class="md:hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-100 z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl text-center w-11/12">
+          <h2 class="text-2xl font-bold mb-4">Best Viewed on PC</h2>
+          <p class="mb-4">For the best experience, we recommend using a desktop or laptop computer.</p>
+          <p class="text-sm text-gray-600">Mobile optimization is in progress.</p>
+        </div>
       </div>
       <slot></slot>
     </section>

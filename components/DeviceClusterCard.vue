@@ -31,9 +31,9 @@ const chartData = ref()
 onBeforeMount(() => {
     // Get the chart data
     const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    chartData.value = deviceStore.getClusterConsumptionTrend(props.option.id, startOfMonth.toISOString(), endOfMonth.toISOString())
+    const startDate = new Date(currentDate.getFullYear(), 0, 1);
+    const endDate = new Date(currentDate.getFullYear(), 11, 31);
+    chartData.value = deviceStore.getClusterConsumptionTrend(props.option.id, startDate.toISOString(), endDate.toISOString())
 })
 
 // CHART SETTTINGS

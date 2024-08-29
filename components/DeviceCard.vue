@@ -1,5 +1,8 @@
 <template>
     <div class="w-full bg-blue-50 rounded-xl p-5 flex flex-col justify-between max-h-[225px]">
+        <div>
+            <Badge class="bg-green-100"><span class="text-xs text-green-400">Primary</span></Badge>
+        </div>
                 <div class="w-20 mx-auto ">
                     <img class="w-full h-full object-cover" src="/img/lorawan.png"/>
                 </div>

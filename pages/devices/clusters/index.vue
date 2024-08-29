@@ -1,18 +1,18 @@
 <template>
   <NuxtLayout name="dashboard">
-    <Header name="Devices"></Header>
+    <Header name="Clusters"></Header>
     <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0">
       <div class="w-full flex  p-2 gap-4">
         <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
           <div class="flex flex-row justify-between gap-2items-center">
-            <h1 class="font-bold text-lg">Clusters</h1>
+            <!-- <h1 class="font-bold text-lg">Blocks</h1> -->
 
           </div>
 
           <!-- DEVICES -->
           <template v-if="deviceStore.hasGroupDevices">
             <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-3 grid gap-2">
-              <NuxtLink :to="`/devices/group/${group.objectId}`" v-for="group in deviceStore.devicesGroups">
+              <NuxtLink :to="`/devices/clusters/${group.objectId}`" v-for="group in deviceStore.devicesGroups">
                 <DeviceClusterCard :option="{devicesCount : group.devicesCount ?? 0, id : group.objectId, name : group.name}"></DeviceClusterCard>
               </NuxtLink>
 
@@ -88,19 +88,19 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { Loader2 } from 'lucide-vue-next'
+import type { IDeviceGroup } from '~/stores/device/model/deviceGroup.model';
 
 
 
 
-useHead({ title: "Devices" })
-definePageMeta({ middleware: 'auth' })
+useHead({ title: "Clusters" })
+
 
 const deviceStore = useDeviceStore()
 
 
-onBeforeMount(() => {
-  deviceStore.getOrgDeviceGroup();
-})
+// Load the devices clusters
+const { refresh } = useAsyncData<IDeviceGroup[]>('deviceGroup', () => deviceStore.getOrgDeviceGroup(), { lazy: true })
 
 
 // NEW CLUSTER DIALOG CONTROL
@@ -127,6 +127,9 @@ const onFormSubmit = handleSubmit(async (values) => {
   if (deviceStore.success_DevicesGroup) {
     // Close modal
     isClusterDialogueOpen.value = false;
+
+    // Refresh the device groups
+    await refresh()
 
     return;
   }

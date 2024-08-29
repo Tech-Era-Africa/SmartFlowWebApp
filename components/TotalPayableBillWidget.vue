@@ -8,8 +8,7 @@
         </div>
         <div class="flex gap-1 items-center text-muted-foreground">
             <CalendarDays class="h-4 w-4 " />
-            <p class=" text-xs my-2">{{ useFormatDateHuman(new Date(option.startDate ??
-                Date.now())) }} - {{ useFormatDateHuman(new Date(option.endDate ?? Date.now())) }}</p>
+            <p class=" text-xs my-2">{{ useFormatDateHuman(new Date(billStore.billingWidget.startDate)) }} - {{ useFormatDateHuman(new Date(billStore.billingWidget.endDate)) }}</p>
         </div>
         <div class="flex-1 flex flex-col lg:flex-row gap-2">
             <Stat :option="{ title: 'Amount', value: `${formatAmount(totalCurrentCharge())}`, clearBg: true }">

@@ -6,7 +6,7 @@
                     <img class="w-36 mx-auto" src="/logo.png" alt="" />
                     <h1 class="mt-12 text-3xl font-bold text-gray-900">Welcome Back</h1>
                     <p class="mt-4 text-sm font-medium text-gray-500">Monitor your water consumption with ease and make
-                        insightful descisions.</p>
+                        insightful decisions.</p>
                 </div>
 
                 <!-- <div class="mt-12">

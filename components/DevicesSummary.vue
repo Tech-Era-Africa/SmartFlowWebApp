@@ -1,9 +1,13 @@
 <template>
-  <div class="w-full max-h-[340px] h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
-    <div class="flex  justify-between items-center">
-      <h1 class="font-bold text-lg">Device Clusters</h1>
+  <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
+    <div class="flex flex-col items-start  justify-between">
+      <h1 class="font-bold text-lg">Clusters</h1>
+      <p class="text-foreground-muted text-xs text-gray-400 flex items-center gap-2">
+        <Info :size="14"></Info> Your grouped devices. Eg. Apartment 1
+      </p>
+
     </div>
-    <div class="flex gap-2 justify-between">
+    <div class="flex gap-2 flex-grow">
       <template v-if="deviceStore.hasGroupDevices">
         <NuxtLink :to="`/devices/group/${deviceStore.devicesGroups[0].objectId}`" class="w-full">
           <Card class="overflow-hidden h-full cursor-pointer flex-1">
@@ -12,11 +16,11 @@
                 <CardTitle>{{ deviceStore.devicesGroups[0].name }}</CardTitle>
                 <CardDescription>
                   <Badge class="mt-2" variant="outline">{{ deviceStore.devicesGroups[0].devicesCount }} Device{{
-        deviceStore.devicesGroups[0].devicesCount! >= 2 ? 's' : '' }}</Badge>
+          deviceStore.devicesGroups[0].devicesCount! >= 2 ? 's' : '' }}</Badge>
                 </CardDescription>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">This month</p>
+                <PeriodFacetedFilter></PeriodFacetedFilter>
               </div>
 
             </CardHeader>
@@ -25,15 +29,18 @@
                 <Skeleton class="h-[100px] m-4" />
               </div>
               <template v-else>
-                <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
-                </apexchart>
+
+                <ClientOnly>
+                  <apexchart v-if="chartIsReady" :key="chartOptions.series" :options="chartOptions" :series="chartOptions.series">
+                  </apexchart>
+                </ClientOnly>
               </template>
             </CardContent>
           </Card>
         </NuxtLink>
 
 
-        <NuxtLink to="/devices/group" v-if="deviceStore.devicesGroups.length>1">
+        <NuxtLink to="/devices/group" v-if="deviceStore.devicesGroups.length > 1">
           <div class="bg-gray-100 flex justify-center items-center px-5 rounded-xl cursor-pointer h-full">
             <p class="font-bold text-xl">+{{ deviceStore.devicesGroups.length - 1 }}</p>
           </div>
@@ -46,7 +53,7 @@
       </template>
 
       <template v-else>
-        <div>
+        <div class="flex flex-grow bg-blue-50 items-center justify-center">
           <p>No Cluster</p>
         </div>
       </template>
@@ -59,32 +66,12 @@
 
 <script setup lang="ts">
 import { useDeviceStore } from '~/stores/device/device.store';
+import { type IDeviceGroup } from '~/stores/device/model/deviceGroup.model';
+import { Info } from 'lucide-vue-next'
 
 
 const deviceStore = useDeviceStore()
-const clusterSummaryChartData = ref([])
-
-onBeforeMount(() => {
-  // TODO!: THIS MUST BE THE ORGANISATION GROUP INSTEAD OF USER GROUP
-  deviceStore.getOrgDeviceGroup();
-
-})
-
-watchEffect(() => {
-  const currentDate = new Date();
-  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-
-  // Get the consumption trend once the groups have been loaded
-  if (deviceStore.success_DevicesGroup && deviceStore.devicesGroups.length > 0) {
-    deviceStore.getDeviceSummaryConsumptionTrend(deviceStore.devicesGroups[0].objectId, startOfMonth.toISOString(), endOfMonth.toISOString());
-  }
-
-})
-
-
-// CHART SETTTINGS
-const chart4Options = ref({
+const chartOptions = ref({
 
   chart: {
     type: 'area',
@@ -95,12 +82,7 @@ const chart4Options = ref({
       enabled: false,
     },
   },
-  series: [
-    {
-      name: 'Consumption',
-      data: [],
-    },
-  ],
+  series: [],
   dataLabels: {
     enabled: false,
   },
@@ -159,32 +141,34 @@ const chart4Options = ref({
   legend: {
     show: false, // Hide the legend
   },
+})
+
+const chartIsReady = ref(false)
+
+// Load the devices from the organisation
+useAsyncData<any>('deviceGroup', () => deviceStore.getOrgDeviceGroup(), { lazy: true })
+
+// Fetch data based on device groups
+watchEffect(() => {
+  if (deviceStore.devicesGroups.length > 0) {
+    const currentDate = new Date();
+    const startDate = new Date(currentDate.getFullYear(), 0, 1);
+    const endDate = new Date(currentDate.getFullYear(), 11, 31);
+    deviceStore.getDeviceSummaryConsumptionTrend(
+      deviceStore.devicesGroups[0].objectId, 
+      startDate.toISOString(), 
+      endDate.toISOString()
+    );
+  }
 });
 
-// // Function to generate random data for the last n days
-// function generateRandomData(days: any) {
-//   const currentDate = new Date();
-//   const data = [];
-
-//   for (let i = days - 1; i >= 0; i--) {
-//     const date = new Date(currentDate);
-//     date.setDate(currentDate.getDate() - i);
-//     const consumption = Math.random() * 5; // Random consumption between 0 and 5
-//     data.push({ x: date.getTime(), y: consumption });
-//   }
-
-//   return data;
-// }
-// end of CHART SETTING
-
-
-// Used to watch for changes and update the charts 
+// Handle the response and update the chart
 watchEffect(() => {
   if (deviceStore.success_TotalConsumptionByCluster) {
-    chart4Options.value.series = deviceStore.summaryClusterConsumptionTrend
+    chartIsReady.value = true;
+    chartOptions.value.series = deviceStore.summaryClusterConsumptionTrend;
   }
-
-})
+});
 
 
 </script>
