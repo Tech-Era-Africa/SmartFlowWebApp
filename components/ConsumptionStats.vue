@@ -10,7 +10,7 @@
             </div>
             <!-- <DateRangePicker @handle-date-change="onDateChanged"></DateRangePicker> -->
         </div>
-        <div v-if="isLoading" class="grid gap-4 md:grid-cols-2">
+        <div v-if="consumptionStore.isLoadingConsumptionInsights" class="grid gap-4 md:grid-cols-2">
             <Card v-for="i in 4" :key="i" class="shadow-none">
                 <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle class="text-sm font-medium">
@@ -25,7 +25,7 @@
             </Card>
         </div>
         <div v-else class="grid gap-4 md:grid-cols-2">
-            <Card class="shadow-none">
+            <Card :class="['shadow-none transition-opacity duration-300', {'opacity-50': +consumptionStore.stats.waterUsed == 0}]">
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle class="text-sm font-medium">
                   Water Used
@@ -45,17 +45,17 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  {{ stats.waterUsed }}L
+                  {{ consumptionStore.stats.waterUsed ? `${consumptionStore.stats.waterUsed}L` : 'N/A' }}
                 </div>
                 <p class="text-xs text-muted-foreground">
-                  {{ stats.waterUsedChange }} since yesterday
+                  {{ consumptionStore.stats.waterUsedChange || 'No change' }} since last period
                 </p>
               </CardContent>
             </Card>
-            <Card class="shadow-none">
+            <Card :class="['shadow-none transition-opacity duration-300', {'opacity-50': +consumptionStore.stats.estimatedBill == 0}]">
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle class="text-sm font-medium">
-                  Estimated Bill
+                  Water Bill
                 </CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -72,17 +72,17 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  GHC{{ stats.estimatedBill }}
+                  {{ consumptionStore.stats.estimatedBill ? `GHC${consumptionStore.stats.estimatedBill}` : 'N/A' }}
                 </div>
                 <p class="text-xs text-muted-foreground">
-                  {{ stats.estimatedBillChange }} since yesterday
+                  {{ consumptionStore.stats.estimatedBillChange || 'No change' }} since last period
                 </p>
               </CardContent>
             </Card>
-            <Card class="shadow-none">
+            <Card :class="['shadow-none transition-opacity duration-300', {'opacity-50': +consumptionStore.stats.peakUsageAmount == 0}]">
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle class="text-sm font-medium">
-                  Peak Usage Date
+                  Peak Usage
                 </CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -99,14 +99,14 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  {{ stats.peakUsageDate }}
+                  {{ consumptionStore.stats.peakUsageAmount ? `${consumptionStore.stats.peakUsageAmount}L` : 'N/A' }}
                 </div>
                 <p class="text-xs text-muted-foreground">
-                  Date
+                  {{ consumptionStore.stats.peakUsageDate ? `on ${consumptionStore.stats.peakUsageDate}` : 'Date not available' }}
                 </p>
               </CardContent>
             </Card>
-            <Card class="shadow-none">
+            <Card :class="['shadow-none transition-opacity duration-300', {'opacity-50': !consumptionStore.stats.peakUsageGroup}]">
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle class="text-sm font-medium">
                   Peak Usage Group
@@ -126,10 +126,10 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  {{ stats.peakUsageGroup }}
+                  {{ consumptionStore.stats.peakUsageGroup ? `-${consumptionStore.stats.peakUsageGroup}` : 'N/A' }}
                 </div>
                 <p class="text-xs text-muted-foreground">
-                  Group
+                  Group ID
                 </p>
               </CardContent>
             </Card>
@@ -138,47 +138,18 @@
      </div>
 </template>
 <script setup lang="ts">
-import type { PropType } from 'vue';
-import { Loader2 } from 'lucide-vue-next'
-import { ref, onMounted } from 'vue';
+import { useConsumptionStore } from '~/stores/consumption/consumption.store';
 
 const emits = defineEmits(['onDateChanged'])
 
-defineProps({
+const props = defineProps({
     option: {
         type: Object as PropType<{ title?:string, subtitle?:string, isLoading?:boolean, max:number, min:number, sum:number }>,
         required: true
     },
 })
 
-const validStatNumber = (num:number)=> num > 0 ? num : 0
-
-const trendPeriod = ref('year')
-const isLoading = ref(true)
-const stats = ref({
-    waterUsed: '0',
-    waterUsedChange: '+0',
-    estimatedBill: '0',
-    estimatedBillChange: '+0',
-    peakUsageDate: '',
-    peakUsageGroup: ''
-})
-
-const fetchStats = () => {
-    isLoading.value = true
-    // Simulating API call
-    setTimeout(() => {
-        stats.value = {
-            waterUsed: '234',
-            waterUsedChange: '+201',
-            estimatedBill: '243',
-            estimatedBillChange: '+50',
-            peakUsageDate: '12th March',
-            peakUsageGroup: 'Akonnor'
-        }
-        isLoading.value = false
-    }, 1500)
-}
+const consumptionStore = useConsumptionStore()
 
 const onDateChanged = (period: string) => {
     const currentDate = new Date();
@@ -187,37 +158,32 @@ const onDateChanged = (period: string) => {
 
     switch (period) {
         case 'month':
-            trendPeriod.value = period
             startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
             endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
             break;
         case 'week':
-            trendPeriod.value = period
-            const firstDayOfWeek = currentDate.getDate() - currentDate.getDay(); // Assuming Sunday is the first day of the week
+            const firstDayOfWeek = currentDate.getDate() - currentDate.getDay();
             startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstDayOfWeek);
             endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstDayOfWeek + 6);
             break;
         case 'year':
-            trendPeriod.value = period
             startDate = new Date(currentDate.getFullYear(), 0, 1);
             endDate = new Date(currentDate.getFullYear(), 11, 31);
             break;
         default:
-            // Default to month if period is not recognized
             startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
             endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
     }
 
-    emits('onDateChanged', {
-        start: startDate,
-        end: endDate
-    });
+    emits('onDateChanged', { start: startDate, end: endDate });
 
-    fetchStats()
+    consumptionStore.getConsumptionInsightsByOrg(startDate.toISOString(), endDate.toISOString())
 }
 
 onMounted(() => {
-    fetchStats()
+    const currentDate = new Date();
+    const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    consumptionStore.getConsumptionInsightsByOrg(startDate.toISOString(), endDate.toISOString())
 })
-
 </script>

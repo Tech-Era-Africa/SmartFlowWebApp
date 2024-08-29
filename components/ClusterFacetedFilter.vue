@@ -6,7 +6,7 @@
                 <p class="mr-2">Clusters</p>
                 <template v-if="selectedValues.size === 0">
                     <Badge variant="secondary" class="rounded-sm px-1 font-normal">
-                        All Groups
+                        All
                     </Badge>
                 </template>
                 <template v-else-if="selectedValues.size <= 2">
@@ -28,7 +28,7 @@
                 <CommandInput placeholder="Search..." />
                 <CommandList>
                     <div v-if="isLoading">
-                        <p class="text-muted-foreground text-xs m-5">Loading {{ title }}..</p>
+                        <p class="text-muted-foreground text-xs m-5">Loading clusters...</p>
                     </div>
                     <template v-else>
                         <CommandGroup :heading="title" class="space-y-4">
@@ -51,7 +51,8 @@
 
 <script setup lang="ts">
 import { PlusCircleIcon } from 'lucide-vue-next'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useDeviceStore } from '~/stores/device/device.store'
 
 interface Cluster {
     id: string;
@@ -60,13 +61,14 @@ interface Cluster {
 
 interface ClusterFacetedFilterProps {
     title?: string;
-    isLoading?: boolean;
-    clusters: Cluster[];
 }
 
 const props = defineProps<ClusterFacetedFilterProps>()
 const emits = defineEmits(['handlePopoverOpen', 'handleFilter'])
 
+const deviceStore = useDeviceStore()
+const clusters = ref<Cluster[]>([])
+const isLoading = ref(true)
 const selectedValues = ref(new Set<string>())
 
 const isAllSelected = computed(() => selectedValues.value.size === 0)
@@ -74,7 +76,7 @@ const isAllSelected = computed(() => selectedValues.value.size === 0)
 const isClusterSelected = (clusterId: string) => selectedValues.value.has(clusterId)
 
 const getClusterName = (clusterId: string) => {
-    const cluster = props.clusters.find(c => c.id === clusterId)
+    const cluster = clusters.value.find(c => c.id === clusterId)
     return cluster ? cluster.name : ''
 }
 
@@ -108,4 +110,18 @@ const handleCommandSelection = (cluster: Cluster) => {
 const emitFilterChange = () => {
     emits('handleFilter', Array.from(selectedValues.value))
 }
+
+onMounted(async () => {
+    try {
+        const deviceGroups = await deviceStore.getOrgDeviceGroup()
+        clusters.value = deviceGroups.map(group => ({
+            id: group.objectId,
+            name: group.name
+        }))
+    } catch (error) {
+        console.error('Failed to load clusters:', error)
+    } finally {
+        isLoading.value = false
+    }
+})
 </script>
