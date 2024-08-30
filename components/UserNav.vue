@@ -28,7 +28,7 @@ const logout = ()=>{
                 </Avatar>
                 <div>
                     <h1>{{ userStore.currentUser?.firstName }} {{ userStore.currentUser?.lastName }}</h1>
-                    <p class="text-xs text-muted-foreground">Super Admin</p>
+                    <p class="text-xs text-muted-foreground">Admin</p>
                 </div>
             </div>
         </DropdownMenuTrigger>

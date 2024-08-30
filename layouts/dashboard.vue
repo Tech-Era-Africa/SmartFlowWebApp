@@ -1,4 +1,7 @@
 <template>
+  <div class="h-[2rem] bg-orange-50 flex items-center justify-center">
+    <p class="text-xs text-black text-muted-foreground">System is currently undergoing a scheduled maintenance. Some features might be breaking, kindly take note</p>
+  </div>
   <section class="w-screen h-screen relative overflow-hidden m-0 p-0 flex">
     <SideBar></SideBar>
     <section class="absolute z-40 md:hidden">
