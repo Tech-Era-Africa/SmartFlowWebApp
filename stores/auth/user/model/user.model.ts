@@ -21,7 +21,8 @@ export class UserModel {
       lastName: "",
       email: "",
       phoneNumber: "",
-      createdAt : ""
+      createdAt : "",
+      orgData : []
 
     };
 
@@ -38,6 +39,7 @@ export class UserModel {
       role:json.role?.objectId,
       phoneNumber: "",
       createdAt : json.createdAt,
+      orgData : json.orgData
 
     };
 
@@ -58,6 +60,7 @@ export interface User {
   role?: string;
   createdAt?: any;
   isLink?:boolean;
+  orgData : any[]
 
 }
 

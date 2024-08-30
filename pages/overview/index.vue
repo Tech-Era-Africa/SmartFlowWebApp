@@ -55,7 +55,6 @@ import { useUserStore } from '~/stores/auth/user/user.store';
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
 useHead({ title: "Overview" })
-// definePageMeta({ middleware: 'check-org' })
 
 const deviceStore = useDeviceStore()
 const userStore = useUserStore()

@@ -59,10 +59,15 @@ export const useUserStore = defineStore('user', {
                 }
               });
 
-
               // Success
               this.currentUserApiState = ApiResponseState.SUCCESS;
               this.currentUser = UserModel.fromMap((data as any))
+
+              // Set org data
+              if(this.currentUser.orgData.length != 0 ){
+                this.selectedOrganisation = this.currentUser.orgData[0].organisation
+              }
+
               return resolve(this.currentUser);
 
           }

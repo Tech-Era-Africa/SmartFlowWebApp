@@ -40,7 +40,6 @@
                         </NuxtLink> -->
                     </nav>
                 </div>
-
                 <div class="px-5 pb-8 mt-16">
                     <Card class="my-5 shadow-none">
                         <CardContent class="flex items-center gap-2 p-2">
