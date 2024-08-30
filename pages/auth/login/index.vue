@@ -29,7 +29,7 @@
                 </div>
             </div> -->
 
-                <form action="#" method="POST" class="mt-4">
+            
                     <div class="space-y-4">
                         <div>
                             <label for="" class="text-sm font-bold text-gray-900"> Email </label>
@@ -65,14 +65,14 @@
                         </div>
 
                         <div>
-                            <Button @click="login" :disabled="authStore.isLoggingUserIn"
+                            <Button @click="login" :disabled="authStore.isLoggingUserIn || authStore.success_LoginUser"
                             class="inline-flex items-center justify-center w-full px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-indigo-600 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 hover:bg-indigo-500">
                             <Loader2 v-if="authStore.isLoggingUserIn" class="ml-2 animate-spin" :size="16"></Loader2>
                             <span v-else>Sign In</span>
                         </Button>
                         </div>
                     </div>
-                </form>
+        
 
                 <!-- <div class="mt-6 text-center">
                 <p class="text-sm font-medium text-gray-900">Don't have an account? <a href="#" title="" class="font-bold hover:underline"> Sign up now </a></p>

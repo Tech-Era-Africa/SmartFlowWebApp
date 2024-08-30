@@ -63,7 +63,7 @@
                         <!-- DEVICES -->
                         <section>
                             <h1 class="font-bold text-lg mb-5 ml-5">{{ 'Devices' }}</h1>
-                            <Sheet :open="isSheetDialogueOpen" @update:open="handleOnSheetDialogOpen">
+                            <Sheet :open="false" @update:open="handleOnSheetDialogOpen">
                                 <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
                                     <DeviceCard
                                         class="cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300"

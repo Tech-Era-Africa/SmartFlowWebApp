@@ -15,6 +15,7 @@ export const useAuthStore = defineStore({
   }),
   actions: {
     async loginWithEmail(cred: LoginDTO) {
+
       try {
         this.loginState = ApiResponseState.LOADING;
     
@@ -29,9 +30,6 @@ export const useAuthStore = defineStore({
         // Set user token
         useUserStore().setUserToken(data.access_token);
 
-        // Refresh to trigger getting current user from here
-        useRouter().go(0)
-    
         this.loginState = ApiResponseState.SUCCESS;
     
       } catch (error: any) {

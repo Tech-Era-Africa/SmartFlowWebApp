@@ -37,11 +37,11 @@ const logout = ()=>{
                 <h2>My Account</h2>
                 <div class="flex justify-between items-center">
                     <h2 class="text-muted-foreground text-xs font-normal">Plan</h2>
-                    <Badge>Basic</Badge>
+                    <Badge class="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-white">Standard</Badge>
                 </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
+            <!-- <DropdownMenuSeparator /> -->
+            <!-- <DropdownMenuGroup>
                 <DropdownMenuItem class="cursor-pointer">
                     <User class="mr-2 h-4 w-4" />
                     <span>Profile</span>
@@ -54,7 +54,7 @@ const logout = ()=>{
                     <Settings class="mr-2 h-4 w-4" />
                     <span>Settings</span>
                 </DropdownMenuItem>
-            </DropdownMenuGroup>
+            </DropdownMenuGroup> -->
             <DropdownMenuSeparator />
             <DropdownMenuItem class="cursor-pointer">
                 <LifeBuoy class="mr-2 h-4 w-4" />
