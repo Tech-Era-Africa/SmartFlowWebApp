@@ -24,14 +24,14 @@
               </div>
 
             </CardHeader>
-            <CardContent class="px-0 h-full">
+            <CardContent class="px-0 h-auto">
               <div v-if="deviceStore.loading_TotalConsumptionByCluster">
-                <Skeleton class="h-[100px] m-4" />
+                <Skeleton class="h-auto m-4" />
               </div>
               <template v-else>
 
                 <ClientOnly>
-                  <apexchart v-if="chartIsReady" :key="chartOptions.series" :options="chartOptions" :series="chartOptions.series">
+                  <apexchart height="100%" v-if="chartIsReady" :key="chartOptions.series" :options="chartOptions" :series="chartOptions.series">
                   </apexchart>
                 </ClientOnly>
               </template>
@@ -49,7 +49,7 @@
       </template>
 
       <template v-else-if="deviceStore.loading_DevicesGroup">
-        <Skeleton class="h-[340px]" />
+        <Skeleton class="h-auto" />
       </template>
 
       <template v-else>

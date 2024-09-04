@@ -10,7 +10,7 @@
         </div>
         <div class="flex-1 flex flex-col lg:flex-row gap-2">
             <div class="w-full flex flex-col gap-2">
-                <div class="flex gap-2">
+                <div class="flex flex-grow gap-2">
                     <Stat
                         :option="{ title: 'Active', value: deviceStore.filterActiveDevices().length.toString(), isLoading: deviceStore.isGettingDevices }">
                     </Stat>

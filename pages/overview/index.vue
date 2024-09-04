@@ -16,8 +16,8 @@
     <NuxtLayout name="dashboard" v-else>
         <Header name="Overview"></Header>
         <section class="flex flex-col gap-4 absolute top-16 z-10 mx-2  lg:mx-8 left-0 right-0">
-            <div class="w-full h-96 flex flex-col lg:flex-row  p-2 gap-4">
-                <div class="w-full  lg:w-3/5 h-full">
+            <div class="w-full  flex flex-col lg:flex-row  p-2 gap-4">
+                <div class="w-full h-auto  md:w-3/5">
                     <WaterConsumptionChart :option="consumptionChart"
                         @on-date-changed="handleWaterConsumptionChartDateChanged">
                     </WaterConsumptionChart>
@@ -31,12 +31,12 @@
                 </div>
 
             </div>
-            <div class="h-80">
+            <div class="h-96">
                 <ClusterConsumptionCompare :option="consumptionChart"></ClusterConsumptionCompare>
             </div>
             <div class="w-full max-h-96 flex flex-col lg:flex-row   p-2 gap-4">
 
-                <div class="w-full lg:w-3/5 h-full">
+                <div class="w-full lg:w-3/5 h-auto">
                     <DeviceMonitoring title="All Devices"></DeviceMonitoring>
                 </div>
                 <div class="flex-1 h-full">

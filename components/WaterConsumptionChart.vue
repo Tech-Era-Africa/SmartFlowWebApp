@@ -21,7 +21,7 @@
             </div>
         </div>
         <ClientOnly v-else>
-            <apexchart :key="chartKey" height="85%" width="100%" :options="chartOptions" :series="chartSeries">
+            <apexchart :key="chartKey" height="100%" width="100%" :options="chartOptions" :series="chartSeries">
             </apexchart>
         </ClientOnly>
     </div>
