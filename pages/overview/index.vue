@@ -31,6 +31,9 @@
                 </div>
 
             </div>
+            <div class="h-80">
+                <ClusterConsumptionCompare :option="consumptionChart"></ClusterConsumptionCompare>
+            </div>
             <div class="w-full max-h-96 flex flex-col lg:flex-row   p-2 gap-4">
 
                 <div class="w-full lg:w-3/5 h-full">

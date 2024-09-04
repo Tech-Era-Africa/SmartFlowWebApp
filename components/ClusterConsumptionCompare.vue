@@ -2,8 +2,8 @@
     <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex justify-between items-center">
             <div>
-                <h1 class="font-bold text-lg">{{ option.title ?? 'Water Consumption' }}</h1>
-                <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p>
+                <h1 class="font-bold text-lg">{{ 'Cluster Water Consumption' }}</h1>
+                <p class="text-xs text-muted-foreground">{{ '* Comparison over time' }}</p>
             </div>
             <div class="flex gap-2 items-center">
                 <ClusterFacetedFilter :clusters="clusters" @handleFilter="handleClusterFilter"></ClusterFacetedFilter>
@@ -45,88 +45,58 @@ const clusters = [
     { id: '1', name: 'Cluster A' },
 ];
 
-const chartSeries = computed(() => props.option.chartSeries || []);
+const chartSeries = computed(() => [{
+            name: 'Net Profit',
+            data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
+          }, {
+            name: 'Revenue',
+            data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
+          }, {
+            name: 'Free Cash Flow',
+            data: [35, 41, 36, 26, 45, 48, 52, 53, 41]
+          }]);
 
 const hasData = computed(() => chartSeries.value.length > 0 && chartSeries.value.some(series => series.data.length > 0));
 
 const chartOptions = computed(() => ({
     chart: {
-        type: 'area',
-        height: 250,
-        toolbar: {
-            show: true,
-            tools: {
-                download: true,
-            },
-            export: {
-                csv: {
-                    filename: 'Water Consumption Chart',
-                    columnDelimiter: ',',
-                    headerCategory: 'Date',
-                    headerValue: 'Value'
-                },
-                svg: {
-                    filename: 'Water Consumption Chart'
-                },
-                png: {
-                    filename: 'Water Consumption Chart'
-                }
-            }
-        },
-        zoom: { enabled: false },
+        type: 'bar',
+        height: 350
     },
-    dataLabels: { enabled: false },
+    plotOptions: {
+        bar: {
+            horizontal: false,
+            columnWidth: '55%',
+            endingShape: 'rounded'
+        },
+    },
+    dataLabels: {
+        enabled: false
+    },
     stroke: {
         show: true,
-        curve: 'smooth',
-        lineCap: 'butt',
         width: 2,
+        colors: ['transparent']
     },
-    grid: { row: { opacity: 0 } },
-    xaxis: { type: 'datetime' },
+    xaxis: {
+        categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+    },
     yaxis: {
         title: {
             text: 'Consumption (kL)'
-        },
-        labels: {
-            formatter: (value: number) => `${Math.round(value)}`
-        }
-    },
-    tooltip: {
-        x: { format: 'dd MMM yyyy' } ,
-        y: {
-            formatter: (value: number) => value.toFixed(2)
         }
     },
     fill: {
-        type: 'gradient',
-        gradient: {
-            shadeIntensity: 1,
-            opacityFrom: 0.7,
-            opacityTo: 0.9,
-            stops: [0, 100]
+        opacity: 1
+    },
+    tooltip: {
+        y: {
+            formatter: function (val: any) {
+                return val + " kL"
+            }
         }
     },
-    colors: ['#46D5E5', '#C578F8', '#86FC5F', '#F729C0', '#FFD700'],
-    legend: {
-        position: 'bottom',
-        markers: { radius: 12, offsetX: -4 },
-        itemMargin: { horizontal: 12, vertical: 20 },
-    },
-    annotations: {
-        yaxis: [{
-            y: 150, // Adjust this value to set the recommended consumption threshold
-            borderColor: '#4CAF50', // A more readable green color
-            label: {
-                borderColor: '#4CAF50',
-                style: {
-                    color: '#fff',
-                    background: '#4CAF50'
-                },
-                text: 'Recommended Consumption Threshold'
-            }
-        }]
-    }
+    colors: ['#46D5E5', '#1E88E5', '#00BFA5', '#6DD5FA', '#2196F3'], // Varied water-themed colors
 }));
 
 const handleDateChange = ({ start, end }: { start: Date, end: Date }) => {
