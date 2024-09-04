@@ -3,7 +3,7 @@
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="font-bold text-lg">{{ option.title ?? 'Water Consumption' }}</h1>
-                <!-- <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p> -->
+                <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p>
             </div>
             <div class="flex gap-2 items-center">
                 <ClusterFacetedFilter :clusters="clusters" @handleFilter="handleClusterFilter"></ClusterFacetedFilter>
@@ -80,12 +80,26 @@ const chartOptions = computed(() => ({
             stops: [0, 100]
         }
     },
-    colors: ['#46D5E5', '#C578F8', '#86FC5F', '#F729C0'],
+    colors: ['#46D5E5', '#C578F8', '#86FC5F', '#F729C0', '#FFD700'],
     legend: {
         position: 'bottom',
         markers: { radius: 12, offsetX: -4 },
         itemMargin: { horizontal: 12, vertical: 20 },
     },
+    annotations: {
+        yaxis: [{
+            y: 150, // Adjust this value to set the recommended consumption threshold
+            borderColor: '#4CAF50', // A more readable green color
+            label: {
+                borderColor: '#4CAF50',
+                style: {
+                    color: '#fff',
+                    background: '#4CAF50'
+                },
+                text: 'Recommended Consumption Threshold'
+            }
+        }]
+    }
 }));
 
 const handleDateChange = ({ start, end }: { start: Date, end: Date }) => {

@@ -84,8 +84,8 @@ const handleWaterConsumptionStatsDateChanged = (date: { start: Date, end: Date }
 const consumptionStatOption = ref<{ title?: string, isLoading?: boolean, min: number, max: number, sum: number, subtitle?: string }>({} as any) //!TODO:IMPELEMENT THIS PROPERLY
 
 const consumptionChart = ref<IWaterConsumptionChart>({
-    title: "Water Usage",
-    subtitle: "* For all devices",
+    title: "Total Water Usage",
+    subtitle: "* Over Time",
     chartSeries: deviceStore.deviceConsumptionTrend,
     isLoading: deviceStore.isGettingConsumptionTrend,
     success: true,
