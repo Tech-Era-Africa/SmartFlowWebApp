@@ -124,7 +124,7 @@ const chartOptions = computed(() => ({
     },
     annotations: {
         yaxis: [{
-            y: 150, // Adjust this value to set the recommended consumption threshold
+            y: 3.5, // Adjust this value to set the recommended consumption threshold
             borderColor: '#4CAF50', // A more readable green color
             label: {
                 borderColor: '#4CAF50',
