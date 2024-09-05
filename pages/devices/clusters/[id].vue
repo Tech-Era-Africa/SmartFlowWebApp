@@ -10,17 +10,13 @@
                                 <ArrowLeftCircle></ArrowLeftCircle>
                             </Button>
                             <div>
-
                                 <Skeleton v-if="deviceStore.isGettingDevices" class="w-500 h-10 rounded-lg"></Skeleton>
                                 <template v-else>
                                     <Badge class="rounded-sm border-none outline-none bg-blue-50 text-blue-600">
                                         Block</Badge>
-                                    <h1 class="text-3xl font-extrabold">{{
-                                deviceStore.deviceGroupName }}</h1>
+                                    <h1 class="text-3xl font-extrabold">{{ deviceStore.deviceGroupName }}</h1>
                                 </template>
-
                             </div>
-
                         </div>
 
                         <div class="flex items-center gap-4">
@@ -35,7 +31,6 @@
                                 </DialogContent>
                             </Dialog>
                         </div>
-
                     </div>
 
                     <!-- DEVICES -->
@@ -50,11 +45,10 @@
                             <TotalPayableBillWidget class="flex-1" :option="billWidgetOption">
                                 <div class="text-right">
                                     <p class="text-xs text-gray-500">Consumption</p>
-                                    <p class="font-bold flex justify-end items-center gap-2"><span
-                                            v-if="deviceStore.loading_SelectedClusterMinMaxConsumption"
-                                            class="loading loading-spinner loading-xs text-gray-400"></span><span>{{
-                                validStatNumber(deviceStore.selectedClusterMinMaxConsumption.sum).toFixed(2)
-                            }}k L</span>
+                                    <p class="font-bold flex justify-end items-center gap-2">
+                                        <span v-if="deviceStore.loading_SelectedClusterMinMaxConsumption"
+                                            class="loading loading-spinner loading-xs text-gray-400"></span>
+                                        <span>{{ validStatNumber(deviceStore.selectedClusterMinMaxConsumption.sum).toFixed(2) }}k L</span>
                                     </p>
                                 </div>
                             </TotalPayableBillWidget>
@@ -78,20 +72,14 @@
                                         <ConsumptionStats :option="consumptionStatOption">
                                         </ConsumptionStats>
                                     </template>
-
                                 </SheetContent>
-
                             </Sheet>
                         </section>
                         <!-- end of DEVICES -->
-
-
-
                     </template>
 
                     <template v-if="!deviceStore.hasDevices && !deviceStore.isGettingDevices">
                         <div class="w-full h-[400px] flex flex-col justify-center items-center bg-gray-50 rounded-lg">
-                            <!-- <img src="/images/no-devices.svg" alt="No devices" class="w-48 h-48 mb-4"> -->
                             <p class="text-xl font-semibold text-gray-600">No Devices Found In This Group</p>
                             <p class="text-gray-400 mt-2">Add a new device to get started</p>
                             <Button @click="isNewDeviceDialogOpen = true" class="mt-6" variant="outline">
@@ -102,23 +90,15 @@
                     <!-- end of DEVICES -->
 
                     <!-- LOADING -->
-
                     <template v-if="deviceStore.isGettingDevices">
                         <div class="grid grid-cols-4 gap-10 p-10">
                             <Skeleton class="h-[150px] w-[180px]" v-for="i in 8" />
                         </div>
                     </template>
                     <!-- end of LOADING -->
-
-
-
-
                 </div>
             </div>
-
         </section>
-
-
     </NuxtLayout>
 </template>
 
@@ -130,50 +110,44 @@ import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 import type { IDevice } from '~/stores/device/model/device.model';
 import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 
-
 useHead({ title: "Devices" })
-
 
 const deviceStore = useDeviceStore()
 const billStore = useBillStore()
 const groupId = useRoute().params.id
 
-const consumptionStatOption = ref<{ deviceId: string, title?: string, isLoading?: boolean, min: number, max: number, sum: number }>({} as any) //!TODO:IMPELEMENT THIS PROPERLY
+const consumptionStatOption = ref<{ deviceId: string, title?: string, isLoading?: boolean, min: number, max: number, sum: number }>({} as any)
 const chartData = ref()
 const currentDate = new Date();
 const startDate = new Date(currentDate.getFullYear(), 0, 1);
-const endDate = new Date(currentDate.getFullYear(), 11, 31);
-
-
+const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
 
 // Load the devices by group
-useAsyncData<any>('devicesGroup', () => Promise.all(
-    [
-        deviceStore.getDevicesByGroup(groupId.toString()),
-        deviceStore.getClusterConsumptionTrend(groupId.toString(), startDate.toISOString(), endDate.toISOString()),
-        deviceStore.getClusterMinMaxConsumption(groupId.toString(), startDate.toISOString(), endDate.toISOString()),
-        billStore.updateBillData({
-            billTitle: `${deviceStore.deviceGroupName} Bill`,
-            billTypeId: "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
-            devices: deviceStore.devices,
-            clusterId: groupId.toString(),
-            totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
-            startDate: startDate.toISOString(),
-            endDate: endDate.toISOString()
-        })
+useAsyncData<any>('devicesGroup', () => Promise.all([
+    deviceStore.getDevicesByGroup(groupId.toString()),
+    deviceStore.getClusterMinMaxConsumption(groupId.toString(), startDate.toISOString(), endDate.toISOString()),
+    billStore.updateBillData({
+        billTitle: `${deviceStore.deviceGroupName} Bill`,
+        billTypeId: "rxc51QYu7l",
+        devices: deviceStore.devices,
+        clusterId: groupId.toString(),
+        totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString()
+    })
+]), { lazy: true })
 
-    ]
-), { lazy: true })
+// Load chart data for the entire year by default
+onMounted(async () => {
+    chartData.value = await deviceStore.getClusterConsumptionTrend(groupId.toString(), startDate.toISOString(), endDate.toISOString())
+})
 
 const handleWaterConsumptionChartDateChanged = (date: { start: Date, end: Date }) => {
     chartData.value = deviceStore.getClusterConsumptionTrend(groupId.toString(), date.start.toISOString(), date.end.toISOString())
-
-    // Recalculate the bill
     deviceStore.getClusterMinMaxConsumption(groupId.toString(), date.start.toISOString(), date.end.toISOString())
-
     billStore.updateBillData({
         billTitle: `${deviceStore.deviceGroupName} Bill`,
-        billTypeId: "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
+        billTypeId: "rxc51QYu7l",
         devices: deviceStore.devices,
         clusterId: groupId.toString(),
         totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
@@ -182,43 +156,24 @@ const handleWaterConsumptionChartDateChanged = (date: { start: Date, end: Date }
     })
 }
 
-
-// Handle the prop values for the Bill Widget
-const billWidgetOption = ref<IBillOptionDTO>({ billTypeId: "rxc51QYu7l" } as IBillOptionDTO) //TODO!: THIS NEEDS TO BE DONE WELL
+const billWidgetOption = ref<IBillOptionDTO>({ billTypeId: "rxc51QYu7l" } as IBillOptionDTO)
 
 const validStatNumber = (num: number) => num > 0 ? num : 0
 
-// SHEET CONTROL
 const isSheetDialogueOpen = ref(false)
+const isNewDeviceDialogOpen = ref(false)
 
 const handleOnSheetDialogOpen = (isOpen: boolean) => {
-
-    // If there's no seleted user do not open
-    if (deviceStore.selectedDevice) return isSheetDialogueOpen.value = false
-
-    // Open/Close sheet
-    isSheetDialogueOpen.value = isOpen
-
-    // Clear the selected device when the modal closes
-    if (!isOpen) {
-        deviceStore.selectedDevice = null!
-    }
+    if (!deviceStore.selectedDevice) isSheetDialogueOpen.value = isOpen
+    if (!isOpen) deviceStore.selectedDevice = null!
 }
-// end of SHEET CONTROL
 
-// NEW DEVICE DIALOG CONTROL
-const isNewDeviceDialogOpen = ref(false)
 const handleNewDeviceDialogOpenUpdate = (state: boolean) => isNewDeviceDialogOpen.value = state
-// end of NEW DEVICE DIALOG CONTROL
 
 const openSheetDrawer = async (device: IDevice) => {
     isSheetDialogueOpen.value = true
-
     deviceStore.selectDevice(device)
-
-    // deviceStore.getMinMaxConsumption(device.objectId)
     billStore.getCurrentPaidBills(device.objectId)
-    // controlStore.toggleDeviceDrawer()
 }
 
 const consumptionChart = ref<IWaterConsumptionChart>({
@@ -236,10 +191,7 @@ const clusterConsumptionChart = ref<IWaterConsumptionChart>({
 })
 
 const prepareDeviceConsumptionData = async () => {
-    // Get chart data and update
     consumptionChart.value.chartSeries = await deviceStore.getDeviceConsumptionTrend(deviceStore.selectedDevice.objectId, startDate.toISOString(), endDate.toISOString())
-
-    // Get consumption stats
     await deviceStore.getDeviceMinMaxConsumption(deviceStore.selectedDevice.objectId, startDate.toISOString(), endDate.toISOString())
     if (deviceStore.success_SelectedDeviceMinMaxConsumption) {
         consumptionStatOption.value = {
@@ -249,24 +201,19 @@ const prepareDeviceConsumptionData = async () => {
             min: deviceStore.selectedDeviceMinMaxConsumption.min,
             max: deviceStore.selectedDeviceMinMaxConsumption.max,
             sum: deviceStore.selectedDeviceMinMaxConsumption.sum,
-
         }
     }
-
 }
 
-// Watch and load seleted device trends
 watchEffect(async () => {
-
-    if (isSheetDialogueOpen) {
-        prepareDeviceConsumptionData()
+    if (isSheetDialogueOpen.value) {
+        await prepareDeviceConsumptionData()
     }
 
-    // Listen for cluster max min values and update billing widget
     if (deviceStore.success_SelectedClusterMinMaxConsumption) {
         billWidgetOption.value = {
             billTitle: `${deviceStore.deviceGroupName} Bill`,
-            billTypeId: "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
+            billTypeId: "rxc51QYu7l",
             devices: deviceStore.devices,
             clusterId: groupId.toString(),
             totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
@@ -275,25 +222,16 @@ watchEffect(async () => {
         }
     }
 
-    // Listens for when there is data in the chartData and sends it to the chart
     if (chartData.value) {
         clusterConsumptionChart.value.chartSeries = await chartData.value
     }
-
-
 })
 
-// Handle the response and update the chart
 watchEffect(() => {
-  if (deviceStore.success_TotalConsumptionByCluster) {
-    clusterConsumptionChart.value.chartSeries = deviceStore.summaryClusterConsumptionTrend;
-  }
+    if (deviceStore.success_TotalConsumptionByCluster) {
+        clusterConsumptionChart.value.chartSeries = deviceStore.summaryClusterConsumptionTrend;
+    }
 });
-
-
-
-
-
 
 
 </script>

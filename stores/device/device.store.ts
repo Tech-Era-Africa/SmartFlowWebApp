@@ -574,7 +574,7 @@ export const useDeviceStore = defineStore({
 
         // TODO!: MUST GIVE THIS THE RIGHT TYPE
         const groupedData = data.reduce((acc: any, entry: any) => {
-          const { date_bin, total_consumption_change } = entry;
+          const { date_bin, total_consumption_change,downtime } = entry;
           // If the key doesn't exist in the accumulator, create it
 
           if (!acc[key]) {
@@ -587,7 +587,8 @@ export const useDeviceStore = defineStore({
           // Push the consumption data to the corresponding key in the accumulator
           acc[key].data.push({
             x: date_bin,
-            y: total_consumption_change
+            y: total_consumption_change,
+            downtime
           });
 
           return acc;
