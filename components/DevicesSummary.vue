@@ -25,7 +25,7 @@
 
             </CardHeader>
             <CardContent class="px-0 h-auto">
-              <div v-if="deviceStore.loading_TotalConsumptionByCluster">
+              <div v-if="deviceStore.loading_TotalClusterConsumption">
                 <Skeleton class="h-auto m-4" />
               </div>
               <template v-else>
@@ -66,7 +66,6 @@
 
 <script setup lang="ts">
 import { useDeviceStore } from '~/stores/device/device.store';
-import { type IDeviceGroup } from '~/stores/device/model/deviceGroup.model';
 import { Info } from 'lucide-vue-next'
 
 
@@ -154,7 +153,7 @@ watchEffect(() => {
     const currentDate = new Date();
     const startDate = new Date(currentDate.getFullYear(), 0, 1);
     const endDate = new Date(currentDate.getFullYear(), 11, 31);
-    deviceStore.getDeviceSummaryConsumptionTrend(
+    deviceStore.getClusterConsumptionTrend(
       deviceStore.devicesGroups[0].objectId, 
       startDate.toISOString(), 
       endDate.toISOString()
@@ -164,11 +163,13 @@ watchEffect(() => {
 
 // Handle the response and update the chart
 watchEffect(() => {
-  if (deviceStore.success_TotalConsumptionByCluster) {
+  if (deviceStore.success_TotalClusterConsumption) {
     chartIsReady.value = true;
-    chartOptions.value.series = deviceStore.summaryClusterConsumptionTrend;
+    chartOptions.value.series = deviceStore.clusterConsumptionTrend;
   }
 });
+
+
 
 
 </script>

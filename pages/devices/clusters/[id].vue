@@ -46,9 +46,9 @@
                                 <div class="text-right">
                                     <p class="text-xs text-gray-500">Consumption</p>
                                     <p class="font-bold flex justify-end items-center gap-2">
-                                        <span v-if="deviceStore.loading_SelectedClusterMinMaxConsumption"
+                                        <span v-if="deviceStore.loading_TotalClusterConsumption"
                                             class="loading loading-spinner loading-xs text-gray-400"></span>
-                                        <span>{{ validStatNumber(deviceStore.selectedClusterMinMaxConsumption.sum).toFixed(2) }}k L</span>
+                                        <span>{{ validStatNumber(deviceStore.totalClusterConsumption.sum).toFixed(2) }}k L</span>
                                     </p>
                                 </div>
                             </TotalPayableBillWidget>
@@ -91,8 +91,22 @@
 
                     <!-- LOADING -->
                     <template v-if="deviceStore.isGettingDevices">
-                        <div class="grid grid-cols-4 gap-10 p-10">
-                            <Skeleton class="h-[150px] w-[180px]" v-for="i in 8" />
+                        <div class="flex flex-col md:flex-row gap-4 p-5">
+                            <div class="w-full md:w-2/3">
+                                <Skeleton class="h-[300px] w-full rounded-lg" />
+                            </div>
+                            <div class="w-full md:w-1/3">
+                                <Skeleton class="h-[300px] w-full rounded-lg" />
+                            </div>
+                            <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                                <div v-for="i in 6" :key="i" class="space-y-3">
+                                    <Skeleton class="h-[120px] w-full rounded-lg" />
+                                    <div class="space-y-2">
+                                        <Skeleton class="h-4 w-3/4" />
+                                        <Skeleton class="h-3 w-1/2" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </template>
                     <!-- end of LOADING -->
@@ -125,13 +139,13 @@ const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), curr
 // Load the devices by group
 useAsyncData<any>('devicesGroup', () => Promise.all([
     deviceStore.getDevicesByGroup(groupId.toString()),
-    deviceStore.getClusterMinMaxConsumption(groupId.toString(), startDate.toISOString(), endDate.toISOString()),
+    deviceStore.getClusterTotalConsumption(groupId.toString(), startDate.toISOString(), endDate.toISOString()),
     billStore.updateBillData({
         billTitle: `${deviceStore.deviceGroupName} Bill`,
         billTypeId: "rxc51QYu7l",
         devices: deviceStore.devices,
         clusterId: groupId.toString(),
-        totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
+        totalConsumption: deviceStore.totalClusterConsumption.sum,
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString()
     })
@@ -144,13 +158,13 @@ onMounted(async () => {
 
 const handleWaterConsumptionChartDateChanged = (date: { start: Date, end: Date }) => {
     chartData.value = deviceStore.getClusterConsumptionTrend(groupId.toString(), date.start.toISOString(), date.end.toISOString())
-    deviceStore.getClusterMinMaxConsumption(groupId.toString(), date.start.toISOString(), date.end.toISOString())
+    deviceStore.getClusterTotalConsumption(groupId.toString(), date.start.toISOString(), date.end.toISOString())
     billStore.updateBillData({
         billTitle: `${deviceStore.deviceGroupName} Bill`,
         billTypeId: "rxc51QYu7l",
         devices: deviceStore.devices,
         clusterId: groupId.toString(),
-        totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
+        totalConsumption: deviceStore.totalClusterConsumption.sum,
         startDate: date.start.toISOString(),
         endDate: date.end.toISOString()
     })
@@ -210,13 +224,13 @@ watchEffect(async () => {
         await prepareDeviceConsumptionData()
     }
 
-    if (deviceStore.success_SelectedClusterMinMaxConsumption) {
+    if (deviceStore.success_TotalClusterConsumption) {
         billWidgetOption.value = {
             billTitle: `${deviceStore.deviceGroupName} Bill`,
             billTypeId: "rxc51QYu7l",
             devices: deviceStore.devices,
             clusterId: groupId.toString(),
-            totalConsumption: deviceStore.selectedClusterMinMaxConsumption.sum,
+            totalConsumption: deviceStore.totalClusterConsumption.sum,
             startDate: startDate.toISOString(),
             endDate: endDate.toISOString()
         }
@@ -228,8 +242,8 @@ watchEffect(async () => {
 })
 
 watchEffect(() => {
-    if (deviceStore.success_TotalConsumptionByCluster) {
-        clusterConsumptionChart.value.chartSeries = deviceStore.summaryClusterConsumptionTrend;
+    if (deviceStore.success_TotalClusterConsumption) {
+        clusterConsumptionChart.value.chartSeries = deviceStore.clusterConsumptionTrend;
     }
 });
 

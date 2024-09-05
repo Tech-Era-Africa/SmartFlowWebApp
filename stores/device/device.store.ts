@@ -44,10 +44,11 @@ export const useDeviceStore = defineStore({
     selectedDeviceMinMaxConsumptionApiState: ApiResponseState.NULL,
     selectedDeviceMinMaxConsumptionApiFailure: { message: "" },
 
-    // Selected Cluster Min Max consumption
-    selectedClusterMinMaxConsumption: { min: 0, max: 0, sum: 0 },
-    selectedClusterMinMaxConsumptionApiState: ApiResponseState.NULL,
-    selectedClusterMinMaxConsumptionApiFailure: { message: "" },
+    //TOTAL CONSUMPTION BY CLUSTER
+    totalClusterConsumption: { sum: 0 },
+    totalClusterConsumptionApiState: ApiResponseState.NULL,
+    totalClusterConsumptionApiFailure: { message: "" },
+    clusterConsumptionTrend : [],
 
     //NEW DEVICE
     newDeviceApiState: ApiResponseState.NULL,
@@ -62,10 +63,6 @@ export const useDeviceStore = defineStore({
     allTotalConsumptionApiFailure: { message: "" },
     allTotalConsumption: 0,
 
-    //TOTAL CONSUMPTION BY CLUSTER
-    totalConsumptionByClusterApiState: ApiResponseState.NULL,
-    totalConsumptionByClusterApiFailure: { message: "" },
-    summaryClusterConsumptionTrend: [],
 
     //DEVICES GROUP BY USER
     devicesGroupApiState: ApiResponseState.NULL,
@@ -100,10 +97,10 @@ export const useDeviceStore = defineStore({
           headers: {
             "Authorization": `Bearer ${useUserStore().token}`
           },
-          body: { 
-            name, 
-            createdBy: useUserStore().currentUser?.objectId!, 
-            orgId: useUserStore().selectedOrganisation.objectId 
+          body: {
+            name,
+            createdBy: useUserStore().currentUser?.objectId!,
+            orgId: useUserStore().selectedOrganisation.objectId
           }
         });
 
@@ -370,48 +367,46 @@ export const useDeviceStore = defineStore({
       }
     },
 
-    async getClusterMinMaxConsumption(clusterId: string, startDate: string, endDate: string) {
+    async getClusterTotalConsumption(clusterId: string, startDate: string, endDate: string) {
       return new Promise<any>(async (resolve, reject) => {
-      try {
+        try {
 
-        this.selectedClusterMinMaxConsumptionApiState = ApiResponseState.LOADING;
+          this.totalClusterConsumptionApiState = ApiResponseState.LOADING;
 
-        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/influx/consumption/sum/by/cluster`, {
-          method: 'GET',
-          query: {
-            id: clusterId,
-            startDate,
-            endDate
-          },
-          headers: {
-            "Authorization": `Bearer ${useUserStore().token}`
-          }
-        });
+          const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/influx/consumption/sum/by/cluster`, {
+            method: 'GET',
+            query: {
+              id: clusterId,
+              startDate,
+              endDate
+            },
+            headers: {
+              "Authorization": `Bearer ${useUserStore().token}`
+            }
+          });
 
           // Handle errors
           if (error?.value) {
-            this.totalConsumptionByClusterApiState = ApiResponseState.FAILED;
+            this.totalClusterConsumptionApiState = ApiResponseState.FAILED;
             return reject(error.value.data.error || 'Server error! Could not fetch organisation device consumption trend data');
           }
 
-        this.selectedClusterMinMaxConsumptionApiState = ApiResponseState.SUCCESS;
+          this.totalClusterConsumptionApiState = ApiResponseState.SUCCESS;
 
-        // Assign data once successful
-        this.selectedClusterMinMaxConsumption = {
-          max: data.value[0].max_consumption_change,
-          min: data.value[0].min_consumption_change,
-          sum: data.value[0].sum_consumption_change
+          // Assign data once successful
+          this.totalClusterConsumption = {
+            sum: data.value[0].total_consumption
+          }
+
+          return resolve(this.totalClusterConsumption)
+
+
+        } catch (error: any) {
+          this.totalClusterConsumptionApiFailure.message = error.message;
+          this.totalClusterConsumptionApiState = ApiResponseState.FAILED;
+          reject(error)
         }
-
-        return resolve(this.selectedClusterMinMaxConsumption)
-
-
-      } catch (error: any) {
-        this.selectedClusterMinMaxConsumptionApiFailure.message = error.message;
-        this.selectedClusterMinMaxConsumptionApiState = ApiResponseState.FAILED;
-        reject(error)
-      }
-    })
+      })
     },
 
 
@@ -437,67 +432,69 @@ export const useDeviceStore = defineStore({
 
     async getAllDevicesConsumptionTrend(startDate: string, endDate: string) {
       return new Promise<any[]>(async (resolve, reject) => {
-      try {
+        try {
 
-        this.consumptionTrendsApiState = ApiResponseState.LOADING;
+          this.consumptionTrendsApiState = ApiResponseState.LOADING;
 
-        const data = await $fetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/influx/consumption/trend/by/org`, {
-          method: 'GET',
-          query: {
-            id: useUserStore().selectedOrganisation.objectId,
-            startDate,
-            endDate
-          },
-          headers: {
-            "Authorization": `Bearer ${useUserStore().token}`
-          }
-        });
-
-        this.consumptionTrendsApiState = ApiResponseState.SUCCESS;
-
-        const key = "Total Consumption"
-
-        // TODO!: MUST GIVE THIS THE RIGHT TYPE
-        const groupedData = data.reduce((acc: any, entry: any) => {
-          const { date_bin, total_consumption_change, downtime } = entry;
-          // If the key doesn't exist in the accumulator, create it
-
-          if (!acc[key]) {
-            acc[key] = {
-              name: key,
-              data: []
-            };
-          }
-
-          // Push the consumption data to the corresponding key in the accumulator
-          acc[key].data.push({
-            x: date_bin,
-            y: total_consumption_change,
-            downtime
+          const data = await $fetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/influx/consumption/trend/by/org`, {
+            method: 'GET',
+            query: {
+              id: useUserStore().selectedOrganisation.objectId,
+              startDate,
+              endDate
+            },
+            headers: {
+              "Authorization": `Bearer ${useUserStore().token}`
+            }
           });
 
-          return acc;
-        }, {});
+          this.consumptionTrendsApiState = ApiResponseState.SUCCESS;
 
-        this.deviceConsumptionTrend = Object.values(groupedData)
+          const key = "Total Consumption"
 
-        console.log(this.deviceConsumptionTrend)
+          // TODO!: MUST GIVE THIS THE RIGHT TYPE
+          const groupedData = data.reduce((acc: any, entry: any) => {
+            const { date_bin, total_consumption_change, downtime } = entry;
+            // If the key doesn't exist in the accumulator, create it
 
-        return resolve(this.deviceConsumptionTrend)
+            if (!acc[key]) {
+              acc[key] = {
+                name: key,
+                data: []
+              };
+            }
 
-      } catch (error: any) {
-        this.deviceConsumptionTrend = [] //Default to empty
-        this.consumptionTrendsApiFailure.message = error.message;
-        this.consumptionTrendsApiState = ApiResponseState.FAILED;
-      }
-    })
+            // Push the consumption data to the corresponding key in the accumulator
+            acc[key].data.push({
+              x: date_bin,
+              y: total_consumption_change,
+              downtime
+            });
+
+            return acc;
+          }, {});
+
+          this.deviceConsumptionTrend = Object.values(groupedData)
+
+          console.log(this.deviceConsumptionTrend)
+
+          return resolve(this.deviceConsumptionTrend)
+
+        } catch (error: any) {
+          this.deviceConsumptionTrend = [] //Default to empty
+          this.consumptionTrendsApiFailure.message = error.message;
+          this.consumptionTrendsApiState = ApiResponseState.FAILED;
+        }
+      })
     },
 
-    async getDeviceSummaryConsumptionTrend(clusterId: string, startDate: string, endDate: string) {
+   
+
+    async getClusterConsumptionTrend(clusterId: string, startDate: string, endDate: string): Promise<any> {
       return new Promise<any[]>(async (resolve, reject) => {
         try {
 
-          this.totalConsumptionByClusterApiState = ApiResponseState.LOADING;
+          this.totalClusterConsumptionApiState = ApiResponseState.LOADING;
 
           const data = await $fetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/influx/consumption/trend/by/cluster`, {
             method: 'GET',
@@ -511,14 +508,11 @@ export const useDeviceStore = defineStore({
             }
           });
 
-          this.totalConsumptionByClusterApiState = ApiResponseState.SUCCESS;
-
-
           const key = "Total Consumption"
 
           // TODO!: MUST GIVE THIS THE RIGHT TYPE
           const groupedData = data.reduce((acc: any, entry: any) => {
-            const { date_bin, total_consumption_change } = entry;
+            const { date_bin, total_consumption_change, downtime } = entry;
             // If the key doesn't exist in the accumulator, create it
 
             if (!acc[key]) {
@@ -531,79 +525,23 @@ export const useDeviceStore = defineStore({
             // Push the consumption data to the corresponding key in the accumulator
             acc[key].data.push({
               x: date_bin,
-              y: total_consumption_change
+              y: total_consumption_change,
+              downtime
             });
 
             return acc;
           }, {});
 
-          this.summaryClusterConsumptionTrend = Object.values(groupedData)
-
-          return resolve(this.summaryClusterConsumptionTrend)
-
-
+          return resolve(Object.values(groupedData))
 
         } catch (error: any) {
-          this.totalConsumptionByClusterApiFailure.message = error.message;
-          this.totalConsumptionByClusterApiState = ApiResponseState.FAILED;
-          this.summaryClusterConsumptionTrend = []
+          this.totalClusterConsumptionApiFailure.message = error.message;
+          this.totalClusterConsumptionApiState = ApiResponseState.FAILED;
+          this.clusterConsumptionTrend = []
+
           return reject(error)
         }
       })
-    },
-
-    async getClusterConsumptionTrend(clusterId: string, startDate: string, endDate: string): Promise<any> {
-      return new Promise<any[]>(async (resolve, reject) => {
-      try {
-
-        this.totalConsumptionByClusterApiState = ApiResponseState.LOADING;
-
-        const data = await $fetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/influx/consumption/trend/by/cluster`, {
-          method: 'GET',
-          query: {
-            id: clusterId,
-            startDate,
-            endDate
-          },
-          headers: {
-            "Authorization": `Bearer ${useUserStore().token}`
-          }
-        });
-
-        const key = "Total Consumption"
-
-        // TODO!: MUST GIVE THIS THE RIGHT TYPE
-        const groupedData = data.reduce((acc: any, entry: any) => {
-          const { date_bin, total_consumption_change,downtime } = entry;
-          // If the key doesn't exist in the accumulator, create it
-
-          if (!acc[key]) {
-            acc[key] = {
-              name: key,
-              data: []
-            };
-          }
-
-          // Push the consumption data to the corresponding key in the accumulator
-          acc[key].data.push({
-            x: date_bin,
-            y: total_consumption_change,
-            downtime
-          });
-
-          return acc;
-        }, {});
-
-        return resolve(Object.values(groupedData))
-
-      } catch (error: any) {
-        this.totalConsumptionByClusterApiFailure.message = error.message;
-        this.totalConsumptionByClusterApiState = ApiResponseState.FAILED;
-        this.summaryClusterConsumptionTrend = []
-
-        return reject(error)
-      }
-    })
     },
 
     async getDeviceConsumptionTrend(deviceId: string, startDate: string, endDate: string): Promise<any> {
@@ -707,9 +645,9 @@ export const useDeviceStore = defineStore({
     failed_SelectedDeviceMinMaxConsumption: (state) => state.selectedDeviceMinMaxConsumptionApiState === ApiResponseState.FAILED,
     success_SelectedDeviceMinMaxConsumption: (state) => state.selectedDeviceMinMaxConsumptionApiState === ApiResponseState.SUCCESS,
 
-    loading_SelectedClusterMinMaxConsumption: (state) => state.selectedClusterMinMaxConsumptionApiState === ApiResponseState.LOADING,
-    failed_SelectedClusterMinMaxConsumption: (state) => state.selectedClusterMinMaxConsumptionApiState === ApiResponseState.FAILED,
-    success_SelectedClusterMinMaxConsumption: (state) => state.selectedClusterMinMaxConsumptionApiState === ApiResponseState.SUCCESS,
+    loading_TotalClusterConsumption: (state) => state.totalClusterConsumptionApiState === ApiResponseState.LOADING,
+    failed_TotalClusterConsumption: (state) => state.totalClusterConsumptionApiState === ApiResponseState.FAILED,
+    success_TotalClusterConsumption: (state) => state.totalClusterConsumptionApiState === ApiResponseState.SUCCESS,
 
     isGettingDeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.LOADING,
     failed_DeviceUsers: (state) => state.deviceUsersApiState === ApiResponseState.FAILED,
@@ -727,10 +665,6 @@ export const useDeviceStore = defineStore({
     loading_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.LOADING,
     failed_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.FAILED,
     success_AllTotalConsumption: (state) => state.allTotalConsumptionApiState === ApiResponseState.SUCCESS,
-
-    loading_TotalConsumptionByCluster: (state) => state.totalConsumptionByClusterApiState === ApiResponseState.LOADING,
-    failed_TotalConsumptionByCluster: (state) => state.totalConsumptionByClusterApiState === ApiResponseState.FAILED,
-    success_TotalConsumptionByCluster: (state) => state.totalConsumptionByClusterApiState === ApiResponseState.SUCCESS,
 
 
     loading_DevicesGroup: (state) => state.devicesGroupApiState === ApiResponseState.LOADING,
