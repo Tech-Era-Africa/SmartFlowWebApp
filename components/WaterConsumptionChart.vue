@@ -21,7 +21,7 @@
             </div>
         </div>
         <ClientOnly v-else>
-            <apexchart :key="chartKey" height="100%" width="100%" :options="chartOptions" :series="chartSeries">
+            <apexchart :key="chartKey" height="100%" width="100%" :options="chartOptions" :series="processedChartSeries">
             </apexchart>
         </ClientOnly>
     </div>
@@ -57,6 +57,11 @@ const chartOptions = computed(() => ({
             show: true,
             tools: {
                 download: true,
+                zoom: true,
+                zoomin: true,
+                zoomout: true,
+                pan: true,
+                reset: true
             },
             export: {
                 csv: {
@@ -73,7 +78,11 @@ const chartOptions = computed(() => ({
                 }
             }
         },
-        zoom: { enabled: false },
+        zoom: { 
+            enabled: true,
+            type: 'x',
+            autoScaleYaxis: true
+        },
     },
     dataLabels: { enabled: false },
     stroke: {
@@ -93,9 +102,9 @@ const chartOptions = computed(() => ({
         }
     },
     tooltip: {
-        x: { format: 'dd MMM yyyy' } ,
+        x: { format: 'dd MMM yyyy' },
         y: {
-            formatter: (value: number) => value.toFixed(2)
+            formatter: (value: number) => `${value.toFixed(2)} kL`
         }
     },
     fill: {
@@ -126,8 +135,54 @@ const chartOptions = computed(() => ({
                 text: 'Recommended Consumption Threshold'
             }
         }]
-    }
+    },
+    markers: {
+        size: 2,
+        colors: undefined,
+        strokeColors: '#fff',
+        strokeWidth: 0.05,
+        strokeOpacity: 0.9,
+        strokeDashArray: 0,
+        fillOpacity: 0.5,
+        discrete: [],
+        shape: "circle",
+        radius: 0.01,
+        offsetX: 0,
+        offsetY: 0,
+        onClick: undefined,
+        onDblClick: undefined,
+        showNullDataPoints: true,
+        hover: {
+            size: 7,
+            sizeOffset: 3
+        }
+    },
+    states: {
+        hover: {
+            filter: {
+                type: 'none',
+            }
+        },
+        active: {
+            filter: {
+                type: 'none',
+            }
+        },
+    },
 }));
+
+// Add this computed property to process the series data
+const processedChartSeries = computed(() => {
+    return chartSeries.value.map(series => ({
+        ...series,
+        data: series.data.map((point: any) => ({
+            x: new Date(point.x).getTime(),
+            y: point.y,
+            fillColor: point.downtime ? '#FF0000' : undefined,
+            strokeColor: point.downtime ? '#FF0000' : undefined,
+        }))
+    }));
+});
 
 const handleDateChange = ({ start, end }: { start: Date, end: Date }) => {
     isLoading.value = true;

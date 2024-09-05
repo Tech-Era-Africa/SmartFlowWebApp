@@ -20,10 +20,60 @@
                 <p class="text-muted-foreground text-xs mt-1">Try adjusting your filters or date range</p>
             </div>
         </div>
-        <ClientOnly v-else>
-            <apexchart :key="chartKey" height="85%" width="100%" :options="chartOptions" :series="chartSeries">
-            </apexchart>
-        </ClientOnly>
+        <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-3">
+                <Card class="shadow-none mb-4">
+                    <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle class="text-sm font-medium">Average Consumption</CardTitle>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                            class="h-4 w-4 text-muted-foreground">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                        </svg>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="text-lg font-bold">{{ 0 }}L</div>
+                    </CardContent>
+                </Card>
+                <Card class="shadow-none mb-4">
+                    <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle class="text-sm font-medium">Highest Consumption</CardTitle>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                            class="h-4 w-4 text-muted-foreground">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                        </svg>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="text-lg font-bold">{{ 0 }}L</div>
+                    </CardContent>
+                </Card>
+                <Card class="shadow-none">
+                    <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle class="text-sm font-medium">Lowest Consumption</CardTitle>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                            class="h-4 w-4 text-muted-foreground">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                        </svg>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="text-lg font-bold">{{ 0 }}L</div>
+                    </CardContent>
+                </Card>
+            </div>
+            <div class="col-span-9 h-auto">
+                <Card class="shadow-none h-full">
+                    <CardContent class="h-full">
+                        <ClientOnly>
+                            <apexchart :key="chartKey" height="100%" width="100%" :options="chartOptions"
+                                :series="chartSeries">
+                            </apexchart>
+                        </ClientOnly>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -46,15 +96,15 @@ const clusters = [
 ];
 
 const chartSeries = computed(() => [{
-            name: 'Net Profit',
-            data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
-          }, {
-            name: 'Revenue',
-            data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
-          }, {
-            name: 'Free Cash Flow',
-            data: [35, 41, 36, 26, 45, 48, 52, 53, 41]
-          }]);
+    name: 'Net Profit',
+    data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
+}, {
+    name: 'Revenue',
+    data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
+}, {
+    name: 'Free Cash Flow',
+    data: [35, 41, 36, 26, 45, 48, 52, 53, 41]
+}]);
 
 const hasData = computed(() => chartSeries.value.length > 0 && chartSeries.value.some(series => series.data.length > 0));
 
@@ -95,6 +145,20 @@ const chartOptions = computed(() => ({
                 return val + " kL"
             }
         }
+    },
+    annotations: {
+        yaxis: [{
+            y: 55, // Adjust this value to set the recommended consumption threshold
+            borderColor: '#4CAF50', // A more readable green color
+            label: {
+                borderColor: '#4CAF50',
+                style: {
+                    color: '#fff',
+                    background: '#4CAF50'
+                },
+                text: 'Recommended Consumption Threshold'
+            }
+        }]
     },
     colors: ['#46D5E5', '#1E88E5', '#00BFA5', '#6DD5FA', '#2196F3'], // Varied water-themed colors
 }));
