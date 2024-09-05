@@ -152,7 +152,7 @@ watchEffect(() => {
   if (deviceStore.devicesGroups.length > 0) {
     const currentDate = new Date();
     const startDate = new Date(currentDate.getFullYear(), 0, 1);
-    const endDate = new Date(currentDate.getFullYear(), 11, 31);
+    const endDate = new Date();
     deviceStore.getClusterConsumptionTrend(
       deviceStore.devicesGroups[0].objectId, 
       startDate.toISOString(), 

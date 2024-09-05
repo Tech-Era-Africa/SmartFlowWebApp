@@ -2,10 +2,11 @@
      <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex justify-between items-center">
             <div>
-                <h1 class="font-bold text-lg">{{ option.title ?? 'Consumption Insights' }}</h1>
+                <h1 class="font-bold text-lg">{{ option.title ?? 'Insights' }}</h1>
                 <!-- <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p> -->
             </div>
             <div class="flex gap-2 items-center">
+              <ClusterFacetedFilter @handleFilter="handleClusterFilter"></ClusterFacetedFilter>
                 <PeriodFacetedFilter @onDateChanged="onDateChanged"></PeriodFacetedFilter>
             </div>
             <!-- <DateRangePicker @handle-date-change="onDateChanged"></DateRangePicker> -->
@@ -204,6 +205,11 @@ const props = defineProps({
 })
 
 const consumptionStore = useConsumptionStore()
+
+
+const handleClusterFilter = (selectedClusters: string[]) => {
+   
+};
 
 const onDateChanged = (period: string) => {
     const currentDate = new Date();
