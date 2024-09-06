@@ -26,12 +26,24 @@
             </CardHeader>
             <CardContent class="px-0 h-auto">
               <div v-if="deviceStore.loading_TotalClusterConsumption">
-                <Skeleton class="h-auto m-4" />
+              
+                <div class="p-4">
+                  <Skeleton class="h-24 w-full" /> 
+                  <div class="flex justify-between mt-4">
+                    <Skeleton class="h-4 w-1/4" />
+                    <Skeleton class="h-4 w-1/4" />
+                    <Skeleton class="h-4 w-1/4" />
+                  </div>
+                  <div class="flex justify-between mt-2">
+                    <Skeleton class="h-4 w-1/6" />
+                    <Skeleton class="h-4 w-1/6" />
+                  </div>
+                </div>
               </div>
+    
               <template v-else>
-
                 <ClientOnly>
-                  <apexchart height="100%" v-if="chartIsReady" :key="chartOptions.series" :options="chartOptions" :series="chartOptions.series">
+                  <apexchart height="100%"  :key="chartOptions.series" :options="chartOptions" :series="chartOptions.series">
                   </apexchart>
                 </ClientOnly>
               </template>
@@ -147,8 +159,7 @@ const chartIsReady = ref(false)
 // Load the devices from the organisation
 useAsyncData<any>('deviceGroup', () => deviceStore.getOrgDeviceGroup(), { lazy: true })
 
-// Fetch data based on device groups
-watchEffect(() => {
+onMounted(() => {
   if (deviceStore.devicesGroups.length > 0) {
     const currentDate = new Date();
     const startDate = new Date(currentDate.getFullYear(), 0, 1);
@@ -159,7 +170,9 @@ watchEffect(() => {
       endDate.toISOString()
     );
   }
-});
+}),
+
+
 
 // Handle the response and update the chart
 watchEffect(() => {
@@ -168,6 +181,8 @@ watchEffect(() => {
     chartOptions.value.series = deviceStore.clusterConsumptionTrend;
   }
 });
+
+
 
 
 

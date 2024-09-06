@@ -168,7 +168,9 @@ export const useBillStore = defineStore({
 
       const bill = useWaterBillAlgo(option)
 
-      return bill.firefighting + bill.ruralWater + bill.serviceCharge + bill.waterCharge
+      const total = bill.firefighting + bill.ruralWater + bill.serviceCharge + bill.waterCharge
+
+      return Number(total.toFixed(2))
     }
   },
 

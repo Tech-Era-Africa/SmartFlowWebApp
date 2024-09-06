@@ -51,7 +51,6 @@
 
 <script setup lang="ts">
 import { PlusCircleIcon } from 'lucide-vue-next'
-import { ref, computed, onMounted } from 'vue'
 import { useDeviceStore } from '~/stores/device/device.store'
 
 interface Cluster {
@@ -61,9 +60,12 @@ interface Cluster {
 
 interface ClusterFacetedFilterProps {
     title?: string;
+    maxSelections?: number;
 }
 
-const props = defineProps<ClusterFacetedFilterProps>()
+const props = withDefaults(defineProps<ClusterFacetedFilterProps>(), {
+    maxSelections: Infinity
+})
 const emits = defineEmits(['handlePopoverOpen', 'handleFilter'])
 
 const deviceStore = useDeviceStore()
@@ -89,9 +91,9 @@ const handleAllSelection = () => {
 }
 
 const handleClusterSelection = (clusterId: string, value: boolean) => {
-    if (value) {
+    if (value && selectedValues.value.size < props.maxSelections) {
         selectedValues.value.add(clusterId)
-    } else {
+    } else if (!value) {
         selectedValues.value.delete(clusterId)
     }
     emitFilterChange()
@@ -101,7 +103,7 @@ const handleCommandSelection = (cluster: Cluster) => {
     console.log('handleCommandSelection called with:', cluster)
     if (selectedValues.value.has(cluster.id)) {
         selectedValues.value.delete(cluster.id)
-    } else {
+    } else if (selectedValues.value.size < props.maxSelections) {
         selectedValues.value.add(cluster.id)
     }
     emitFilterChange()
@@ -122,6 +124,14 @@ onMounted(async () => {
         console.error('Failed to load clusters:', error)
     } finally {
         isLoading.value = false
+    }
+})
+
+watch(() => props.maxSelections, (newMax) => {
+    if (selectedValues.value.size > newMax) {
+        const valuesToKeep = Array.from(selectedValues.value).slice(0, newMax)
+        selectedValues.value = new Set(valuesToKeep)
+        emitFilterChange()
     }
 })
 </script>

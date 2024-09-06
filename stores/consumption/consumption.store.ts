@@ -10,6 +10,10 @@ interface ConsumptionStats {
   peakUsageDate: string
   peakUsageGroup: string
   peakUsageAmount: string
+  waterUsedChangeDescription:string
+  peakUsageDescription:string
+  peakUsageClusterDescription:string
+  averageConsumption : number
 }
 
 export const useConsumptionStore = defineStore('consumption', {
@@ -21,7 +25,9 @@ export const useConsumptionStore = defineStore('consumption', {
       estimatedBillChange: '0',
       peakUsageDate: '',
       peakUsageGroup: '',
-      peakUsageAmount: '0'
+      peakUsageAmount: '0',
+      waterUsedChangeDescription : '',
+      averageConsumption : 0
     } as ConsumptionStats,
     trendPeriod: 'year',
     consumptionInsightsApiState: ApiResponseState.NULL,
@@ -51,13 +57,26 @@ export const useConsumptionStore = defineStore('consumption', {
 
         this.consumptionInsightsApiState = ApiResponseState.SUCCESS
         this.stats = {
+          // Water consumption
           waterUsed: data.value.totalConsumption.totalConsumption.toFixed(2),
           waterUsedChange: data.value.totalConsumption.consumptionChange.toFixed(2),
-          estimatedBill: '0', // This is not provided in the API response
-          estimatedBillChange: '0', // This is not provided in the API response
+          waterUsedChangeDescription: data.value.totalConsumption.description,
+
+          // Estimated bill (placeholder values)
+          estimatedBill: '0', // Not provided in the API response
+          estimatedBillChange: '0', // Not provided in the API response
+
+          // Peak usage information
           peakUsageDate: new Date(data.value.peakUsage.peakTime).toLocaleDateString(),
+          peakUsageAmount: data.value.peakUsage.peakUsage.toFixed(2),
+          peakUsageDescription: data.value.peakUsage.description,
+
+          // Peak usage cluster information
           peakUsageGroup: data.value.peakUsageCluster.peakUsageCluster,
-          peakUsageAmount: data.value.peakUsage.peakUsage.toFixed(2)
+          peakUsageClusterDescription: data.value.peakUsageCluster.description,
+
+          // Average consumption
+          averageConsumption : data.value.averageConsumption
         }
       } catch (error: any) {
         this.consumptionInsightsApiState = ApiResponseState.FAILED

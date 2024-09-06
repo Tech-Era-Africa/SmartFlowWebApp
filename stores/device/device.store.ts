@@ -24,6 +24,11 @@ export const useDeviceStore = defineStore({
     consumptionTrendsApiState: ApiResponseState.NULL,
     consumptionTrendsApiFailure: { message: "" },
 
+     // CONSUMPTION TREND GROUPED STATE
+     consumptionGrouped: [] as { name: string, data: { x: string, y: number, downtime: number }[] }[],
+     consumptionGroupedApiState: ApiResponseState.NULL,
+     consumptionGroupedApiFailure: { message: "" },
+
     // SELECTED DEVICE CONSUMPTION TREND STATE
     selectedDeviceConsumptionTrend: [],
     selectedDeviceConsumptionTrendsApiState: ApiResponseState.NULL,
@@ -429,6 +434,47 @@ export const useDeviceStore = defineStore({
     //   }
     // },
 
+    async getAllDevicesConsumptionGroupedTrend(startDate: string, endDate: string) {
+      return new Promise<any[]>(async (resolve, reject) => {
+        try {
+          this.consumptionGroupedApiState = ApiResponseState.LOADING;
+
+          const data = await $fetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/influx/consumption/trend/by/cluster/group`, {
+            method: 'GET',
+            query: {
+              id: "1fJSQmnlHE,q0jA4kl2PA,FmGIyBw9S6",
+              startDate,
+              endDate
+            },
+            headers: {
+              "Authorization": `Bearer ${useUserStore().token}`
+            }
+          });
+
+          this.consumptionGroupedApiState = ApiResponseState.SUCCESS;
+
+          const groupedData = Object.entries(data).map(([key, value]) => ({
+            name: key,
+            data: (value as any[]).map(entry => ({
+              x: entry.date_bin,
+              y: entry.total_consumption_change,
+              downtime: entry.downtime
+            }))
+          }));
+
+          this.consumptionGrouped = groupedData;
+
+          return resolve(this.consumptionGrouped );
+
+        } catch (error: any) {
+          this.deviceConsumptionTrend = []; //Default to empty
+          this.consumptionTrendsApiFailure.message = error.message;
+          this.consumptionTrendsApiState = ApiResponseState.FAILED;
+          reject(error);
+        }
+      });
+    },
+
 
     async getAllDevicesConsumptionTrend(startDate: string, endDate: string) {
       return new Promise<any[]>(async (resolve, reject) => {
@@ -532,7 +578,10 @@ export const useDeviceStore = defineStore({
             return acc;
           }, {});
 
-          return resolve(Object.values(groupedData))
+          this.totalClusterConsumptionApiState = ApiResponseState.SUCCESS
+          this.clusterConsumptionTrend = Object.values(groupedData)
+
+          return resolve(this.clusterConsumptionTrend)
 
         } catch (error: any) {
           this.totalClusterConsumptionApiFailure.message = error.message;
@@ -628,6 +677,10 @@ export const useDeviceStore = defineStore({
     isGettingConsumptionTrend: (state) => state.consumptionTrendsApiState === ApiResponseState.LOADING,
     failed_ConsumptionTrend: (state) => state.consumptionTrendsApiState === ApiResponseState.FAILED,
     success_ConsumptionTrend: (state) => state.consumptionTrendsApiState === ApiResponseState.SUCCESS,
+
+    isGettingConsumptionGroupedTrend: (state) => state.consumptionGroupedApiState === ApiResponseState.LOADING,
+    failed_ConsumptionGroupedTrend: (state) => state.consumptionGroupedApiState === ApiResponseState.FAILED,
+    success_ConsumptionGroupedTrend: (state) => state.consumptionGroupedApiState === ApiResponseState.SUCCESS,
 
     loading_SelectedDeviceConsumptionTrend: (state) => state.selectedDeviceConsumptionTrendsApiState === ApiResponseState.LOADING,
     failed_SelectedDeviceConsumptionTrend: (state) => state.selectedDeviceConsumptionTrendsApiState === ApiResponseState.FAILED,

@@ -6,7 +6,7 @@
                 <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p>
             </div>
             <div class="flex gap-2 items-center">
-                <ClusterFacetedFilter :clusters="clusters" @handleFilter="handleClusterFilter"></ClusterFacetedFilter>
+                <!-- <ClusterFacetedFilter :clusters="clusters" @handleFilter="handleClusterFilter"></ClusterFacetedFilter> -->
                 <PeriodFacetedFilter @onDateChanged="handleDateChange"></PeriodFacetedFilter>
             </div>
         </div>

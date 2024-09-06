@@ -6,7 +6,7 @@
                 <p class="text-xs text-muted-foreground">{{ '* Comparison over time' }}</p>
             </div>
             <div class="flex gap-2 items-center">
-                <ClusterFacetedFilter :clusters="clusters" @handleFilter="handleClusterFilter"></ClusterFacetedFilter>
+                <ClusterFacetedFilter @handleFilter="handleClusterFilter" :max-selections="3"></ClusterFacetedFilter>
                 <PeriodFacetedFilter @onDateChanged="handleDateChange"></PeriodFacetedFilter>
             </div>
         </div>
@@ -81,6 +81,7 @@
 import { ref, computed, watchEffect } from 'vue';
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 import { ChartLine } from 'lucide-vue-next'
+import { useDeviceStore } from '~/stores/device/device.store';
 
 const props = defineProps<{
     option: IWaterConsumptionChart
@@ -95,16 +96,24 @@ const clusters = [
     { id: '1', name: 'Cluster A' },
 ];
 
-const chartSeries = computed(() => [{
-    name: 'Net Profit',
-    data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
-}, {
-    name: 'Revenue',
-    data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
-}, {
-    name: 'Free Cash Flow',
-    data: [35, 41, 36, 26, 45, 48, 52, 53, 41]
-}]);
+const deviceStore = useDeviceStore()
+
+const currentDate = new Date();
+const startDate = new Date(currentDate.getFullYear(), 0, 1);
+const endDate = new Date(currentDate.getFullYear(), 11, 31);
+useAsyncData<any>('deviceConsumptionTrendM', () => Promise.all([
+    deviceStore.getAllDevicesConsumptionGroupedTrend(startDate.toISOString(), endDate.toISOString()),
+]), { lazy: true })
+
+const getDeviceGroupName = (id:string) => {
+
+const group = deviceStore.devicesGroups.find(group => group.objectId === id);
+return group ? group.name : 'Unknown Group';
+
+};
+
+
+const chartSeries = computed(() => deviceStore.consumptionGrouped);
 
 const hasData = computed(() => chartSeries.value.length > 0 && chartSeries.value.some(series => series.data.length > 0));
 
@@ -128,9 +137,7 @@ const chartOptions = computed(() => ({
         width: 2,
         colors: ['transparent']
     },
-    xaxis: {
-        categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-    },
+    xaxis: { type: 'datetime' },
     yaxis: {
         title: {
             text: 'Consumption (kL)'
@@ -144,11 +151,12 @@ const chartOptions = computed(() => ({
             formatter: function (val: any) {
                 return val + " kL"
             }
-        }
+        },
+        
     },
     annotations: {
         yaxis: [{
-            y: 55, // Adjust this value to set the recommended consumption threshold
+            y: 6, // Adjust this value to set the recommended consumption threshold
             borderColor: '#4CAF50', // A more readable green color
             label: {
                 borderColor: '#4CAF50',
@@ -161,6 +169,12 @@ const chartOptions = computed(() => ({
         }]
     },
     colors: ['#46D5E5', '#1E88E5', '#00BFA5', '#6DD5FA', '#2196F3'], // Varied water-themed colors
+    legend: {
+        position: 'bottom',
+        formatter: function(seriesName:any) {
+            return getDeviceGroupName(seriesName)
+        }
+    }
 }));
 
 const handleDateChange = ({ start, end }: { start: Date, end: Date }) => {

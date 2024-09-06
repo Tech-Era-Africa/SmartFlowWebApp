@@ -6,7 +6,7 @@
                 <!-- <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p> -->
             </div>
             <div class="flex gap-2 items-center">
-              <ClusterFacetedFilter @handleFilter="handleClusterFilter"></ClusterFacetedFilter>
+              <!-- <ClusterFacetedFilter @handleFilter="handleClusterFilter"></ClusterFacetedFilter> -->
                 <PeriodFacetedFilter @onDateChanged="onDateChanged"></PeriodFacetedFilter>
             </div>
             <!-- <DateRangePicker @handle-date-change="onDateChanged"></DateRangePicker> -->
@@ -46,14 +46,14 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  {{ consumptionStore.stats.waterUsed ? `${consumptionStore.stats.waterUsed}L` : 'N/A' }}
+                  {{ consumptionStore.stats.waterUsed ? `${consumptionStore.stats.waterUsed} kL` : 'N/A' }}
                 </div>
                 <p class="text-xs text-muted-foreground">
-                  {{ consumptionStore.stats.waterUsedChange || 'No change' }} since last period
+                  {{ consumptionStore.stats.waterUsedChangeDescription }}
                 </p>
               </CardContent>
             </Card>
-            <Card :class="['shadow-none transition-opacity duration-300', {'opacity-50': +consumptionStore.stats.estimatedBill == 0}]">
+            <Card class="'shadow-none transition-opacity duration-300'">
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle class="text-sm font-medium">
                   Water Bill
@@ -73,10 +73,10 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  {{ consumptionStore.stats.estimatedBill ? `GHC${consumptionStore.stats.estimatedBill}` : 'N/A' }}
+                  {{ consumptionStore.stats.estimatedBill ? `GHC${billStore.calculateTotalBill({ consumption: +consumptionStore.stats.waterUsed }) }` : 'N/A' }}
                 </div>
                 <p class="text-xs text-muted-foreground">
-                  {{ consumptionStore.stats.estimatedBillChange || 'No change' }} since last period
+                  {{ `GHC${billStore.calculateTotalBill({ consumption: +consumptionStore.stats.waterUsedChange }) }` }} since last period
                 </p>
               </CardContent>
             </Card>
@@ -100,7 +100,7 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  {{ consumptionStore.stats.peakUsageAmount ? `${consumptionStore.stats.peakUsageAmount}L` : 'N/A' }}
+                  {{ consumptionStore.stats.peakUsageAmount ? `${consumptionStore.stats.peakUsageAmount} kL` : 'N/A' }}
                 </div>
                 <p class="text-xs text-muted-foreground">
                   {{ consumptionStore.stats.peakUsageDate ? `on ${consumptionStore.stats.peakUsageDate}` : 'Date not available' }}
@@ -127,10 +127,10 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  {{ consumptionStore.stats.peakUsageGroup ? `-${consumptionStore.stats.peakUsageGroup}` : 'N/A' }}
+                  {{ consumptionStore.stats.peakUsageGroup ? `${getDeviceGroupName(consumptionStore.stats.peakUsageGroup)}` : 'N/A' }}
                 </div>
                 <p class="text-xs text-muted-foreground">
-                  Group ID
+                  Cluster
                 </p>
               </CardContent>
             </Card>
@@ -154,14 +154,14 @@
               </CardHeader>
               <CardContent>
                 <div class="text-lg font-bold">
-                  {{ consumptionStore.stats.peakUsageGroup ? `-${consumptionStore.stats.peakUsageGroup}` : 'N/A' }}
+                  {{ consumptionStore.stats.averageConsumption }} kL
                 </div>
                 <p class="text-xs text-muted-foreground">
-                  0 since period
+                  {{  }}
                 </p>
               </CardContent>
             </Card>
-            <Card :class="['shadow-none transition-opacity duration-300', {'opacity-50': !consumptionStore.stats.peakUsageGroup}]">
+            <Card :class="['shadow-none transition-opacity duration-300', {'opacity-50': true}]">
               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle class="text-sm font-medium">
                   CGP
@@ -184,7 +184,7 @@
                   {{ '0%' }}
                 </div>
                 <p class="text-xs text-muted-foreground">
-                  Conserved xl compared to yl last period
+                  ...
                 </p>
               </CardContent>
             </Card>
@@ -194,8 +194,9 @@
 </template>
 <script setup lang="ts">
 import { useConsumptionStore } from '~/stores/consumption/consumption.store';
+import { useDeviceStore } from '~/stores/device/device.store';
+import { useBillStore } from '~/stores/bill/bill.store.js';
 
-const emits = defineEmits(['onDateChanged'])
 
 const props = defineProps({
     option: {
@@ -205,45 +206,30 @@ const props = defineProps({
 })
 
 const consumptionStore = useConsumptionStore()
+const billStore = useBillStore();
 
 
 const handleClusterFilter = (selectedClusters: string[]) => {
    
 };
 
-const onDateChanged = (period: string) => {
-    const currentDate = new Date();
-    let startDate: Date;
-    let endDate: Date;
+const deviceStore = useDeviceStore()
+const getDeviceGroupName = (id:string) => {
 
-    switch (period) {
-        case 'month':
-            startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-            endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-            break;
-        case 'week':
-            const firstDayOfWeek = currentDate.getDate() - currentDate.getDay();
-            startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstDayOfWeek);
-            endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstDayOfWeek + 6);
-            break;
-        case 'year':
-            startDate = new Date(currentDate.getFullYear(), 0, 1);
-            endDate = new Date(currentDate.getFullYear(), 11, 31);
-            break;
-        default:
-            startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-            endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    }
+    const group = deviceStore.devicesGroups.find(group => group.objectId === id);
+    return group ? group.name : 'Unknown Group';
 
-    emits('onDateChanged', { start: startDate, end: endDate });
+};
 
-    consumptionStore.getConsumptionInsightsByOrg(startDate.toISOString(), endDate.toISOString())
+
+const onDateChanged = (period: {start:Date, end:Date}) => {
+    consumptionStore.getConsumptionInsightsByOrg(period.start.toISOString(), period.end.toISOString())
 }
 
-onMounted(() => {
-    const currentDate = new Date();
-    const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    consumptionStore.getConsumptionInsightsByOrg(startDate.toISOString(), endDate.toISOString())
-})
+useAsyncData('consumptionInsights', async () => {
+  const currentDate = new Date();
+  const startDate = new Date(currentDate.getFullYear(), 0, 1);
+  const endDate = new Date(currentDate.getFullYear(), 11, 31);
+  await consumptionStore.getConsumptionInsightsByOrg(startDate.toISOString(), endDate.toISOString());
+}, {lazy:true});
 </script>

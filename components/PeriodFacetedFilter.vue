@@ -56,6 +56,7 @@ const handlePopoverOpen = (state: boolean) =>
     emits('handlePopoverOpen', state)
 
 const handleCommandSelection = (period: string) => {
+    
     selectedPeriod.value = period
     const currentDate = new Date();
     let startDate: Date;
