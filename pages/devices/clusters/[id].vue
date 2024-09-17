@@ -91,12 +91,14 @@
 
                     <!-- LOADING -->
                     <template v-if="deviceStore.isGettingDevices">
-                        <div class="flex flex-col md:flex-row gap-4 p-5">
-                            <div class="w-full md:w-2/3">
-                                <Skeleton class="h-[300px] w-full rounded-lg" />
-                            </div>
-                            <div class="w-full md:w-1/3">
-                                <Skeleton class="h-[300px] w-full rounded-lg" />
+                        <div class="flex flex-col  gap-4 p-5">
+                            <div class="flex  w-full">
+                                <div class="w-full md:w-2/3 md:mr-4">
+                                    <Skeleton class="h-[300px] w-full rounded-lg" />
+                                </div>
+                                <div class="w-full md:w-1/3 mt-4 md:mt-0">
+                                    <Skeleton class="h-[300px] w-full rounded-lg" />
+                                </div>
                             </div>
                             <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                                 <div v-for="i in 6" :key="i" class="space-y-3">
