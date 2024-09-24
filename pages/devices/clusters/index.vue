@@ -13,7 +13,9 @@
           <template v-if="deviceStore.hasGroupDevices">
             <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-3 grid gap-2">
               <NuxtLink :to="`/devices/clusters/${group.objectId}`" v-for="group in deviceStore.devicesGroups">
-                <DeviceClusterCard :option="{devicesCount : group.devicesCount ?? 0, id : group.objectId, name : group.name}"></DeviceClusterCard>
+                <DeviceClusterCard
+                  :option="{ devicesCount: group.devicesCount ?? 0, id: group.objectId, name: group.name }">
+                </DeviceClusterCard>
               </NuxtLink>
 
               <Dialog :open="isClusterDialogueOpen" @update:open="handleOnClusterDialogOpen">
@@ -38,14 +40,14 @@
                       <FormItem>
                         <FormControl>
                           <Input type="text" placeholder="Eg. Apartment 1" v-bind="componentField"
-                            :disabled="deviceStore.isAddingNewCluster" />
+                            :disabled="clusterStore.isAddingNewCluster" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     </FormField>
                     <Button type="submit" class="w-full"
-                      :disabled="!isFieldValid('clusterName') && !deviceStore.isAddingNewCluster">
-                      <template v-if="deviceStore.isAddingNewCluster">
+                      :disabled="!isFieldValid('clusterName') && !clusterStore.isAddingNewCluster">
+                      <template v-if="clusterStore.isAddingNewCluster">
                         <Loader2 class="animate-spin"></Loader2>
                       </template>
                       <span v-else>Create New Cluster</span>
@@ -89,6 +91,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { Loader2 } from 'lucide-vue-next'
 import type { IDeviceGroup } from '~/stores/device/model/deviceGroup.model';
+import { useClusterStore } from '../../../stores/cluster/cluster.store';
 
 
 
@@ -97,6 +100,7 @@ useHead({ title: "Clusters" })
 
 
 const deviceStore = useDeviceStore()
+const clusterStore = useClusterStore()
 
 
 // Load the devices clusters
@@ -122,21 +126,16 @@ const { handleSubmit, isFieldValid } = useForm({
 
 const onFormSubmit = handleSubmit(async (values) => {
   // Add new device cluster
-  await deviceStore.addNewDeviceCluster(values.clusterName)
-
-  if (deviceStore.success_DevicesGroup) {
+  try {
+    await clusterStore.createNewCluster(values.clusterName);
     // Close modal
     isClusterDialogueOpen.value = false;
 
     // Refresh the device groups
-    await refresh()
-
-    return;
+    await refresh();
+  } catch (e) {
+    alert("Could not create cluster. Something went wrong.");
   }
-
-  alert("Could not create cluster. Something went wrong.")
-
-
 })
 //  end of FORM SETTINGS
 

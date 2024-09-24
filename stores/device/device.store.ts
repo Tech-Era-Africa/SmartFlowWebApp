@@ -94,42 +94,6 @@ export const useDeviceStore = defineStore({
       }
     },
 
-    async addNewDeviceCluster(name: string) {
-      try {
-        this.newClusterApiState = ApiResponseState.LOADING;
-        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/device/cluster/create`, {
-          method: 'POST',
-          headers: {
-            "Authorization": `Bearer ${useUserStore().token}`
-          },
-          body: {
-            name,
-            createdBy: useUserStore().currentUser?.objectId!,
-            orgId: useUserStore().selectedOrganisation.objectId
-          }
-        });
-
-        if (error.value) {
-          throw new Error(error.value.data?.error || 'Failed to create device cluster')
-        }
-
-        this.newClusterApiState = ApiResponseState.SUCCESS;
-        this.devicesGroups.push(DeviceGroupModel.fromMap({
-          userDeviceGroup: data.value,
-          devicesCount: 0
-        }));
-
-        // Reset
-        setTimeout(() => {
-          this.newClusterApiState = ApiResponseState.NULL;
-        }, 500);
-
-      } catch (error: any) {
-        this.newClusterApiFailure.message = error.message;
-        this.newClusterApiState = ApiResponseState.FAILED;
-      }
-    },
-
     async getUserDeviceGroup() {
       try {
 
@@ -153,7 +117,7 @@ export const useDeviceStore = defineStore({
 
           this.devicesGroupApiState = ApiResponseState.LOADING;
 
-          const { data, error } = await useFetch(`${useRuntimeConfig().public.API_BASE_URL}/device/group/by/org`, {
+          const data = await $fetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/device/group/by/org`, {
             method: 'GET',
             query: {
               id: useUserStore().selectedOrganisation.objectId
@@ -163,14 +127,8 @@ export const useDeviceStore = defineStore({
             }
           });
 
-          // Handle errors
-          if (error?.value) {
-            this.devicesGroupApiState = ApiResponseState.FAILED;
-            return reject(error.value); // Resolve with empty array on failure
-          }
-
           this.devicesGroupApiState = ApiResponseState.SUCCESS;
-          this.devicesGroups = ((data.value as any) as IDeviceGroup[]).map(deviceGroup => DeviceGroupModel.fromMap(deviceGroup))
+          this.devicesGroups = ((data as any) as IDeviceGroup[]).map(deviceGroup => DeviceGroupModel.fromMap(deviceGroup))
 
           return resolve(this.devicesGroups)
 
