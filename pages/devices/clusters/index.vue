@@ -18,7 +18,7 @@
                 </DeviceClusterCard>
               </NuxtLink>
 
-              <Dialog :open="isClusterDialogueOpen" @update:open="handleOnClusterDialogOpen">
+              <Dialog :open="isClusterDialogueOpen" @update:open="handleOnClusterDialogOpen" v-if="false">
                 <DialogTrigger>
                   <Card class="h-[150px] outline-dashed border-none outline-blue-300 cursor-pointer">
                     <CardContent class="flex justify-center items-center w-full h-full p-0">

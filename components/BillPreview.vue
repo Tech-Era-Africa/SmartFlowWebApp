@@ -93,7 +93,7 @@
         </CollapsibleContent>
     </Collapsible>
 
-    <Button class="mt-4 w-full" @click="createBill" :disabled="billStore.isCreatingBill"><span>Create Bill
+    <Button v-if="false" class="mt-4 w-full" @click="createBill" :disabled="billStore.isCreatingBill"><span>Create Bill
             Invoice</span>
         <Loader2 v-if="billStore.isCreatingBill" class="animate-spin ml-2" :size="16"></Loader2>
     </Button>
@@ -176,7 +176,7 @@ const createBill = async () => {
 const usersDataTableOption = ref<UserTableOptionDTO>({
 
     users: [
-        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin" }).user
+        new UserModel({ firstName: "Ronald", lastName: "Nettey", email: "ronaldnettey360@gmail.com", objectId: "1", phoneNumber: "+233558474469", role: "Admin", orgData :[] }).user
     ] as User[],
     columns: ["Invoice #", "User", "Date Issued", "Date Paid", "Devices", "Status"]
 } as UserTableOptionDTO);

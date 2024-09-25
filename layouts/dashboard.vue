@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[2rem] bg-orange-50 flex items-center justify-center">
+  <div class="h-[2rem] bg-orange-50 flex items-center justify-center" v-if="false">
     <p class="text-xs text-black text-muted-foreground">🚧 Scheduled Maintenance: Some features may be temporarily unavailable. Thank you for your patience! 🚧</p>
   </div>
   <section class="w-screen h-screen relative overflow-hidden m-0 p-0 flex">
