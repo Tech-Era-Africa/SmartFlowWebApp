@@ -1,5 +1,5 @@
 <template>
-    <Popover @update:open="handlePopoverOpen">
+    <Popover v-model:open="isOpen" @update:open="handlePopoverOpen">
         <PopoverTrigger>
             <Button variant="outline" size="sm" class="h-8 border-dashed border-violet-400">
                 <CalendarIcon class="mr-2 h-4 w-4" />
@@ -34,17 +34,8 @@
                 </CommandList>
             </Command>
             <div v-if="selectedPeriod === 'custom'" class="mt-4">
-                <div class="flex justify-between">
-                    <div>
-                        <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
-                        <input type="date" id="startDate" v-model="customStartDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    </div>
-                    <div>
-                        <label for="endDate" class="block text-sm font-medium text-gray-700">End Date</label>
-                        <input type="date" id="endDate" v-model="customEndDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    </div>
-                </div>
-                <Button @click="applyCustomRange" class="mt-4 w-full">Apply</Button>
+                <DateRangePicker @handleDateChange="handleCustomRangeChange"></DateRangePicker>
+                <Button @click="applyCustomRange" class="mt-2 w-full">Apply</Button>
             </div>
         </PopoverContent>
     </Popover>
@@ -52,7 +43,6 @@
 
 <script setup lang="ts">
 import { CalendarIcon, CheckIcon } from 'lucide-vue-next'
-import { ref, watch, onMounted } from 'vue'
 
 const props = defineProps<{
     title?: string;
@@ -63,6 +53,8 @@ const emits = defineEmits(['handlePopoverOpen', 'onDateChanged'])
 const selectedPeriod = ref('month')
 const customStartDate = ref('')
 const customEndDate = ref('')
+const isOpen = ref(false)
+const tempCustomRange = ref<{ start: Date, end: Date } | null>(null)
 
 const periods = ref([
     { value: 'week', label: 'This Week' },
@@ -77,8 +69,9 @@ const getPeriodLabel = (value: string) => {
     return periods.value.find(period => period.value === value)?.label || 'Select Period'
 }
 
-const handlePopoverOpen = (state: boolean) =>
+const handlePopoverOpen = (state: boolean) => {
     emits('handlePopoverOpen', state)
+}
 
 const handleCommandSelection = (period: string) => {
     selectedPeriod.value = period
@@ -110,17 +103,20 @@ const handleCommandSelection = (period: string) => {
             start: startDate,
             end: endDate
         });
+        isOpen.value = false;
     }
 }
 
-const applyCustomRange = () => {
-    if (customStartDate.value && customEndDate.value) {
-        emits('onDateChanged', {
-            start: new Date(customStartDate.value),
-            end: new Date(customEndDate.value)
-        });
+const handleCustomRangeChange = (range: { start: Date, end: Date }) => {
+    tempCustomRange.value = range;
+}
 
-        handlePopoverOpen(false)
+const applyCustomRange = () => {
+    if (tempCustomRange.value) {
+        customStartDate.value = tempCustomRange.value.start.toISOString().split('T')[0];
+        customEndDate.value = tempCustomRange.value.end.toISOString().split('T')[0];
+        emits('onDateChanged', tempCustomRange.value);
+        isOpen.value = false;
     }
 }
 

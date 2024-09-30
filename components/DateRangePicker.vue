@@ -22,22 +22,28 @@ const date = ref({
   end: endOfMonth
 })
 
-const handleDateChange = (date:any)=>{
-  emits('handleDateChange', date)
+const isOpen = ref(false)
+
+const handleDateChange = (newDate: any) => {
+  date.value = newDate
+  emits('handleDateChange', newDate)
+  if (newDate.start && newDate.end) {
+    isOpen.value = false
+  }
 }
 </script>
 
 <template>
   <div :class="cn('grid gap-2', $attrs.class ?? '')">
-    <Popover>
+    <Popover v-model:open="isOpen">
       <PopoverTrigger as-child>
         <Button
           id="date"
           :variant="'outline'"
-          :class="cn(
-            'w-[200px] justify-center text-left text-xs font-bold',
+          :class="[
+            'w-full justify-center text-left text-xs font-bold',
             !date && 'text-muted-foreground',
-          )"
+      ]"
         >
           <CalendarIcon class="mr-2 h-4 w-4" />
 

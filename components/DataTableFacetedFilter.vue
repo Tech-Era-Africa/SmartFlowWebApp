@@ -24,7 +24,7 @@
 
             </Button>
         </PopoverTrigger>
-        <PopoverContent>
+        <PopoverContent class="w-full max-w-full">
             <Command>
                 <CommandInput placeholder="Search..." />
                 <CommandList>
