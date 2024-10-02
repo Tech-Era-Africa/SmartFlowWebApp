@@ -122,20 +122,20 @@ const chartOptions = computed(() => ({
         markers: { radius: 12, offsetX: -4 },
         itemMargin: { horizontal: 12, vertical: 20 },
     },
-    annotations: {
-        yaxis: [{
-            y: 3.5, // Adjust this value to set the recommended consumption threshold
-            borderColor: '#4CAF50', // A more readable green color
-            label: {
-                borderColor: '#4CAF50',
-                style: {
-                    color: '#fff',
-                    background: '#4CAF50'
-                },
-                text: 'Recommended Consumption Threshold'
-            }
-        }]
-    },
+    // annotations: {
+    //     yaxis: [{
+    //         y: 3.5, // Adjust this value to set the recommended consumption threshold
+    //         borderColor: '#4CAF50', // A more readable green color
+    //         label: {
+    //             borderColor: '#4CAF50',
+    //             style: {
+    //                 color: '#fff',
+    //                 background: '#4CAF50'
+    //             },
+    //             text: 'Recommended Consumption Threshold'
+    //         }
+    //     }]
+    // },
     markers: {
         size: 2,
         colors: undefined,
