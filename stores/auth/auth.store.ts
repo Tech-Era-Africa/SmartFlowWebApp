@@ -18,8 +18,10 @@ export const useAuthStore = defineStore({
 
       try {
         this.loginState = ApiResponseState.LOADING;
+
+        const url = `${useRuntimeConfig().public.API_BASE_URL}/auth/login`;
     
-        const data = await $fetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/auth/login`, {
+        const data = await $fetch<any>(url, {
           method : 'POST',
           body :{
             email: cred.email,
@@ -33,7 +35,20 @@ export const useAuthStore = defineStore({
         this.loginState = ApiResponseState.SUCCESS;
     
       } catch (error: any) {
-        this.loginFailure.message = error.message || 'An unexpected error occurred.';
+
+        let message = 'Something went wrong. Login failed.';
+        
+        if (error.status === 401) {
+          message = 'Invalid email or password. Please try again.';
+        } else if (error.status === 403) {
+          message = 'Account is disabled. Please contact support.';
+        } else if (error.status === 500) {
+          message = 'Server error. Please try again later.';
+        } else if (!error.status) {
+          message = 'Network error. Please check your connection.';
+        }
+        
+        this.loginFailure.message = message;
         this.loginState = ApiResponseState.FAILED;
       }
     },

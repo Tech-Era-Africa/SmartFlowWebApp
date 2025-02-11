@@ -85,6 +85,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth/auth.store';
 import { Loader2 } from 'lucide-vue-next'
+import { toast } from '@/components/ui/toast';
 
 definePageMeta({
     middleware: "already-auth"
@@ -104,9 +105,15 @@ const password = ref("")
 const login = async () => {
     await authStore.loginWithEmail({ email: email.value, password: password.value })
 
-    if (authStore.failed_LoginUser) return alert(authStore.loginFailure.message)
+    if (authStore.failed_LoginUser){
+        toast({
+        title: 'Login Failed',
+        description: authStore.loginFailure.message,
+      });
+      return;
+    }
 
-    return useRouter().go(0) //Middleware will handle it from here
+    // return useRouter().go(0) //Middleware will handle it from here
 }
 
 const forgotPassword = () => alert("Something went wrong")

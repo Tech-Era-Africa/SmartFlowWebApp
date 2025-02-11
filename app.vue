@@ -1,5 +1,8 @@
 <template>
+
   <NuxtLoadingIndicator :height="5"></NuxtLoadingIndicator>
+
+  <Toaster />
   <NuxtPage></NuxtPage>
 </template>
 <script setup lang="ts">
