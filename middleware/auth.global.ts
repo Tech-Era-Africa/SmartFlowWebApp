@@ -4,7 +4,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   const userStore = useUserStore()
 
   // Dont affect the login route
-  if (to.path === '/auth/login') {
+  if (to.path === '/auth/login' || to.path === '/auth/signup' || to.path === '/auth/forgot-password') {
     return
   }
 

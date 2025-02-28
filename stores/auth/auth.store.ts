@@ -11,6 +11,9 @@ export const useAuthStore = defineStore({
     loginState: ApiResponseState.NULL,
     loginFailure: { message: "" },
 
+    // RESET PASSWORD
+    resetPasswordState: ApiResponseState.NULL,
+    resetPasswordFailure: { message: "" },
 
   }),
   actions: {
@@ -62,6 +65,37 @@ export const useAuthStore = defineStore({
 
     logoutUser() {
       useUserStore().clearUserToken()
+    },
+
+    async resetPassword(data: { email: string }) {
+      try {
+        this.resetPasswordState = ApiResponseState.LOADING;
+
+        const url = `${useRuntimeConfig().public.API_BASE_URL}/auth/forgot-password`;
+
+        await $fetch(url, {
+          method: 'POST',
+          body: {
+            email: data.email
+          }
+        });
+
+        this.resetPasswordState = ApiResponseState.SUCCESS;
+
+      } catch (error: any) {
+        let message = 'Failed to send reset password instructions.';
+
+        if (error.status === 404) {
+          message = 'Email address not found.';
+        } else if (error.status === 500) {
+          message = 'Server error. Please try again later.';
+        } else if (!error.status) {
+          message = 'Network error. Please check your connection.';
+        }
+
+        this.resetPasswordFailure.message = message;
+        this.resetPasswordState = ApiResponseState.FAILED;
+      }
     }
   },
 
@@ -69,5 +103,9 @@ export const useAuthStore = defineStore({
     isLoggingUserIn: (state) => state.loginState === ApiResponseState.LOADING,
     failed_LoginUser: (state) => state.loginState === ApiResponseState.FAILED,
     success_LoginUser: (state) => state.loginState === ApiResponseState.SUCCESS,
+    
+    isResettingPassword: (state) => state.resetPasswordState === ApiResponseState.LOADING,
+    failed_ResetPassword: (state) => state.resetPasswordState === ApiResponseState.FAILED,
+    success_ResetPassword: (state) => state.resetPasswordState === ApiResponseState.SUCCESS
   }
 })

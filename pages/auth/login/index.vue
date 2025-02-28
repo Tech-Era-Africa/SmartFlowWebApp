@@ -43,8 +43,8 @@
                             <div class="flex items-center justify-between">
                                 <label for="" class="text-sm font-bold text-gray-900"> Password </label>
 
-                                <a href="#" title="" class="text-sm font-medium text-indigo-600 hover:text-indigo-700"
-                                    @click="forgotPassword"> Forgot Password? </a>
+                                <NuxtLink to="/auth/forgot-password" title="" class="text-sm font-medium text-indigo-600 hover:text-indigo-700"
+                                    > Forgot Password? </NuxtLink>
                             </div>
                             <div class="mt-2">
                                 <Input type="password" name="" placeholder="Password (min. 8 character)" v-model="password" 
@@ -116,5 +116,4 @@ const login = async () => {
     // return useRouter().go(0) //Middleware will handle it from here
 }
 
-const forgotPassword = () => alert("Something went wrong")
 </script>
