@@ -16,31 +16,23 @@ export class UserModel {
   // Factory constructor
   static default(): UserModel {
     const user: User = {
-      objectId : "",
+      id: "",
       firstName: "",
       lastName: "",
       email: "",
-      phoneNumber: "",
-      createdAt : "",
-      orgData : []
-
+      avatarUrl: ""
     };
 
     return new UserModel(user);
   }
 
-  static fromMap(json:any) {
+  static fromMap(json: any) {
     const user: User = {
-      objectId:json.objectId,
-      firstName: json.firstname,
-      lastName: json.lastname,
+      id: json.id,
+      firstName: json.first_name,
+      lastName: json.last_name,
       email: json.email,
-      avatarUrl : json.avatarUrl,
-      role:json.role?.objectId,
-      phoneNumber: "",
-      createdAt : json.createdAt,
-      orgData : json.orgData
-
+      avatarUrl: json.avatar_url
     };
 
     return user;
@@ -48,19 +40,10 @@ export class UserModel {
 }
 
 export interface User {
-  objectId:string;
+  id: string;
   firstName: string;
   lastName: string;
-  middleName?: string;
-  fullName?: string;
   email: string;
-  phoneNumber: string;
-  joinDate?: Date;
   avatarUrl?: string;
-  role?: string;
-  createdAt?: any;
-  isLink?:boolean;
-  orgData : any[]
-
 }
 

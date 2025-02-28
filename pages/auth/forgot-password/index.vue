@@ -73,7 +73,7 @@ const resetPassword = async () => {
         description: 'Password reset instructions have been sent to your email',
     });
 
-    // Navigate to login page after successful password reset request
-    router.push('/auth/login');
+    // Navigate to code entry page after successful password reset request
+    router.push('/auth/reset-password/code');
 }
 </script>

@@ -3,15 +3,13 @@ import { defineStore } from 'pinia';
 import { RoleModel, type IRole } from '~/stores/auth/user/model/role.model';
 import { UserModel, type User } from '~/stores/auth/user/model/user.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
-import type { IOrganisation } from './model/organisation.model';
-
 
 export const useUserStore = defineStore('user', {
   state: () => ({
     apiState: ApiResponseState.NULL,
     apiFailure: { message: "" },
     users: [] as User[],
-    currentUser: {} as User | null,
+    currentUser: null as User | null,
     currentUserApiState: ApiResponseState.NULL,
     token: useCookie('WF_UT', { maxAge: 60 * 60 }).value ?? "", //Cookie set for an hour
 
@@ -21,278 +19,187 @@ export const useUserStore = defineStore('user', {
     apiInviteNewUserFailure: { message: "" },
     newInviteId: "",
 
-    // USER
+    // USER ROLES
     apiRoleState: ApiResponseState.NULL,
     apiRoleFailure: { message: "" },
     roles: [] as IRole[],
-
     // ORGANISATIONS
-    apiUserOrganisationState: ApiResponseState.NULL,
-    apiUserOrganisationFailure: { message: "" },
-    organisations: [] as IOrganisation[],
-    selectedOrganisation: {} as IOrganisation
-
+    organisations: [{
+      objectId: "org123",
+      name: "Test Organization",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }],
+    selectedOrganisation: {
+      objectId: "org123",
+      name: "Test Organization",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    loading_UserOrganisations: false,
   }),
-  actions: {
 
+  actions: {
     setUserToken(token?: string) {
-      useCookie('WF_UT', { maxAge: 60 * 60 }).value = token ?? ""
-      console.log("Current user token set")
+      const cookie = useCookie('WF_UT', { maxAge: 60 * 60 });
+      cookie.value = token ?? "";
     },
 
     clearUserToken() {
-      useCookie('WF_UT').value = null
-      console.log("Current user token cleared")
+      const cookie = useCookie('WF_UT');
+      cookie.value = null;
     },
 
     async getCurrentUser() {
-      return new Promise<any>(async (resolve, reject) => {
-        try {
-
-          if (this.token) {
-              //GET CURRENT USER
-              // SERVER LOGIC
-              const data = await $fetch(`${useRuntimeConfig().public.API_BASE_URL}/auth/current/user`, {
-                method: 'GET',
-                headers:{
-                  "Authorization" : `Bearer ${this.token}`
-                }
-              });
-
-              // Success
-              this.currentUserApiState = ApiResponseState.SUCCESS;
-              this.currentUser = UserModel.fromMap((data as any))
-
-              // Set org data
-              if(this.currentUser.orgData.length != 0 ){
-                this.selectedOrganisation = this.currentUser.orgData[0].organisation
-              }
-
-              return resolve(this.currentUser);
-
-          }
-
-          // No token areas
-          console.log("NO TOKEN FOUND")
-          this.currentUser = null;
-          return resolve(this.currentUser);
-        }
-        catch (error) {
-          console.log(error)
-          this.currentUserApiState = ApiResponseState.FAILED;
-          return reject('Internal Server error! Could not get current user');
-        }
-      })
-    },
-
-    async getAllUsers() {
-
       try {
-        this.apiState = ApiResponseState.LOADING;
+        if (!this.token) {
+          this.currentUser = null;
+          return null;
+        }
 
-        // SERVER LOGIC
-        const data = await useStoreFetchRequest('/api/auth/user/all', 'GET')
-        // end of SERVER LOGIC
+        this.currentUserApiState = ApiResponseState.LOADING;
+        const data = await $fetch(`${useRuntimeConfig().public.API_BASE_URL}/auth/me`, {
+          method: 'GET',
+          headers: {
+            "Authorization": `Bearer ${this.token}`
+          }
+        });
 
-        // Data
-        this.apiState = ApiResponseState.SUCCESS;
-        this.users = (data as any).results.map((usersJson: User) => UserModel.fromMap(usersJson))
+        this.currentUserApiState = ApiResponseState.SUCCESS;
+        this.currentUser = UserModel.fromMap(data as any);
+        return this.currentUser;
 
       } catch (error) {
-        // Handle login error
-        this.apiFailure.message = 'Server error! Could not load users';
-        this.apiState = ApiResponseState.FAILED;
+        this.currentUserApiState = ApiResponseState.FAILED;
+        this.currentUser = null;
+        throw new Error('Could not get current user');
       }
     },
 
-    async getUserOrganisations() {
-      return new Promise<IOrganisation[]>(async (resolve, reject) => {
-        try {
-          this.apiUserOrganisationState = ApiResponseState.LOADING;
-
-          // SERVER LOGIC
-          const { data, error } = await useFetch(`${useRuntimeConfig().public.API_BASE_URL}/org`, {
-            method: 'GET',
-            headers:{
-             "Authorization": `Bearer ${this.token}`
-            }
-          });
-          // end of SERVER LOGIC
-
-           // Handle errors
-           if (error?.value) {
-            this.apiUserOrganisationState = ApiResponseState.FAILED;
-            return resolve([]); // Resolve with empty array on failure
-          } else if (error?.value) {
-            return reject(error.value.data.error || 'Server error! Could not fetch organisations');
-          }
-
-
-          // Data
-          this.organisations = (data as any)
-          
-          this.apiUserOrganisationState = ApiResponseState.SUCCESS;
-
-          return resolve(this.organisations)
-
-        } catch (error) {
-          // Handle login error
-          this.apiUserOrganisationFailure.message = 'Server error! Could not load user organisations';
-          this.apiUserOrganisationState = ApiResponseState.FAILED;
-          reject(error); 
-        }
-      })
-
+    async getAllUsers() {
+      try {
+        this.apiState = ApiResponseState.LOADING;
+        const data = await useStoreFetchRequest('/api/auth/user/all', 'GET');
+        
+        this.users = (data as any).results.map((userData: any) => UserModel.fromMap(userData));
+        this.apiState = ApiResponseState.SUCCESS;
+      } catch (error) {
+        this.apiFailure.message = 'Could not load users';
+        this.apiState = ApiResponseState.FAILED;
+        throw error;
+      }
     },
 
-    setCurrentUserOrg(){
-      if(this.organisations.length > 0){
-        this.selectedOrganisation = this.organisations[0]
+    async inviteNewUser(newUser: UserModel, isLink: boolean = true) {
+      try {
+        this.apiInviteNewUserState = ApiResponseState.LOADING;
+        if (isLink) {
+          this.apiCreateNewInviteLinkState = ApiResponseState.LOADING;
+        }
+
+        const data = await useStoreFetchRequest('/api/auth/user/invite', 'POST', {
+          method: 'POST',
+          body: { ...newUser.user, isLink }
+        });
+
+        this.apiInviteNewUserState = ApiResponseState.SUCCESS;
+        this.newInviteId = (data as any).objectId;
+
+        if (isLink) {
+          this.apiCreateNewInviteLinkState = ApiResponseState.SUCCESS;
+        }
+      } catch (error) {
+        this.apiInviteNewUserFailure.message = 'Could not invite new user';
+        this.apiInviteNewUserState = ApiResponseState.FAILED;
+        if (isLink) {
+          this.apiCreateNewInviteLinkState = ApiResponseState.FAILED;
+        }
+        throw error;
       }
     },
 
     resetInviteState() {
       this.apiInviteNewUserState = ApiResponseState.NULL;
-    },
-
-    async inviteNewUser(newUser: UserModel, isLink: boolean = true) {
-      try {
-        if (isLink) this.apiCreateNewInviteLinkState = ApiResponseState.LOADING;
-
-        this.apiInviteNewUserState = ApiResponseState.LOADING;
-
-        // SERVER LOGIC
-        const data = await useStoreFetchRequest('/api/auth/user/invite', 'POST', {
-          method: 'POST',
-          body: { ...newUser.user, isLink }
-        })
-        // end of SERVER LOGIC
-
-
-        // Success
-        this.apiInviteNewUserState = ApiResponseState.SUCCESS;
-        this.newInviteId = (data as any).objectId
-
-      } catch (error) {
-        // Handle login error
-        console.log(error)
-        this.apiInviteNewUserFailure.message = 'Server error! Could not invite new user';
-        this.apiInviteNewUserState = ApiResponseState.FAILED;
-      }
+      this.apiCreateNewInviteLinkState = ApiResponseState.NULL;
+      this.apiInviteNewUserFailure.message = "";
     },
 
     async manageUserRoles(options: { userId: string, roles?: string[], op: 'add' | 'remove' }) {
       try {
+        if (!options.userId) {
+          throw new Error("User ID required");
+        }
 
-        if (!options.userId) throw Error("User id required")
-
-        this.apiInviteNewUserState = ApiResponseState.LOADING;
-
-        // SERVER LOGIC
+        this.apiRoleState = ApiResponseState.LOADING;
         const data = await useStoreFetchRequest('/api/auth/user/role', 'PUT', {
           method: 'PUT',
           body: options
-        })
-        // end of SERVER LOGIC
+        });
 
-        // Success
-        this.apiInviteNewUserState = ApiResponseState.SUCCESS;
-        this.newInviteId = (data as any).objectId
-
+        this.apiRoleState = ApiResponseState.SUCCESS;
+        return data;
       } catch (error) {
-        // Handle login error
-        console.log(error)
-        this.apiInviteNewUserFailure.message = 'Server error! Could not update user roles';
-        this.apiInviteNewUserState = ApiResponseState.FAILED;
+        this.apiRoleFailure.message = 'Could not update user roles';
+        this.apiRoleState = ApiResponseState.FAILED;
+        throw error;
       }
     },
 
     async getAllUserRoles() {
-
       try {
         this.apiRoleState = ApiResponseState.LOADING;
-
-        // SERVER LOGIC
-        const data = await useStoreFetchRequest('/api/auth/user/role', 'GET')
-        // end of SERVER LOGIC
-
-
-        // Data
+        const data = await useStoreFetchRequest('/api/auth/user/role', 'GET');
+        
+        this.roles = (data as any).map((roleData: any) => RoleModel.fromMap(roleData));
         this.apiRoleState = ApiResponseState.SUCCESS;
-        this.roles = (data as any).map((role: any) => RoleModel.fromMap(role))
-
       } catch (error) {
-        // Handle login error
-        this.apiRoleFailure.message = 'Server error! Could not load roles.';
+        this.apiRoleFailure.message = 'Could not load roles';
         this.apiRoleState = ApiResponseState.FAILED;
+        throw error;
       }
     },
 
     exportToCSV() {
       return useExportToCSV({
-        fileName: `CFCScreeningTool_Users_${Date.now()}`,
-        header: ["Id", "First Name", "Middle Name", "Last Name", "Phone", "Avatar", "Email", "Location", "Country", "Join Date"],
+        fileName: `Users_${Date.now()}`,
+        header: ["Id", "First Name", "Last Name", "Email"],
         records: this.transformUserToCSVData()
-      })
+      });
     },
 
     transformUserToCSVData(): any[] {
-      const csvData: any[] = [];
-
-      // Transform each user object into the desired format
-      this.users.forEach(user => {
-        const {
-          objectId,
-          firstName,
-          middleName,
-          lastName,
-          phoneNumber,
-          avatarUrl,
-          email,
-          createdAt,
-        } = user;
-
-
-
-        // Format the "Join Date" column
-        const joinDate = useFormatDateHuman(new Date(createdAt))
-
-        // Push the transformed values into the CSV data array
-        csvData.push([objectId, firstName, middleName, lastName, phoneNumber, avatarUrl, email, joinDate]);
-      });
-
-      return csvData;
+      return this.users.map(user => [
+        user.id,
+        user.firstName,
+        user.lastName,
+        user.email,
+      ]);
     }
-  }
-  ,
+  },
+
   getters: {
-    hasUsers: (state) => state.apiState == ApiResponseState.SUCCESS && state.users.length > 0,
-    isLoading: (state) => state.apiState == ApiResponseState.LOADING,
-    failed: (state) => state.apiState == ApiResponseState.FAILED,
-    success: (state) => state.apiState == ApiResponseState.SUCCESS,
+    hasUsers: (state) => state.apiState === ApiResponseState.SUCCESS && state.users.length > 0,
+    isLoading: (state) => state.apiState === ApiResponseState.LOADING,
+    failed: (state) => state.apiState === ApiResponseState.FAILED,
+    success: (state) => state.apiState === ApiResponseState.SUCCESS,
 
-    // CURRENT USER
-    failedCurrentUser: (state) => state.currentUserApiState == ApiResponseState.FAILED,
-    successCurrentUser: (state) => state.currentUserApiState == ApiResponseState.SUCCESS,
-    isLoadingCurrentUser: (state) => state.currentUserApiState == ApiResponseState.LOADING,
+    // Current User
+    isLoadingCurrentUser: (state) => state.currentUserApiState === ApiResponseState.LOADING,
+    failedCurrentUser: (state) => state.currentUserApiState === ApiResponseState.FAILED,
+    successCurrentUser: (state) => state.currentUserApiState === ApiResponseState.SUCCESS,
 
-    // NEW INVITE
-    isInvitingNewUser: (state) => state.apiInviteNewUserState == ApiResponseState.LOADING,
-    failed_InviteNewUser: (state) => state.apiInviteNewUserState == ApiResponseState.FAILED,
-    success_InviteNewUser: (state) => state.apiInviteNewUserState == ApiResponseState.SUCCESS,
+    // New Invite
+    isInvitingNewUser: (state) => state.apiInviteNewUserState === ApiResponseState.LOADING,
+    failed_InviteNewUser: (state) => state.apiInviteNewUserState === ApiResponseState.FAILED,
+    success_InviteNewUser: (state) => state.apiInviteNewUserState === ApiResponseState.SUCCESS,
 
-    isCreatingNewInviteLink: (state) => state.apiCreateNewInviteLinkState == ApiResponseState.LOADING,
-    failed_CreatingNewInviteLink: (state) => state.apiCreateNewInviteLinkState == ApiResponseState.FAILED,
-    success_CreatingNewInviteLink: (state) => state.apiCreateNewInviteLinkState == ApiResponseState.SUCCESS,
+    isCreatingNewInviteLink: (state) => state.apiCreateNewInviteLinkState === ApiResponseState.LOADING,
+    failed_CreatingNewInviteLink: (state) => state.apiCreateNewInviteLinkState === ApiResponseState.FAILED,
+    success_CreatingNewInviteLink: (state) => state.apiCreateNewInviteLinkState === ApiResponseState.SUCCESS,
 
-    // ROLE
-    loading_GettingAllRoles: (state) => state.apiRoleState == ApiResponseState.LOADING,
-    failed_GettingAllRoles: (state) => state.apiRoleState == ApiResponseState.FAILED,
-    success_GettingAllRoles: (state) => state.apiRoleState == ApiResponseState.SUCCESS,
-
-    // ORGANISATIONS
-    loading_UserOrganisations: (state) => state.apiUserOrganisationState == ApiResponseState.LOADING,
-    failed_UserOrganisations: (state) => state.apiUserOrganisationState == ApiResponseState.FAILED,
-    success_UserOrganisations: (state) => state.apiUserOrganisationState == ApiResponseState.SUCCESS,
+    // Roles
+    loading_GettingAllRoles: (state) => state.apiRoleState === ApiResponseState.LOADING,
+    failed_GettingAllRoles: (state) => state.apiRoleState === ApiResponseState.FAILED,
+    success_GettingAllRoles: (state) => state.apiRoleState === ApiResponseState.SUCCESS
   }
-})
+});

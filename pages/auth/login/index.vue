@@ -103,7 +103,7 @@ const email = ref("")
 const password = ref("")
 
 const login = async () => {
-    await authStore.loginWithEmail({ email: "ronaldnettey360@gmail.com", password: "cyberon360@Smartflow" })
+    await authStore.loginWithEmail({ email : email.value, password : password.value })
 
     if (authStore.failed_LoginUser){
         toast({
