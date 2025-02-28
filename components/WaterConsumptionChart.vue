@@ -52,7 +52,7 @@ const hasData = computed(() => chartSeries.value.length > 0 && chartSeries.value
 const chartOptions = computed(() => ({
     chart: {
         type: 'area',
-        height: 250,
+        height: 350,
         toolbar: {
             show: true,
             tools: {
@@ -65,24 +65,36 @@ const chartOptions = computed(() => ({
             },
             export: {
                 csv: {
-                    filename: 'Water Consumption Chart',
+                    filename: 'Water Consumption Analysis',
                     columnDelimiter: ',',
                     headerCategory: 'Date',
-                    headerValue: 'Value'
+                    headerValue: 'Consumption (kL)'
                 },
                 svg: {
-                    filename: 'Water Consumption Chart'
+                    filename: 'Water Consumption Analysis'
                 },
                 png: {
-                    filename: 'Water Consumption Chart'
+                    filename: 'Water Consumption Analysis'
                 }
             }
         },
         zoom: { 
             enabled: true,
-            type: 'x',
             autoScaleYaxis: true
         },
+        animations: {
+            enabled: true,
+            easing: 'easeinout',
+            speed: 800,
+            animateGradually: {
+                enabled: true,
+                delay: 150
+            },
+            dynamicAnimation: {
+                enabled: true,
+                speed: 350
+            }
+        }
     },
     dataLabels: { enabled: false },
     stroke: {
