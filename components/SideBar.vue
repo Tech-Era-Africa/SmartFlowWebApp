@@ -26,12 +26,12 @@
                             Clusters
                         </NuxtLink>
 
-                        <NuxtLink to="/users" title=""
+                        <!-- <NuxtLink to="/users" title=""
                             :class="{ 'bg-indigo-50 text-blue-600  mx-5 rounded-lg': isActive('/users') }"
                             class="flex items-center px-4 py-3 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200 group">
                             <Icon name="fluent:people-12-regular" size="20" class="mr-5"></Icon>
                             Users
-                        </NuxtLink>
+                        </NuxtLink> -->
 
                         <!-- <NuxtLink to="/billing" :class="{'bg-indigo-50 text-blue-600  mx-5 rounded-lg' : isActive('/billing')}" title="" class="flex items-center px-4 py-3 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200 group">
                             <Icon name="streamline:money-cash-coins-stack-accounting-billing-payment-stack-cash-coins-currency-money-finance" size="15" class="mr-5"></Icon>
@@ -45,12 +45,12 @@
                         <CardContent class="flex items-center gap-2 p-2">
                             <Avatar size="sm">
                                 <AvatarImage
-                                    :src="selectedOrg.avatarUrl ?? ''"
+                                    :src="'https://res.cloudinary.com/techera/image/upload/v1709782492/download_df7agc.png'"
                                     alt="Organisation avatar" />
                                 <AvatarFallback>UN</AvatarFallback>
                             </Avatar>
                             <div>
-                                <p class="text-sm">{{ selectedOrg.name }}</p>
+                                <p class="text-sm">{{ 'Ashesi Univeristy' }}</p>
                                 <p class="text-xs text-muted-foreground">Organisation</p>
                             </div>
 
@@ -78,5 +78,4 @@ import { useUserStore } from '~/stores/auth/user/user.store';
 const userStore = useUserStore()
 
 const isActive = (path: string) => useRoute().path.startsWith(path)
-const selectedOrg = userStore.selectedOrganisation
 </script>

@@ -1,54 +1,40 @@
 <template>
-    <section v-if="userStore.loading_UserOrganisations" class="w-screen h-screen overflow-hidden p-6 bg-gray-100">
-        <div class="flex flex-col gap-6 h-full animate-pulse">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div v-for="i in 3" :key="i" class="h-32 bg-white rounded-lg shadow-sm"></div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="h-96 bg-white rounded-lg shadow-sm"></div>
-                <div class="h-96 bg-white rounded-lg shadow-sm"></div>
-            </div>
-        </div>
-    </section>
-    <NuxtLayout name="dashboard" v-else>
-        <Header name="Water Insights">
-            <template #description>
-                Monitor and optimize your water consumption patterns
-            </template>
-        </Header>
-        <section class="flex flex-col gap-6 absolute top-16 z-10 p-4 lg:p-8 left-0 right-0">
-            <!-- Key Metrics Section -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <ConsumptionStats 
-                    @on-date-changed="handleWaterConsumptionStatsDateChanged"
-                    :option="consumptionStatOption" 
-                    class="h-full">
-                </ConsumptionStats>
-            </div>
-            
-            <!-- Main Charts Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <WaterConsumptionChart 
-                    :option="consumptionChart"
-                    @on-date-changed="handleWaterConsumptionChartDateChanged"
-                    class="h-[500px]">
-                </WaterConsumptionChart>
-                
-                <ClusterConsumptionCompare 
-                    :option="consumptionChart"
-                    class="h-[500px]">
-                </ClusterConsumptionCompare>
-            </div>
-
-            <!-- Device Monitoring Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2">
-                    <DeviceMonitoring title="Active Devices"></DeviceMonitoring>
+  
+    <NuxtLayout name="dashboard" >
+        <Header name="Overview"></Header>
+        <section class="flex flex-col gap-4 absolute top-16 z-10 mx-2  lg:mx-8 left-0 right-0">
+            <div class="w-full  flex flex-col lg:flex-row  p-2 gap-4">
+                <div class="w-full h-auto  md:w-3/5">
+                    <WaterConsumptionChart :option="consumptionChart"
+                        @on-date-changed="handleWaterConsumptionChartDateChanged">
+                    </WaterConsumptionChart>
+                    
                 </div>
-                <div>
+                <div class="flex flex-col gap-2 flex-1 flex-grow">
+                    <ConsumptionStats @on-date-changed="handleWaterConsumptionStatsDateChanged"
+                        :option="consumptionStatOption" class="h-full">
+                    </ConsumptionStats>
+                    <SmartCredit></SmartCredit>
+                </div>
+
+            </div>
+            <!-- <div class="h-auto">
+                <ClusterConsumptionCompare :option="consumptionChart"></ClusterConsumptionCompare>
+            </div> -->
+            <div class="w-full max-h-96 flex flex-col lg:flex-row   p-2 gap-4">
+
+                <div class="w-full lg:w-3/5 h-auto">
+                    <DeviceMonitoring title="All Devices"></DeviceMonitoring>
+                </div>
+                <div class="flex-1 h-full">
                     <DevicesSummary></DevicesSummary>
                 </div>
+
             </div>
+            <div class="h-20">
+
+            </div>
+
         </section>
     </NuxtLayout>
 </template>
@@ -88,8 +74,8 @@ const handleWaterConsumptionStatsDateChanged = (date: { start: Date, end: Date }
 const consumptionStatOption = ref<{ title?: string, isLoading?: boolean, min: number, max: number, sum: number, subtitle?: string }>({} as any) //!TODO:IMPELEMENT THIS PROPERLY
 
 const consumptionChart = ref<IWaterConsumptionChart>({
-    title: "Total Water Usage",
-    subtitle: "* Over Time",
+    title: "Water Management Insights",
+    subtitle: "Track your collection, consumption, and savings",
     chartSeries: deviceStore.deviceConsumptionTrend,
     isLoading: deviceStore.isGettingConsumptionTrend,
     success: true,

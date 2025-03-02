@@ -7,9 +7,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     // If the current user exists navigate to the dashboard
     if (userStore.successCurrentUser) {
         console.log("SUCCESSFULLY LOGGED IN")
-        // Check for existing organisation
-        if(userStore.currentUser?.orgData.length === 0) return await navigateTo({ path: '/org/new', replace: true })
-
         return await navigateTo({ path: '/overview', replace: true })
 
     }

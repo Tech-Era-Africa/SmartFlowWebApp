@@ -2,9 +2,10 @@
     <Card
         class="w-full h-[150px] flex justify-between items-center cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300 shadow-none">
         <CardHeader>
+            <Badge :class="option.type.id == 1? 'hover:bg-transparent bg-green-100  text-green-600' : 'hover:bg-transparent bg-blue-100  text-blue-600'"  class="rounded-sm border-none outline-none my-3 text-xs inline-flex w-fit "> {{ option.type.name }}</Badge>
             <CardTitle>{{ option.name }}</CardTitle>
             <CardDescription>
-                <Badge variant="outline" class="my-3">{{ option.devicesCount }} Device{{ option.devicesCount! >= 2 ?
+                <Badge variant="outline" class="my-3">{{ option.device_count }} Device{{ option.device_count! >= 2 ?
                 's' : '' }}</Badge>
             </CardDescription>
         </CardHeader>
@@ -12,17 +13,16 @@
             <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
             </apexchart>
         </CardContent>
+       
     </Card>
 </template>
 <script setup lang="ts">
 import { useDeviceStore } from '~/stores/device/device.store';
+import Card from './ui/card/Card.vue';
+import type { ICluster } from '~/stores/cluster/model/cluster.model';
 
 const props = defineProps<{
-    option: {
-        id: string,
-        name: string,
-        devicesCount: number
-    }
+    option: ICluster
 }>()
 
 const deviceStore = useDeviceStore()

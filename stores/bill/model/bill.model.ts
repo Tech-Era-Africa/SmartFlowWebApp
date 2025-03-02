@@ -1,6 +1,6 @@
 import { type IObject } from "~/utils/type/i.object";
 import type { IOrganisation } from "~/stores/auth/user/model/organisation.model";
-import type { IDeviceGroup } from "~/stores/device/model/deviceGroup.model";
+import type { IDeviceGroup } from "~/stores/cluster/model/cluster.model";
 import { UserModel, type User } from "~/stores/auth/user/model/user.model";
 
 

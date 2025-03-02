@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { UserModel } from '~/stores/auth/user/model/user.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 import type { LoginDTO } from './dto/login.dto';
 import { useUserStore } from './user/user.store';
@@ -23,35 +22,42 @@ export const useAuthStore = defineStore({
     // UPDATE PASSWORD
     updatePasswordState: ApiResponseState.NULL,
     updatePasswordFailure: { message: "" },
+
   }),
   actions: {
     async loginWithEmail(cred: LoginDTO) {
+
       try {
         this.loginState = ApiResponseState.LOADING;
 
-        // For development, use dummy successful response
-        const dummyResponse = {
-          access_token: 'dummy_token_' + Date.now(),
-          user: {
-            id: 'user123',
+        const url = `${useRuntimeConfig().public.API_BASE_URL}/auth/login`;
+
+        const data = await $fetch<any>(url, {
+          method: 'POST',
+          body: {
             email: cred.email,
-            name: 'Test User'
+            password: cred.password,
           }
-        };
+        });
 
         // Set user token
-        useUserStore().setUserToken(dummyResponse.access_token);
+        useUserStore().setUserToken(data.access_token, data.refresh_token);
+
         this.loginState = ApiResponseState.SUCCESS;
 
       } catch (error: any) {
+
+        console.log(error)
+
         let message = 'Something went wrong. Login failed.';
 
         if (error.status === 401) {
           message = 'Invalid email or password. Please try again.';
         } else if (error.status === 403) {
           message = 'Account is disabled. Please contact support.';
-        } else if (error.status === 404) {
-          message = 'Account does not exist. Please contact support.';
+        }
+        else if (error.status === 404) {
+          message = 'Account does not exist . Please contact support.';
         } else if (error.status === 500) {
           message = 'Server error. Please try again later.';
         } else if (!error.status) {
@@ -70,10 +76,17 @@ export const useAuthStore = defineStore({
     async resetPassword(data: { email: string }) {
       try {
         this.resetPasswordState = ApiResponseState.LOADING;
-        this.resetPasswordEmail = data.email;
+        this.resetPasswordEmail = data.email; // Store email for the reset flow
 
-        // Simulate API call success
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const url = `${useRuntimeConfig().public.API_BASE_URL}/auth/password-reset`;
+
+        await $fetch(url, {
+          method: 'POST',
+          body: {
+            email: data.email
+          }
+        });
+
         this.resetPasswordState = ApiResponseState.SUCCESS;
 
       } catch (error: any) {
@@ -91,13 +104,21 @@ export const useAuthStore = defineStore({
         this.resetPasswordState = ApiResponseState.FAILED;
       }
     },
-
+    // VERIFY RESET CODE
     async verifyResetCode(data: { email: string, code: string }) {
       try {
         this.verifyResetCodeState = ApiResponseState.LOADING;
 
-        // Simulate API call success
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const url = `${useRuntimeConfig().public.API_BASE_URL}/auth/verify-password-reset-code`;
+
+        await $fetch(url, {
+          method: 'POST',
+          body: {
+            email: data.email,
+            code: data.code
+          }
+        });
+
         this.verifyResetCodeState = ApiResponseState.SUCCESS;
 
       } catch (error: any) {
@@ -120,8 +141,16 @@ export const useAuthStore = defineStore({
       try {
         this.updatePasswordState = ApiResponseState.LOADING;
 
-        // Simulate API call success
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const url = `${useRuntimeConfig().public.API_BASE_URL}/auth/reset-password`;
+
+        await $fetch(url, {
+          method: 'POST',
+          body: {
+            email: data.email,
+            password: data.password
+          }
+        });
+
         this.updatePasswordState = ApiResponseState.SUCCESS;
 
       } catch (error: any) {
@@ -151,7 +180,6 @@ export const useAuthStore = defineStore({
     isResettingPassword: (state) => state.resetPasswordState === ApiResponseState.LOADING,
     failed_ResetPassword: (state) => state.resetPasswordState === ApiResponseState.FAILED,
     success_ResetPassword: (state) => state.resetPasswordState === ApiResponseState.SUCCESS,
-
     isVerifyingResetCode: (state) => state.verifyResetCodeState === ApiResponseState.LOADING,
     failed_VerifyResetCode: (state) => state.verifyResetCodeState === ApiResponseState.FAILED,
     success_VerifyResetCode: (state) => state.verifyResetCodeState === ApiResponseState.SUCCESS,

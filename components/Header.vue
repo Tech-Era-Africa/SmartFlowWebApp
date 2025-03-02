@@ -2,8 +2,13 @@
     <section class="h-1/3 bg-cover bg-center bg-no-repeat bg-blue-50 ">
         <header>
             <div class="flex justify-between h-16 px-8">
-                <div class="flex items-center ">
+                <div class="flex  flex-col items-start ">
                     <h1 class="text-black text-2xl">{{ name }}</h1>
+                    <!-- <p class="text-xs text-muted-foreground">
+                        <slot name="description" >
+                        </slot>
+                    </p> -->
+                   
                 </div>
 
                 <div class="flex items-center justify-end">

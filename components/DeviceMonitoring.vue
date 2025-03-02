@@ -14,17 +14,17 @@
                     <Stat
                         :option="{ title: 'Active', value: deviceStore.filterActiveDevices().length.toString(), isLoading: deviceStore.isGettingDevices }">
                     </Stat>
-                    <Stat :option="{ title: 'Users', value: '1' }"></Stat>
+                    <Stat :option="{ title: 'Offline', value: '1' }"></Stat>
                 </div>
                 <div class="flex gap-2">
                     <Stat
-                        :option="{ title: 'Total Bill', value: `GHC${totalBill}`, isLoading: deviceStore.isGettingDevices, hasError: billingStore.failed_TotalBilling }">
+                        :option="{ title: 'Total Consumption', value: `${totalBill}`, isLoading: deviceStore.isGettingDevices, hasError: billingStore.failed_TotalBilling }">
                     </Stat>
-                    <!-- <Stat :option="{ title: 'Valve', value: 'Open' }"></Stat> -->
+                    <Stat :option="{ title: 'Highest Consumption', value: 'Open' }"></Stat>
                 </div>
                 <div class="flex gap-2">
                     <Stat
-                        :option="{ title: 'Total Consumption', value: `${totalConsumption.toFixed(2)}k L`, isLoading: deviceStore.isGettingDevices, hasError: deviceStore.failed_AllTotalConsumption }">
+                        :option="{ title: 'Peak Usage', value: `${totalConsumption.toFixed(2)}k L`, isLoading: deviceStore.isGettingDevices, hasError: deviceStore.failed_AllTotalConsumption }">
                     </Stat>
                 </div>
 

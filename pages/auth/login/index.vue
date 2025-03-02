@@ -113,7 +113,7 @@ const login = async () => {
       return;
     }
 
-    // return useRouter().go(0) //Middleware will handle it from here
+    return useRouter().go(0) //Middleware will handle it from here
 }
 
 </script>

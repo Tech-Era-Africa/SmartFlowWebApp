@@ -4,7 +4,6 @@ import { DeviceModel, type IDevice } from '~/stores/device/model/device.model';
 import { UserModel, type User } from '~/stores/auth/user/model/user.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 import { useUserStore } from '../auth/user/user.store';
-import { DeviceGroupModel, type IDeviceGroup } from '~/stores/device/model/deviceGroup.model';
 
 export const useDeviceStore = defineStore({
   id: 'deviceStore',

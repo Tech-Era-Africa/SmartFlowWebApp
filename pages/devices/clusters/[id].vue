@@ -10,11 +10,10 @@
                                 <ArrowLeftCircle></ArrowLeftCircle>
                             </Button>
                             <div>
-                                <Skeleton v-if="deviceStore.isGettingDevices" class="w-500 h-10 rounded-lg"></Skeleton>
+                                <Skeleton  v-if="status == 'pending'" class="w-500 h-10 rounded-lg"></Skeleton>
                                 <template v-else>
-                                    <Badge class="rounded-sm border-none outline-none bg-blue-50 text-blue-600">
-                                        Block</Badge>
-                                    <h1 class="text-3xl font-extrabold">{{ deviceStore.deviceGroupName }}</h1>
+                                    <Badge :class="clusterStore.clusterDevices.cluster.type.id == 1? 'hover:bg-transparent bg-green-100  text-green-600' : 'hover:bg-transparent bg-blue-100  text-blue-600'"  class="rounded-sm border-none outline-none my-3 text-xs inline-flex w-fit "> {{ clusterStore.clusterDevices.cluster.type.name  }}</Badge>
+                                    <h1 class="text-3xl font-extrabold">{{ clusterStore.clusterDevices.cluster.name }}</h1>
                                 </template>
                             </div>
                         </div>
@@ -26,7 +25,7 @@
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
-                                    <NewDevice :cluster-id="groupId.toString()"
+                                    <NewDevice :cluster-id="clusterId.toString()"
                                         @update:open="handleNewDeviceDialogOpenUpdate"></NewDevice>
                                 </DialogContent>
                             </Dialog>
@@ -34,7 +33,7 @@
                     </div>
 
                     <!-- DEVICES -->
-                    <template v-if="deviceStore.hasDevices">
+                    <template v-if="status == 'success'">
                         <!-- TREND -->
                         <section class="flex w-full gap-4 mb-10">
                             <div class="w-2/3">
@@ -61,8 +60,8 @@
                                 <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
                                     <DeviceCard
                                         class="cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300"
-                                        :option="{ device }" @click="openSheetDrawer(device)"
-                                        v-for="device in deviceStore.devices"></DeviceCard>
+                                        :option="device" @click="openSheetDrawer(device)"
+                                        v-for="device in clusterDevices.devices"></DeviceCard>
                                 </div>
                                 <SheetContent class=" bg-white overflow-y-auto md:max-w-[600px] flex flex-col">
                                     <template v-if="deviceStore.selectedDevice">
@@ -78,7 +77,7 @@
                         <!-- end of DEVICES -->
                     </template>
 
-                    <template v-if="!deviceStore.hasDevices && !deviceStore.isGettingDevices">
+                    <template v-if="clusterDevices.devices.length == 0">
                         <div class="w-full h-[400px] flex flex-col justify-center items-center bg-gray-50 rounded-lg">
                             <p class="text-xl font-semibold text-gray-600">No Devices Found In This Group</p>
                             <p class="text-gray-400 mt-2">Add a new device to get started</p>
@@ -90,7 +89,7 @@
                     <!-- end of DEVICES -->
 
                     <!-- LOADING -->
-                    <template v-if="deviceStore.isGettingDevices">
+                    <template v-if="status == 'pending'">
                         <div class="flex flex-col  gap-4 p-5">
                             <div class="flex  w-full">
                                 <div class="w-full md:w-2/3 md:mr-4">
@@ -125,12 +124,15 @@ import { ArrowLeftCircle, Plus } from 'lucide-vue-next'
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 import type { IDevice } from '~/stores/device/model/device.model';
 import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
+import { useClusterStore } from '~/stores/cluster/cluster.store';
 
 useHead({ title: "Devices" })
 
 const deviceStore = useDeviceStore()
+const clusterStore = useClusterStore()
+
 const billStore = useBillStore()
-const groupId = useRoute().params.id
+const clusterId = useRoute().params.id
 
 const consumptionStatOption = ref<{ deviceId: string, title?: string, isLoading?: boolean, min: number, max: number, sum: number }>({} as any)
 const chartData = ref()
@@ -138,34 +140,37 @@ const currentDate = new Date();
 const startDate = new Date(currentDate.getFullYear(), 0, 1);
 const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
 
-// Load the devices by group
-useAsyncData<any>('devicesGroup', () => Promise.all([
-    deviceStore.getDevicesByGroup(groupId.toString()),
-    deviceStore.getClusterTotalConsumption(groupId.toString(), startDate.toISOString(), endDate.toISOString()),
-    billStore.updateBillData({
-        billTitle: `${deviceStore.deviceGroupName} Bill`,
-        billTypeId: "rxc51QYu7l",
-        devices: deviceStore.devices,
-        clusterId: groupId.toString(),
-        totalConsumption: deviceStore.totalClusterConsumption.sum,
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString()
-    })
-]), { lazy: true })
+// Load cluster devices 
+const {  error, data:clusterDevices, refresh, status } = await useAsyncData<any>('clusterDevices', () => clusterStore.getClusterDevices(clusterId.toString()), { lazy: true })
+
+// // Load the devices by group
+// useAsyncData<any>('devicesGroup', () => Promise.all([
+//     deviceStore.getDevicesByGroup(clusterId.toString()),
+//     deviceStore.getClusterTotalConsumption(clusterId.toString(), startDate.toISOString(), endDate.toISOString()),
+//     billStore.updateBillData({
+//         billTitle: `${deviceStore.deviceGroupName} Bill`,
+//         billTypeId: "rxc51QYu7l",
+//         devices: deviceStore.devices,
+//         clusterId: clusterId.toString(),
+//         totalConsumption: deviceStore.totalClusterConsumption.sum,
+//         startDate: startDate.toISOString(),
+//         endDate: endDate.toISOString()
+//     })
+// ]), { lazy: true })
 
 // Load chart data for the entire year by default
 onMounted(async () => {
-    chartData.value = await deviceStore.getClusterConsumptionTrend(groupId.toString(), startDate.toISOString(), endDate.toISOString())
+    chartData.value = await deviceStore.getClusterConsumptionTrend(clusterId.toString(), startDate.toISOString(), endDate.toISOString())
 })
 
 const handleWaterConsumptionChartDateChanged = (date: { start: Date, end: Date }) => {
-    chartData.value = deviceStore.getClusterConsumptionTrend(groupId.toString(), date.start.toISOString(), date.end.toISOString())
-    deviceStore.getClusterTotalConsumption(groupId.toString(), date.start.toISOString(), date.end.toISOString())
+    chartData.value = deviceStore.getClusterConsumptionTrend(clusterId.toString(), date.start.toISOString(), date.end.toISOString())
+    deviceStore.getClusterTotalConsumption(clusterId.toString(), date.start.toISOString(), date.end.toISOString())
     billStore.updateBillData({
         billTitle: `${deviceStore.deviceGroupName} Bill`,
         billTypeId: "rxc51QYu7l",
         devices: deviceStore.devices,
-        clusterId: groupId.toString(),
+        clusterId: clusterId.toString(),
         totalConsumption: deviceStore.totalClusterConsumption.sum,
         startDate: date.start.toISOString(),
         endDate: date.end.toISOString()
@@ -231,7 +236,7 @@ watchEffect(async () => {
             billTitle: `${deviceStore.deviceGroupName} Bill`,
             billTypeId: "rxc51QYu7l",
             devices: deviceStore.devices,
-            clusterId: groupId.toString(),
+            clusterId: clusterId.toString(),
             totalConsumption: deviceStore.totalClusterConsumption.sum,
             startDate: startDate.toISOString(),
             endDate: endDate.toISOString()

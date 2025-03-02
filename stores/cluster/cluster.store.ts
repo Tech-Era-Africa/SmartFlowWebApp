@@ -1,13 +1,18 @@
 import { defineStore } from 'pinia'
 import { useUserStore } from '../auth/user/user.store';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
-import { DeviceGroupModel, type IDeviceGroup } from '~/stores/device/model/deviceGroup.model';
+import type { ICluster } from './model/cluster.model';
 
 export const useClusterStore = defineStore('cluster', {
     state: () => ({
         newClusterApiState: ApiResponseState.NULL,
         newClusterApiFailure: { message: "" },
-        devicesGroups: [] as IDeviceGroup[],
+        cluster: [] as ICluster[],
+        getClustersApiState: ApiResponseState.NULL,
+        getClustersApiFailure: { message: "" },
+        clusterDevices: {} as any,
+        clusterDevicesApiState: ApiResponseState.NULL,
+        clusterDevicesApiFailure: { message: "" },
     }),
 
     actions: {
@@ -21,8 +26,8 @@ export const useClusterStore = defineStore('cluster', {
                     },
                     body: {
                         name,
-                        createdBy: useUserStore().currentUser?.objectId!,
-                        orgId: useUserStore().selectedOrganisation.objectId
+                        createdBy: useUserStore().currentUser?.id!,
+                        orgId: ""
                     }
                 });
 
@@ -40,11 +45,71 @@ export const useClusterStore = defineStore('cluster', {
             }
         },
 
-       
-    },
+        async getAllOrgClusters(): Promise<ICluster[]> {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    this.getClustersApiState = ApiResponseState.LOADING;
+                    const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/clusters`, {
+                        method: 'GET',
+                        headers: {
+                            "Authorization": `Bearer ${useUserStore().token}`
+                        }
+                    });
+
+                    if (error.value) throw error.value;
+
+                    this.cluster = data.value;
+                    this.getClustersApiState = ApiResponseState.SUCCESS;
+                    resolve(this.cluster);
+                } catch (error: any) {
+                    this.getClustersApiFailure.message = error.message;
+                    this.getClustersApiState = ApiResponseState.FAILED;
+                    reject(error);
+                }
+            });
+
+        },
+
+        async getClusterDevices(clusterId: string): Promise<any[]> {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    this.clusterDevicesApiState = ApiResponseState.LOADING;
+                    const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/clusters/${clusterId}/devices`, {
+                        method: 'GET',
+                        headers: {
+                            "Authorization": `Bearer ${useUserStore().token}`
+                        }
+                    });
+
+                    if (error.value) throw error.value;
+
+                    this.clusterDevices = data.value;
+                    this.clusterDevicesApiState = ApiResponseState.SUCCESS;
+                    resolve(this.clusterDevices);
+                } catch (error: any) {
+                    this.clusterDevicesApiFailure.message = error.message;
+                    this.clusterDevicesApiState = ApiResponseState.FAILED;
+                    reject(error);
+                }
+            });
+        },
+    }, 
+
+    
+
     getters: {
         isAddingNewCluster: (state) => state.newClusterApiState === ApiResponseState.LOADING,
         failed_AddingNewCluster: (state) => state.newClusterApiState === ApiResponseState.FAILED,
         success_AddingNewCluster: (state) => state.newClusterApiState === ApiResponseState.SUCCESS,
+        
+        isLoadingClusters: (state) => state.getClustersApiState === ApiResponseState.LOADING,
+        failed_LoadingClusters: (state) => state.getClustersApiState === ApiResponseState.FAILED,
+        success_LoadingClusters: (state) => state.getClustersApiState === ApiResponseState.SUCCESS,
+        hasClusters: (state) => state.getClustersApiState === ApiResponseState.SUCCESS && state.cluster.length > 0,
+
+        isLoadingClusterDevices: (state) => state.clusterDevicesApiState === ApiResponseState.LOADING,
+        failed_LoadingClusterDevices: (state) => state.clusterDevicesApiState === ApiResponseState.FAILED,
+        success_LoadingClusterDevices: (state) => state.clusterDevicesApiState === ApiResponseState.SUCCESS,
+        hasClusterDevices: (state) => state.clusterDevicesApiState === ApiResponseState.SUCCESS && state.clusterDevices.length > 0,
     },
 })

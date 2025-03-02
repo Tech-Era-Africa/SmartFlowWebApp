@@ -4,116 +4,103 @@
     <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0">
       <div class="w-full flex  p-2 gap-4">
         <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
-          <div class="flex flex-row justify-between gap-2items-center">
-            <!-- <h1 class="font-bold text-lg">Blocks</h1> -->
-
+          <div class="flex flex-row justify-between gap-2 items-center">
+            <h1 class="font-bold text-lg">Clusters</h1>
+            <Button @click="handleOnClusterDialogOpen(true)" variant="outline" class="gap-2">
+              Add New Cluster <PlusCircle :size="16"></PlusCircle>
+            </Button>
           </div>
 
-          <!-- DEVICES -->
-          <template v-if="deviceStore.hasGroupDevices">
+          <!-- CLUSTERS -->
+          <template v-if="clusters">
             <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-3 grid gap-2">
-              <NuxtLink :to="`/devices/clusters/${group.objectId}`" v-for="group in deviceStore.devicesGroups">
+              <NuxtLink :to="`/devices/clusters/${cluster.id}`" v-for="cluster in clusters">
                 <DeviceClusterCard
-                  :option="{ devicesCount: group.devicesCount ?? 0, id: group.objectId, name: group.name }">
+                  :option="cluster">
                 </DeviceClusterCard>
               </NuxtLink>
-
-              <Dialog :open="isClusterDialogueOpen" @update:open="handleOnClusterDialogOpen" v-if="false">
-                <DialogTrigger>
-                  <Card class="h-[150px] outline-dashed border-none outline-blue-300 cursor-pointer">
-                    <CardContent class="flex justify-center items-center w-full h-full p-0">
-                      <PlusCircle :size="30" class="text-blue-500"></PlusCircle>
-                    </CardContent>
-                  </Card>
-                </DialogTrigger>
-
-                <DialogContent>
-                  <DialogTitle>
-                    <p>Create New Cluster</p>
-                  </DialogTitle>
-                  <DialogDescription>
-                    <p>Clusters keeps track of groups of your devices for easier management. You can place all devices
-                      in a facility in one cluster.</p>
-                  </DialogDescription>
-                  <form class="w-full space-y-6" @submit="onFormSubmit">
-                    <FormField v-slot="{ componentField }" name="clusterName">
-                      <FormItem>
-                        <FormControl>
-                          <Input type="text" placeholder="Eg. Apartment 1" v-bind="componentField"
-                            :disabled="clusterStore.isAddingNewCluster" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    </FormField>
-                    <Button type="submit" class="w-full"
-                      :disabled="!isFieldValid('clusterName') && !clusterStore.isAddingNewCluster">
-                      <template v-if="clusterStore.isAddingNewCluster">
-                        <Loader2 class="animate-spin"></Loader2>
-                      </template>
-                      <span v-else>Create New Cluster</span>
-                    </Button>
-                  </form>
-
-                </DialogContent>
-              </Dialog>
-
             </div>
-
           </template>
-          <!-- end of DEVICES -->
+          <!-- end of CLUSTERS -->
 
           <!-- LOADING -->
-
-          <template v-if="deviceStore.loading_DevicesGroup">
+          <template v-if="status == 'pending'">
             <div class="grid grid-cols-3 gap-10 p-10">
               <Skeleton class="h-[150px]" v-for="i in 6" />
             </div>
           </template>
           <!-- end of LOADING -->
 
-
-
-
+          <!-- NO CLUSTERS -->
+          <template v-if="clusters?.length == 0">
+            <div class="flex flex-col items-center justify-center py-10 gap-4">
+              <p class="text-gray-500">No clusters found</p>
+              <Button @click="handleOnClusterDialogOpen(true)" variant="outline" class="gap-2">
+                Create Your First Cluster <PlusCircle :size="16"></PlusCircle>
+              </Button>
+            </div>
+          </template>
+          <!-- end of NO CLUSTERS -->
         </div>
       </div>
-
     </section>
 
-
+    <!-- CREATE CLUSTER DIALOG -->
+    <Dialog :open="isClusterDialogueOpen" @update:open="handleOnClusterDialogOpen">
+      <DialogContent>
+        <DialogTitle>
+          <p>Create New Cluster</p>
+        </DialogTitle>
+        <DialogDescription>
+          <p>Clusters keeps track of groups of your devices for easier management. You can place all devices
+            in a facility in one cluster.</p>
+        </DialogDescription>
+        <form class="w-full space-y-6" @submit="onFormSubmit">
+          <FormField v-slot="{ componentField }" name="clusterName">
+            <FormItem>
+              <FormControl>
+                <Input type="text" placeholder="Eg. Apartment 1" v-bind="componentField"
+                  :disabled="clusterStore.isAddingNewCluster" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <Button type="submit" class="w-full"
+            :disabled="!isFieldValid('clusterName') || clusterStore.isAddingNewCluster">
+            <template v-if="clusterStore.isAddingNewCluster">
+              <Loader2 class="animate-spin"></Loader2>
+            </template>
+            <span v-else>Create New Cluster</span>
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
   </NuxtLayout>
 </template>
 
 <script setup lang="ts">
-import { useDeviceStore } from '~/stores/device/device.store';
-import { PlusCircle } from 'lucide-vue-next'
+
+import { PlusCircle, Loader2 } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-import { Loader2 } from 'lucide-vue-next'
-import type { IDeviceGroup } from '~/stores/device/model/deviceGroup.model';
 import { useClusterStore } from '../../../stores/cluster/cluster.store';
-
-
-
+import { useDeviceStore } from '../../../stores/device/device.store';
+import { type ICluster } from '~/stores/cluster/model/cluster.model';
 
 useHead({ title: "Clusters" })
-
 
 const deviceStore = useDeviceStore()
 const clusterStore = useClusterStore()
 
-
 // Load the devices clusters
-const { refresh } = useAsyncData<IDeviceGroup[]>('deviceGroup', () => deviceStore.getOrgDeviceGroup(), { lazy: true })
-
+const {  error, data:clusters, refresh, status } = await useAsyncData<ICluster[]>('device_clusters', () => clusterStore.getAllOrgClusters(), {lazy:true})
 
 // NEW CLUSTER DIALOG CONTROL
 const isClusterDialogueOpen = ref(false)
 const handleOnClusterDialogOpen = (isOpen: boolean) => {
   isClusterDialogueOpen.value = isOpen
 }
-// end of DIALOG CONTROL
-
 
 // FORM SETTINGS
 const formSchema = toTypedSchema(z.object({
@@ -125,18 +112,12 @@ const { handleSubmit, isFieldValid } = useForm({
 })
 
 const onFormSubmit = handleSubmit(async (values) => {
-  // Add new device cluster
   try {
     await clusterStore.createNewCluster(values.clusterName);
-    // Close modal
     isClusterDialogueOpen.value = false;
-
-    // Refresh the device groups
     await refresh();
   } catch (e) {
     alert("Could not create cluster. Something went wrong.");
   }
 })
-//  end of FORM SETTINGS
-
 </script>
