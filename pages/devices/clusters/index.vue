@@ -5,7 +5,14 @@
       <div class="w-full flex  p-2 gap-4">
         <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
           <div class="flex flex-row justify-between gap-2 items-center">
-            <h1 class="font-bold text-lg">Clusters</h1>
+            <div>
+              <h1 class="font-bold text-lg">Clusters</h1>
+              <div class="my-2">
+                <ClusterTypeFacetedFilter></ClusterTypeFacetedFilter>
+              </div>
+
+            </div>
+           
             <Button @click="handleOnClusterDialogOpen(true)" variant="outline" class="gap-2">
               Add New Cluster <PlusCircle :size="16"></PlusCircle>
             </Button>
@@ -87,6 +94,7 @@ import * as z from 'zod'
 import { useClusterStore } from '../../../stores/cluster/cluster.store';
 import { useDeviceStore } from '../../../stores/device/device.store';
 import { type ICluster } from '~/stores/cluster/model/cluster.model';
+import {ClusterTypeFacetedFilter} from '~/components/cluster';
 
 useHead({ title: "Clusters" })
 

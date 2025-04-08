@@ -35,14 +35,66 @@ export const useConsumptionStore = defineStore('consumption', {
   }),
 
   actions: {
-    async getConsumptionInsightsByOrg(startDate: string, endDate: string) {
-      try {
-        this.consumptionInsightsApiState = ApiResponseState.LOADING
+    async getConsumptionTrend(startDate: string,
+      endDate: string,
+      orgId: string,
+      options: {
+          clusterId?: string,
+          deviceId?: string
+      } = {}): Promise<{total_consumption_change: number, date_bin: string}[]> {
 
-        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/influx/consumption/insights/by/org`, {
+      try {
+
+        const currentDate = new Date();
+
+        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/trend`, {
           method: 'GET',
           query: {
-            id: useUserStore().selectedOrganisation.objectId,
+            orgId: "hXR7sQI3FI",
+            startDate  : startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate : endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+          },
+          headers: {
+            "Authorization": `Bearer ${useUserStore().token}`
+          }
+        })
+
+        if (error.value) {
+          throw new Error(error.value.data?.error || 'Failed to fetch consumption trend')
+        }
+
+        console.log("DATA:", data.value)
+        console.log("ERROR:", error.value)
+
+        // const groupedData = Object.entries(data.value).map(([key, value]) => ({
+        //   name: key,
+        //   data: (value as any[]).map(entry => ({
+        //     x: entry.date_bin,
+        //     y: entry.total_consumption_change,
+        //   }))
+        // }));
+
+        return data.value;
+
+      } catch (error: any) {
+        console.log("ERROR:", error)
+        throw error
+      }
+    },
+
+    async getTotalWaterConsumption(startDate: string,
+      endDate: string,
+      orgId: string,
+      options: {
+          clusterId?: string,
+          deviceId?: string
+      } = {}) {
+      try {
+
+        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/total`, {
+          method: 'GET',
+          query: {
+            orgId : "hXR7sQI3FI",
             startDate,
             endDate
           },
@@ -52,35 +104,13 @@ export const useConsumptionStore = defineStore('consumption', {
         })
 
         if (error.value) {
-          throw new Error(error.value.data?.error || 'Failed to fetch consumption insights')
+          throw new Error(error.value.data?.error || 'Failed to fetch total water consumption')
         }
 
-        this.consumptionInsightsApiState = ApiResponseState.SUCCESS
-        this.stats = {
-          // Water consumption
-          waterUsed: data.value.totalConsumption.totalConsumption.toFixed(2),
-          waterUsedChange: data.value.totalConsumption.consumptionChange.toFixed(2),
-          waterUsedChangeDescription: data.value.totalConsumption.description,
-
-          // Estimated bill (placeholder values)
-          estimatedBill: '0', // Not provided in the API response
-          estimatedBillChange: '0', // Not provided in the API response
-
-          // Peak usage information
-          peakUsageDate: new Date(data.value.peakUsage.peakTime).toLocaleDateString(),
-          peakUsageAmount: data.value.peakUsage.peakUsage.toFixed(2),
-          peakUsageDescription: data.value.peakUsage.description,
-
-          // Peak usage cluster information
-          peakUsageGroup: data.value.peakUsageCluster.peakUsageCluster,
-          peakUsageClusterDescription: data.value.peakUsageCluster.description,
-
-          // Average consumption
-          averageConsumption : data.value.averageConsumption
-        }
+        return data;
+       
       } catch (error: any) {
-        this.consumptionInsightsApiState = ApiResponseState.FAILED
-        this.consumptionInsightsApiFailure.message = error.message
+        throw error;
       }
     },
 

@@ -65,8 +65,18 @@
       </template>
 
       <template v-else>
-        <div class="flex flex-grow bg-blue-50 items-center justify-center">
-          <p>No Cluster</p>
+        <div class="flex flex-col flex-grow bg-blue-50 items-center justify-center w-full h-full min-h-[280px] rounded-xl gap-4 p-6">
+          <!-- <img src="/img/empty-cluster.svg" alt="No clusters" class="w-32 h-32 opacity-80" /> -->
+          <div class="text-center">
+            <h3 class="font-semibold text-gray-700 mb-1">No Clusters Found</h3>
+            <p class="text-xs text-gray-500">Create a cluster to group and manage your devices efficiently</p>
+          </div>
+          <NuxtLink to="/devices/group/new">
+            <Button variant="outline" class="mt-2">
+              <Plus class="h-4 w-4 mr-2" />
+              Create Cluster
+            </Button>
+          </NuxtLink>
         </div>
       </template>
 
@@ -79,6 +89,7 @@
 <script setup lang="ts">
 import { useDeviceStore } from '~/stores/device/device.store';
 import { Info } from 'lucide-vue-next'
+import { Plus } from 'lucide-vue-next'
 
 
 const deviceStore = useDeviceStore()

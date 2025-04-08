@@ -15,12 +15,14 @@ export const useUserStore = defineStore('user', {
   }),
 
   actions: {
-    setUserToken(token?: string, refreshToken?: string) {
+    setUserToken(token?: string) {
       const access_token_cookie = useCookie('WF_UT', { maxAge: 60 * 60 });
       access_token_cookie.value = token ?? "";
+    },
 
-      const refresh_token_cookie = useCookie('WF_RT', { maxAge: 60 * 60 });
-      refresh_token_cookie.value = refreshToken ?? "";
+    setRefreshToken(token?: string) {
+      const refresh_token_cookie = useCookie('WF_RT', { maxAge: 7 * 24 * 60 * 60 });
+      refresh_token_cookie.value = token ?? "";
     },
 
     clearUserToken() {
@@ -41,7 +43,8 @@ export const useUserStore = defineStore('user', {
         });
 
         if (data.value) {
-          this.setUserToken((data.value as any).access_token, (data.value as any).refresh_token);
+          this.setUserToken((data.value as any).access_token);
+          this.setRefreshToken((data.value as any).refresh_token);
           return true;
         }
         return false;

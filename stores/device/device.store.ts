@@ -403,32 +403,26 @@ export const useDeviceStore = defineStore({
         try {
           this.consumptionTrendsApiState = ApiResponseState.LOADING;
 
-          const data = await $fetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/influx/consumption/trend/by/org`, {
+          const data = await $fetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/trend`, {
             method: 'GET',
             query: {
-              id: useUserStore().selectedOrganisation.objectId,
-              startDate,
-              endDate
+              orgId: "hXR7sQI3FI",
+              startDate : "2024-03-02T00:00:00Z",
+              endDate : "2025-03-03T23:59:00Z"
             },
             headers: {
               "Authorization": `Bearer ${useUserStore().token}`
             }
           });
 
-          const key = "Total Consumption";
-          const groupedData = {
-            [key]: {
-              name: key,
-              data: data.map((entry: any) => ({
-                x: entry.date_bin,
-                y: entry.total_consumption_change,
-                downtime: entry.downtime || 0
-              }))
-            }
-          };
+          function convertToXY(data:any) {
+            return data.map((item:any) => ({
+                x: item.date_bin, // Use the date_bin as the x-coordinate
+                y: item.total_consumption_change // Use the total_consumption_change as the y-coordinate
+            }));
+        }
 
-          this.consumptionTrendsApiState = ApiResponseState.SUCCESS;
-          this.deviceConsumptionTrend = [];
+          this.deviceConsumptionTrend = convertToXY(data);
           return resolve(this.deviceConsumptionTrend);
         } catch (error: any) {
           this.deviceConsumptionTrend = [];

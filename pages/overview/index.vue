@@ -5,12 +5,12 @@
         <section class="flex flex-col gap-4 absolute top-16 z-10 mx-2  lg:mx-8 left-0 right-0">
             <div class="w-full  flex flex-col lg:flex-row  p-2 gap-4">
                 <div class="w-full h-auto  md:w-3/5">
-                    <WaterConsumptionChart :option="consumptionChart"
-                        @on-date-changed="handleWaterConsumptionChartDateChanged">
+                    <WaterConsumptionChart :option="consumptionChart">
                     </WaterConsumptionChart>
                     
                 </div>
                 <div class="flex flex-col gap-2 flex-1 flex-grow">
+                    <pre></pre>
                     <ConsumptionStats @on-date-changed="handleWaterConsumptionStatsDateChanged"
                         :option="consumptionStatOption" class="h-full">
                     </ConsumptionStats>
@@ -41,31 +41,12 @@
 
 <script setup lang="ts">
 import { useDeviceStore } from '~/stores/device/device.store';
-import { useUserStore } from '~/stores/auth/user/user.store';
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
 useHead({ title: "Overview" })
 
 const deviceStore = useDeviceStore()
-const userStore = useUserStore()
 
-
-const currentDate = new Date();
-const startDate = new Date(currentDate.getFullYear(), 0, 1);
-const endDate = new Date(currentDate.getFullYear(), 11, 31);
-
-
-useAsyncData<any>('deviceConsumptionTrendM', () => Promise.all([
-    deviceStore.getAllDevicesConsumptionTrend(startDate.toISOString(), endDate.toISOString()),
-    // deviceStore.getMinMaxConsumption(startDate.toISOString(), endDate.toISOString())
-]), { lazy: true })
-
-
-
-
-const handleWaterConsumptionChartDateChanged = (date: { start: Date, end: Date }) => {
-    deviceStore.getAllDevicesConsumptionTrend(date.start.toISOString(), date.end.toISOString())
-}
 
 const handleWaterConsumptionStatsDateChanged = (date: { start: Date, end: Date }) => {
     deviceStore.getMinMaxConsumption(date.start.toISOString(), date.end.toISOString())
@@ -76,26 +57,9 @@ const consumptionStatOption = ref<{ title?: string, isLoading?: boolean, min: nu
 const consumptionChart = ref<IWaterConsumptionChart>({
     title: "Water Management Insights",
     subtitle: "Track your collection, consumption, and savings",
-    chartSeries: deviceStore.deviceConsumptionTrend,
-    isLoading: deviceStore.isGettingConsumptionTrend,
-    success: true,
+ 
 })
 
-// Watch and update consumption chart trend
-watchEffect(() => {
-    if (deviceStore.success_ConsumptionTrend) {
-        consumptionChart.value.chartSeries = deviceStore.deviceConsumptionTrend
-    }
 
-    consumptionChart.value.isLoading = deviceStore.isGettingConsumptionTrend
-    consumptionStatOption.value = {
-        subtitle: "* For all devices",
-        isLoading: deviceStore.isGettingDeviceMinMaxConsumption,
-        min: deviceStore.minMaxconsumption.min,
-        max: deviceStore.minMaxconsumption.max,
-        sum: deviceStore.minMaxconsumption.sum,
-
-    }
-})
 
 </script>

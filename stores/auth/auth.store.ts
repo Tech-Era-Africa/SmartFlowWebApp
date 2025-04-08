@@ -41,7 +41,8 @@ export const useAuthStore = defineStore({
         });
 
         // Set user token
-        useUserStore().setUserToken(data.access_token, data.refresh_token);
+        useUserStore().setUserToken(data.access_token);
+        useUserStore().setRefreshToken(data.refresh_token);
 
         this.loginState = ApiResponseState.SUCCESS;
 

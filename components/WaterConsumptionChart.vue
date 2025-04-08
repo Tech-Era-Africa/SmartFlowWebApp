@@ -1,3 +1,71 @@
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useAsyncData } from '#app';
+import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
+import { ChartLine } from 'lucide-vue-next';
+import { useConsumptionStore } from '~/stores/consumption/consumption.store';
+
+const props = defineProps<{
+    option: IWaterConsumptionChart;
+}>();
+
+const consumptionStore = useConsumptionStore();
+const chartKey = ref(0);
+
+// Reactive variables for date range
+const startDate = ref<string | null>();
+const endDate = ref<string | null>();
+
+// Fetch consumption trend data using useAsyncData
+const { data: chartSeries, refresh, status, error } = useAsyncData(async () => {
+    if (!startDate.value || !endDate.value) return [];
+    return await consumptionStore.getConsumptionTrend(startDate.value, endDate.value, "hXR7sQI3FI");
+}, { immediate: true });
+
+const processedChartSeries = computed(() => {
+    console.log("PROCESSING THE DATA FOR THE CHART");
+    if (!chartSeries.value) return [];
+    
+    // Create a single series from the flat array
+    return [{
+        name: 'Water Consumption',
+        data: chartSeries.value.map(point => ({
+            x: new Date(point.date_bin).getTime(),
+            y: point.total_consumption_change,
+            // // Keep the downtime coloring if it exists
+            // fillColor: point.downtime ? '#FF0000' : undefined,
+            // strokeColor: point.downtime ? '#FF0000' : undefined,
+        }))
+    }];
+});
+
+const hasData = computed(() => {
+    return chartSeries.value && chartSeries.value.length > 0;
+});
+
+
+
+const chartOptions = computed(() => ({
+    chart: {
+        type: 'area',
+        height: 300,
+        toolbar: { show: true },
+        animations: { enabled: true },
+    },
+    xaxis: { type: 'datetime' },
+    yaxis: { labels: { formatter: (value: number) => `${Math.round(value)}` } },
+    tooltip: { x: { format: 'dd MMM yyyy' } },
+    fill: { type: 'gradient', gradient: { shadeIntensity: 1 } },
+    colors: ['#46D5E5', '#C578F8', '#86FC5F'],
+    legend: { position: 'bottom' },
+}));
+
+const handleDateChange = ({ start, end }: { start: Date; end: Date }) => {
+    startDate.value = start.toISOString().split('T')[0];
+    endDate.value = end.toISOString().split('T')[0];
+    refresh();
+};
+</script>
 <template>
     <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex justify-between items-center">
@@ -6,13 +74,39 @@
                 <p class="text-xs text-muted-foreground">{{ option.subtitle }}</p>
             </div>
             <div class="flex gap-2 items-center">
-                <!-- <ClusterFacetedFilter :clusters="clusters" @handleFilter="handleClusterFilter"></ClusterFacetedFilter> -->
                 <PeriodFacetedFilter @onDateChanged="handleDateChange"></PeriodFacetedFilter>
             </div>
         </div>
-        <div v-if="isLoading" class="w-full h-full">
-            <Skeleton class="h-full" />
+        <div v-if="status === 'pending'" class="w-full h-full flex flex-col items-center justify-center bg-gray-50 rounded-lg">
+        <!-- Placeholder Chart -->
+        <div class="relative w-full h-[300px] bg-white rounded-lg overflow-hidden animate-pulse">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gray-200 to-transparent opacity-50"></div>
+            <svg class="w-full h-full" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- Placeholder Lines -->
+                <path
+                    d="M0 250 C100 200, 200 150, 400 250"
+                    stroke="rgba(200, 200, 200, 0.6)"
+                    stroke-width="2"
+                    fill="none"
+                />
+                <path
+                    d="M0 200 C100 150, 200 200, 400 200"
+                    stroke="rgba(200, 200, 200, 0.6)"
+                    stroke-width="2"
+                    fill="none"
+                />
+                <!-- X-Axis and Y-Axis -->
+                <line x1="50" y1="280" x2="350" y2="280" stroke="rgba(200, 200, 200, 0.6)" stroke-width="1" />
+                <line x1="50" y1="280" x2="50" y2="20" stroke="rgba(200, 200, 200, 0.6)" stroke-width="1" />
+            </svg>
         </div>
+
+        <!-- Loading Spinner -->
+        <div class="mt-4 flex items-center gap-2">
+            <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
+            <p class="text-sm text-muted-foreground">Loading data...</p>
+        </div>
+    </div>
         <div v-else-if="!hasData" class="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
             <div class="text-center">
                 <ChartLine class="text-gray-400 text-4xl mb-2 mx-auto" />
@@ -26,190 +120,3 @@
         </ClientOnly>
     </div>
 </template>
-
-<script setup lang="ts">
-import { ref, computed, watchEffect } from 'vue';
-import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
-import { ChartLine } from 'lucide-vue-next'
-
-const props = defineProps<{
-    option: IWaterConsumptionChart
-}>();
-
-const emits = defineEmits(['onDateChanged', 'onClusterChanged']);
-
-const isLoading = ref(true);
-const chartKey = ref(0);
-
-const clusters = [
-    { id: '1', name: 'Cluster A' },
-];
-
-const chartSeries = computed(() => props.option.chartSeries || []);
-
-const hasData = computed(() => chartSeries.value.length > 0 && chartSeries.value.some(series => series.data.length > 0));
-
-const chartOptions = computed(() => ({
-    chart: {
-        type: 'area',
-        height: 350,
-        toolbar: {
-            show: true,
-            tools: {
-                download: true,
-                zoom: true,
-                zoomin: true,
-                zoomout: true,
-                pan: true,
-                reset: true
-            },
-            export: {
-                csv: {
-                    filename: 'Water Consumption Analysis',
-                    columnDelimiter: ',',
-                    headerCategory: 'Date',
-                    headerValue: 'Consumption (kL)'
-                },
-                svg: {
-                    filename: 'Water Consumption Analysis'
-                },
-                png: {
-                    filename: 'Water Consumption Analysis'
-                }
-            }
-        },
-        zoom: { 
-            enabled: true,
-            autoScaleYaxis: true
-        },
-        animations: {
-            enabled: true,
-            easing: 'easeinout',
-            speed: 800,
-            animateGradually: {
-                enabled: true,
-                delay: 150
-            },
-            dynamicAnimation: {
-                enabled: true,
-                speed: 350
-            }
-        }
-    },
-    dataLabels: { enabled: false },
-    stroke: {
-        show: true,
-        curve: 'smooth',
-        lineCap: 'butt',
-        width: 2,
-    },
-    grid: { row: { opacity: 0 } },
-    xaxis: { type: 'datetime' },
-    yaxis: {
-        title: {
-            text: 'Consumption (kL)'
-        },
-        labels: {
-            formatter: (value: number) => `${Math.round(value)}`
-        }
-    },
-    tooltip: {
-        x: { format: 'dd MMM yyyy' },
-        y: {
-            formatter: (value: number) => `${value.toFixed(2)} kL`
-        }
-    },
-    fill: {
-        type: 'gradient',
-        gradient: {
-            shadeIntensity: 1,
-            opacityFrom: 0.7,
-            opacityTo: 0.9,
-            stops: [0, 100]
-        }
-    },
-    colors: ['#46D5E5', '#C578F8', '#86FC5F', '#F729C0', '#FFD700'],
-    legend: {
-        position: 'bottom',
-        markers: { radius: 12, offsetX: -4 },
-        itemMargin: { horizontal: 12, vertical: 20 },
-    },
-    // annotations: {
-    //     yaxis: [{
-    //         y: 3.5, // Adjust this value to set the recommended consumption threshold
-    //         borderColor: '#4CAF50', // A more readable green color
-    //         label: {
-    //             borderColor: '#4CAF50',
-    //             style: {
-    //                 color: '#fff',
-    //                 background: '#4CAF50'
-    //             },
-    //             text: 'Recommended Consumption Threshold'
-    //         }
-    //     }]
-    // },
-    markers: {
-        size: 2,
-        colors: undefined,
-        strokeColors: '#fff',
-        strokeWidth: 0.05,
-        strokeOpacity: 0.9,
-        strokeDashArray: 0,
-        fillOpacity: 0.5,
-        discrete: [],
-        shape: "circle",
-        radius: 0.01,
-        offsetX: 0,
-        offsetY: 0,
-        onClick: undefined,
-        onDblClick: undefined,
-        showNullDataPoints: true,
-        hover: {
-            size: 7,
-            sizeOffset: 3
-        }
-    },
-    states: {
-        hover: {
-            filter: {
-                type: 'none',
-            }
-        },
-        active: {
-            filter: {
-                type: 'none',
-            }
-        },
-    },
-}));
-
-// Add this computed property to process the series data
-const processedChartSeries = computed(() => {
-    return chartSeries.value.map(series => ({
-        ...series,
-        data: series.data.map((point: any) => ({
-            x: new Date(point.x).getTime(),
-            y: point.y,
-            fillColor: point.downtime ? '#FF0000' : undefined,
-            strokeColor: point.downtime ? '#FF0000' : undefined,
-        }))
-    }));
-});
-
-const handleDateChange = ({ start, end }: { start: Date, end: Date }) => {
-    isLoading.value = true;
-    emits('onDateChanged', { start, end });
-};
-
-const handleClusterFilter = (selectedClusters: string[]) => {
-    isLoading.value = true;
-    emits('onClusterChanged', selectedClusters);
-};
-
-watchEffect(() => {
-    if (props.option.chartSeries) {
-        isLoading.value = false;
-        chartKey.value++; // Force chart re-render
-    }
-});
-</script>
