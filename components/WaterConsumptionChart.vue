@@ -10,20 +10,13 @@ const props = defineProps<{
 }>();
 
 const consumptionStore = useConsumptionStore();
-const chartKey = ref(0);
-
-// Reactive variables for date range
-const startDate = ref<string | null>();
-const endDate = ref<string | null>();
 
 // Fetch consumption trend data using useAsyncData
 const { data: chartSeries, refresh, status, error } = useAsyncData(async () => {
-    if (!startDate.value || !endDate.value) return [];
-    return await consumptionStore.getConsumptionTrend(startDate.value, endDate.value, "hXR7sQI3FI");
-}, { immediate: true });
+    return await consumptionStore.getConsumptionTrend();
+}, { immediate: true, lazy:true });
 
 const processedChartSeries = computed(() => {
-    console.log("PROCESSING THE DATA FOR THE CHART");
     if (!chartSeries.value) return [];
     
     // Create a single series from the flat array
@@ -44,6 +37,20 @@ const hasData = computed(() => {
 });
 
 
+// Listen to when the dates change and refresh
+// Subscribe to changes in the store's state
+consumptionStore.$subscribe((mutation, state) => {
+    if (state.startDate || state.endDate) {
+        refresh();
+    }
+});
+
+// Update the start and end once there is a change in period
+const handleDateChange = ({ start, end }: { start: Date; end: Date }) => {
+    consumptionStore.updatePeriod(start.toISOString(), end.toISOString());
+
+};
+
 
 const chartOptions = computed(() => ({
     chart: {
@@ -60,11 +67,7 @@ const chartOptions = computed(() => ({
     legend: { position: 'bottom' },
 }));
 
-const handleDateChange = ({ start, end }: { start: Date; end: Date }) => {
-    startDate.value = start.toISOString().split('T')[0];
-    endDate.value = end.toISOString().split('T')[0];
-    refresh();
-};
+
 </script>
 <template>
     <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
@@ -115,7 +118,7 @@ const handleDateChange = ({ start, end }: { start: Date; end: Date }) => {
             </div>
         </div>
         <ClientOnly v-else>
-            <apexchart :key="chartKey" height="100%" width="100%" :options="chartOptions" :series="processedChartSeries">
+            <apexchart  height="100%" width="100%" :options="chartOptions" :series="processedChartSeries">
             </apexchart>
         </ClientOnly>
     </div>

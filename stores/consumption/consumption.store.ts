@@ -2,46 +2,47 @@ import { defineStore } from 'pinia'
 import { useUserStore } from '~/stores/auth/user/user.store'
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum'
 
-interface ConsumptionStats {
-  waterUsed: string
-  waterUsedChange: string
-  estimatedBill: string
-  estimatedBillChange: string
-  peakUsageDate: string
-  peakUsageGroup: string
-  peakUsageAmount: string
-  waterUsedChangeDescription:string
-  peakUsageDescription:string
-  peakUsageClusterDescription:string
-  averageConsumption : number
+interface ConsumptionTrend {
+  total_consumption_change: number
+  date_bin: string
 }
+
+interface TotalWaterStats {
+  total: number
+  unit: string
+  percentageChange: number
+  comparisonPeriod: string
+  currentPeriod: string
+}
+
+interface ConsumptionData {
+  total: number;
+  percentageChange: number;
+}
+
+interface ConsumptionInsightResponse {
+  unit: string;
+  comparisonPeriod: string;
+  currentPeriod: string;
+  consumption: ConsumptionData;
+  collection: ConsumptionData;
+  saved: number;
+}
+
+
 
 export const useConsumptionStore = defineStore('consumption', {
   state: () => ({
-    stats: {
-      waterUsed: '0',
-      waterUsedChange: '0',
-      estimatedBill: '0',
-      estimatedBillChange: '0',
-      peakUsageDate: '',
-      peakUsageGroup: '',
-      peakUsageAmount: '0',
-      waterUsedChangeDescription : '',
-      averageConsumption : 0
-    } as ConsumptionStats,
-    trendPeriod: 'year',
-    consumptionInsightsApiState: ApiResponseState.NULL,
-    consumptionInsightsApiFailure: { message: "" },
+   startDate: null as string | null,
+   endDate: null as string | null,
   }),
 
   actions: {
-    async getConsumptionTrend(startDate: string,
-      endDate: string,
-      orgId: string,
+    async getConsumptionTrend(
       options: {
-          clusterId?: string,
-          deviceId?: string
-      } = {}): Promise<{total_consumption_change: number, date_bin: string}[]> {
+        clusterId?: string,
+        deviceId?: string
+      } = {}): Promise<ConsumptionTrend[]> {
 
       try {
 
@@ -51,8 +52,8 @@ export const useConsumptionStore = defineStore('consumption', {
           method: 'GET',
           query: {
             orgId: "hXR7sQI3FI",
-            startDate  : startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
-            endDate : endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
           },
           headers: {
             "Authorization": `Bearer ${useUserStore().token}`
@@ -63,17 +64,6 @@ export const useConsumptionStore = defineStore('consumption', {
           throw new Error(error.value.data?.error || 'Failed to fetch consumption trend')
         }
 
-        console.log("DATA:", data.value)
-        console.log("ERROR:", error.value)
-
-        // const groupedData = Object.entries(data.value).map(([key, value]) => ({
-        //   name: key,
-        //   data: (value as any[]).map(entry => ({
-        //     x: entry.date_bin,
-        //     y: entry.total_consumption_change,
-        //   }))
-        // }));
-
         return data.value;
 
       } catch (error: any) {
@@ -82,21 +72,20 @@ export const useConsumptionStore = defineStore('consumption', {
       }
     },
 
-    async getTotalWaterConsumption(startDate: string,
-      endDate: string,
-      orgId: string,
+    async getTotalWaterConsumption(
       options: {
-          clusterId?: string,
-          deviceId?: string
-      } = {}) {
+        clusterId?: string,
+        deviceId?: string
+      } = {}): Promise<TotalWaterStats> {
       try {
+        const currentDate = new Date();
 
         const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/total`, {
           method: 'GET',
           query: {
-            orgId : "hXR7sQI3FI",
-            startDate,
-            endDate
+            orgId: "hXR7sQI3FI",
+            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
           },
           headers: {
             "Authorization": `Bearer ${useUserStore().token}`
@@ -107,21 +96,54 @@ export const useConsumptionStore = defineStore('consumption', {
           throw new Error(error.value.data?.error || 'Failed to fetch total water consumption')
         }
 
-        return data;
-       
+        return data.value;
+
       } catch (error: any) {
         throw error;
       }
     },
 
-    setTrendPeriod(period: string) {
-      this.trendPeriod = period
+    async getInsights(
+      options: {
+        clusterId?: string,
+        deviceId?: string
+      } = {}): Promise<ConsumptionInsightResponse> {
+
+      try {
+        const currentDate = new Date();
+
+        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/insight`, {
+          method: 'GET',
+          query: {
+            orgId: "hXR7sQI3FI",
+            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+          },
+          headers: {
+            "Authorization": `Bearer ${useUserStore().token}`
+          }
+        })
+
+        if (error.value) {
+          throw new Error(error.value.data?.error || 'Failed to fetch total water consumption')
+        }
+
+        return data.value;
+
+      } catch (error: any) {
+        throw error;
+      }
+    },
+
+    updatePeriod(startDate: string, endDate: string) {
+      this.startDate = startDate;
+      this.endDate = endDate;
     }
+
+    
   },
 
-  getters: {
-    isLoadingConsumptionInsights: (state) => state.consumptionInsightsApiState === ApiResponseState.LOADING,
-    failedConsumptionInsights: (state) => state.consumptionInsightsApiState === ApiResponseState.FAILED,
-    successConsumptionInsights: (state) => state.consumptionInsightsApiState === ApiResponseState.SUCCESS,
-  }
+ 
+
+
 })

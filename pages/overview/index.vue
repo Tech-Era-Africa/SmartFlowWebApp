@@ -11,8 +11,7 @@
                 </div>
                 <div class="flex flex-col gap-2 flex-1 flex-grow">
                     <pre></pre>
-                    <ConsumptionStats @on-date-changed="handleWaterConsumptionStatsDateChanged"
-                        :option="consumptionStatOption" class="h-full">
+                    <ConsumptionStats @on-date-changed="handleWaterConsumptionStatsDateChanged"class="h-full">
                     </ConsumptionStats>
                     <SmartCredit></SmartCredit>
                 </div>
@@ -51,8 +50,6 @@ const deviceStore = useDeviceStore()
 const handleWaterConsumptionStatsDateChanged = (date: { start: Date, end: Date }) => {
     deviceStore.getMinMaxConsumption(date.start.toISOString(), date.end.toISOString())
 }
-
-const consumptionStatOption = ref<{ title?: string, isLoading?: boolean, min: number, max: number, sum: number, subtitle?: string }>({} as any) //!TODO:IMPELEMENT THIS PROPERLY
 
 const consumptionChart = ref<IWaterConsumptionChart>({
     title: "Water Management Insights",

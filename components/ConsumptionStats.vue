@@ -1,7 +1,62 @@
+<script setup lang="ts">
+import { ref, watch } from 'vue';
+import { useConsumptionStore } from '~/stores/consumption/consumption.store';
+import { useBillStore } from '~/stores/bill/bill.store';
+
+const consumptionStore = useConsumptionStore();
+const billStore = useBillStore();
+
+// Fetch water insights
+const { data, refresh, status, error } = useAsyncData('waterInsights', async () => {
+  return await consumptionStore.getInsights();
+}, { immediate: true, lazy: true });
+
+// Listen to when the dates change and refresh
+// Subscribe to changes in the store's state
+consumptionStore.$subscribe((mutation, state) => {
+    if (state.startDate || state.endDate) {
+        refresh();
+    }
+});
+
+// Keeps track of the percentage of water consumed against the amount stored
+const percentageOfConsumed = computed(() => {
+    if(!data.value?.consumption?.total || !data.value?.collection?.total) return 0;
+    return (data.value?.consumption?.total / data.value?.collection?.total) * 100;
+});
+
+// Keeps track of the percentage of water collected against the target
+const percentageCollectedAgainstTarget = computed(() => {
+    const target = 100000
+    if(!data.value?.collection?.total || !data.value?.collection?.total) return 0;
+    return (data.value?.collection?.total / target) * 100;
+});
+
+//Conservation rate = total saved / total collected * 100
+const conservationRate = computed(() => {
+    if(!data.value?.saved || !data.value?.collection?.total) return 0;
+    return (data.value?.saved / data.value?.collection?.total) * 100;
+});
+
+//Saved bill = total consumed
+const savedBill = computed(() => {
+    if(!data.value?.consumption?.total || !data.value?.saved) return 0;
+    return billStore.calculateTotalBill({ consumption: data.value?.consumption.total ?? 0 }) - billStore.calculateTotalBill({ consumption: data.value?.saved ?? 0 })
+});
+
+const percentageSaved = computed(() => {
+    if(!data.value?.saved || !data.value?.consumption?.total) return 0;
+    return (data.value?.saved / data.value?.consumption?.total) * 100;
+});
+
+const savedMessage = computed(() => {
+    return `You saved GHC${savedBill.value} by conserving ${data.value?.saved} kL of water compared to the previous period`;
+});
+
+</script>
 <template>
     <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
-      
-       <div v-if="consumptionStore.isLoadingConsumptionInsights" class="grid gap-4 md:grid-cols-2">
+       <div v-if="status == 'pending'" class="grid gap-4 md:grid-cols-2">
            <Card v-for="i in 4" :key="i" class="shadow-none">
                <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                    <CardTitle class="text-sm font-medium">
@@ -27,16 +82,16 @@
                </CardHeader>
                <CardContent>
                    <div class="text-lg font-bold">
-                       {{ consumptionStore.stats.waterCollected }} kL
+                       {{ data?.collection?.total }} {{ data?.unit }}
                    </div>
-                   <p class="text-xs text-muted-foreground">
-                       {{ consumptionStore.stats.waterCollectedChange > 0 ? '+' : '' }}{{ consumptionStore.stats.waterCollectedChange }}% since last period
+                   <p v-if="data?.collection" class="text-xs text-muted-foreground">
+                       {{ data?.collection?.percentageChange > 0 ? '+' : '' }}{{ data?.collection?.percentageChange }}% {{ data?.comparisonPeriod }}
                    </p>
                    <div class="mt-4 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                       <div class="h-full bg-blue-500 rounded-full" :style="`width: ${consumptionStore.stats.collectionEfficiency}%`"></div>
+                       <div class="h-full bg-blue-500 rounded-full" :style="`width: ${percentageCollectedAgainstTarget}%`"></div>
                    </div>
                    <p class="text-xs text-muted-foreground mt-1">
-                       {{ consumptionStore.stats.collectionEfficiency }}% of target
+                       {{ percentageCollectedAgainstTarget }}% of target
                    </p>
                </CardContent>
            </Card>
@@ -51,16 +106,16 @@
                </CardHeader>
                <CardContent>
                    <div class="text-lg font-bold">
-                       {{ consumptionStore.stats.waterUsed }} kL
+                       {{ data?.consumption?.total }} {{ data?.unit}}
                    </div>
-                   <p class="text-xs text-muted-foreground">
-                       {{ consumptionStore.stats.waterUsedChangeDescription }}
+                   <p v-if="data?.consumption" class="text-xs text-muted-foreground">
+                    {{ data?.consumption?.percentageChange > 0 ? '+' : '' }}{{ data?.consumption?.percentageChange }}% {{ data?.comparisonPeriod }}
                    </p>
                    <div class="mt-4 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                       <div class="h-full bg-red-500 rounded-full" :style="`width: ${consumptionStore.stats.consumptionRate}%`"></div>
+                       <div class="h-full bg-red-500 rounded-full" :style="`width: ${percentageOfConsumed}%`"></div>
                    </div>
                    <p class="text-xs text-muted-foreground mt-1">
-                       {{ consumptionStore.stats.consumptionRate }}% of collected water
+                       {{ percentageOfConsumed }}% of collected water
                    </p>
                </CardContent>
            </Card>
@@ -75,16 +130,16 @@
                </CardHeader>
                <CardContent>
                    <div class="text-lg font-bold">
-                       {{ consumptionStore.stats.waterSaved }} kL
+                       {{ data?.saved}} kL
                    </div>
-                   <p class="text-xs text-muted-foreground">
-                       {{ consumptionStore.stats.waterSavedChange > 0 ? '+' : '' }}{{ consumptionStore.stats.waterSavedChange }}% since last period
+                   <p v-if="data?.consumption" class="text-xs text-muted-foreground">
+                    {{ data?.consumption?.percentageChange > 0 ? '+' : '' }}{{ data?.consumption?.percentageChange }}% {{ data?.comparisonPeriod }}
                    </p>
                    <div class="mt-4 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                       <div class="h-full bg-green-500 rounded-full" :style="`width: ${consumptionStore.stats.conservationRate}%`"></div>
+                       <div class="h-full bg-green-500 rounded-full" :style="`width: ${conservationRate}%`"></div>
                    </div>
                    <p class="text-xs text-muted-foreground mt-1">
-                       {{ consumptionStore.stats.conservationRate }}% conservation rate
+                       {{ conservationRate }}% conservation rate
                    </p>
                </CardContent>
            </Card>
@@ -102,26 +157,26 @@
                        <div>
                            <p class="text-sm text-muted-foreground">Water Bill</p>
                            <p class="text-lg font-bold">
-                               GHC{{ billStore.calculateTotalBill({ consumption: +consumptionStore.stats.waterUsed }) }}
+                               GHC{{ billStore.calculateTotalBill({ consumption: data?.consumption.total ?? 0 }) }}
                            </p>
                        </div>
                        <div>
                            <p class="text-sm text-muted-foreground">Savings</p>
                            <p class="text-lg font-bold text-green-500">
-                               GHC{{ consumptionStore.stats.waterSavingsCost }}
+                               GHC{{ savedBill }}
                            </p>
                        </div>
                    </div>
                    <div class="mt-4">
                        <div class="flex justify-between text-xs mb-1">
-                           <span>This Month</span>
-                           <span>Previous</span>
+                           <span>This period</span>
+                           <span>{{ data?.comparisonPeriod }}</span>
                        </div>
                        <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                           <div class="h-full bg-blue-500 rounded-full" :style="`width: ${consumptionStore.stats.costComparisonPercentage}%`"></div>
+                           <div class="h-full bg-blue-500 rounded-full" :style="`width: ${percentageSaved}%`"></div>
                        </div>
                        <p class="text-xs text-muted-foreground mt-1">
-                           {{ costChangeDescription }}
+                           {{ savedMessage }}
                        </p>
                    </div>
                </CardContent>
@@ -130,77 +185,3 @@
        
     </div>
 </template>
-<script setup lang="ts">
-import { useConsumptionStore } from '~/stores/consumption/consumption.store';
-import { useDeviceStore } from '~/stores/device/device.store';
-import { useBillStore } from '~/stores/bill/bill.store.js';
-import { 
-    Droplet, Gauge, Save, TrendingUp, DollarSign, 
-    Activity, Award, Lightbulb, MoreHorizontal 
-} from 'lucide-vue-next';
-
-
-const props = defineProps({
-   option: {
-       type: Object as PropType<{ title?:string, subtitle?:string, isLoading?:boolean, max:number, min:number, sum:number }>,
-       required: true
-   },
-})
-
-// Create a consumptionStore with reactive data for the dashboard
-const consumptionStore = ref({
-    isLoadingConsumptionInsights: false,
-    stats: {
-        // Original stats from your template
-        waterUsed: 780,
-        waterUsedChange: -5,
-        waterUsedChangeDescription: "-5% since last period",
-        estimatedBill: true,
-        peakUsageAmount: 42,
-        peakUsageDate: "15 Feb 2025",
-        peakUsageGroup: "1",
-        averageConsumption: 25.6,
-        
-        // New stats for enhanced dashboard
-        waterCollected: 1250,
-        waterCollectedChange: 12,
-        waterSaved: 470,
-        waterSavedChange: 23,
-        collectionEfficiency: 85,
-        consumptionRate: 62,
-        conservationRate: 38,
-        usageOptimization: 72,
-        efficiencyScore: 73,
-        waterSavingsCost: 850,
-        costComparisonPercentage: 75
-    }
-});
-
-// const consumptionStore = useConsumptionStore()
-const billStore = useBillStore();
-
-
-const handleClusterFilter = (selectedClusters: string[]) => {
-  
-};
-
-const deviceStore = useDeviceStore()
-const getDeviceGroupName = (id:string) => {
-
-   const group = deviceStore.devicesGroups.find(group => group.objectId === id);
-   return group ? group.name : 'Unknown Group';
-
-};
-
-
-const onDateChanged = (period: {start:Date, end:Date}) => {
-   consumptionStore.getConsumptionInsightsByOrg(period.start.toISOString(), period.end.toISOString())
-}
-
-useAsyncData('consumptionInsights', async () => {
- const currentDate = new Date();
- const startDate = new Date(currentDate.getFullYear(), 0, 1);
- const endDate = new Date(currentDate.getFullYear(), 11, 31);
- await consumptionStore.getConsumptionInsightsByOrg(startDate.toISOString(), endDate.toISOString());
-}, {lazy:true});
-</script>
