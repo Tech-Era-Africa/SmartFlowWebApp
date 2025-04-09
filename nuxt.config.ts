@@ -35,8 +35,13 @@ export default defineNuxtConfig({
 
   },
   runtimeConfig: {
+    // Private keys that are exposed to the server
+    PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY,
+
+    // Public keys that are exposed to the client
     public: {
       API_BASE_URL: process.env.NUXT_API_BASE_URL,
+      APP_BASE_URL: process.env.APP_BASE_URL || 'http://localhost:3000',
     }
   },
   routeRules: {

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { useUserStore } from '~/stores/auth/user/user.store'
+import { useBillStore } from '~/stores/bill/bill.store'
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum'
 
 interface ConsumptionTrend {
@@ -48,10 +49,13 @@ export const useConsumptionStore = defineStore('consumption', {
 
         const currentDate = new Date();
 
+        // Get the current user's organization ID from the bill store which has this information
+        const orgId = useBillStore().createdBill?.organisation?.objectId || "";
+
         const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/trend`, {
           method: 'GET',
           query: {
-            orgId: "hXR7sQI3FI",
+            orgId,
             startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
             endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
           },
@@ -80,10 +84,13 @@ export const useConsumptionStore = defineStore('consumption', {
       try {
         const currentDate = new Date();
 
+        // Get the current user's organization ID from the bill store which has this information
+        const orgId = useBillStore().createdBill?.organisation?.objectId || "";
+
         const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/total`, {
           method: 'GET',
           query: {
-            orgId: "hXR7sQI3FI",
+            orgId,
             startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
             endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
           },
@@ -112,10 +119,13 @@ export const useConsumptionStore = defineStore('consumption', {
       try {
         const currentDate = new Date();
 
+        // Get the current user's organization ID from the bill store which has this information
+        const orgId = useBillStore().createdBill?.organisation?.objectId || "";
+
         const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/insight`, {
           method: 'GET',
           query: {
-            orgId: "hXR7sQI3FI",
+            orgId,
             startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
             endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
           },
@@ -140,10 +150,10 @@ export const useConsumptionStore = defineStore('consumption', {
       this.endDate = endDate;
     }
 
-    
+
   },
 
- 
+
 
 
 })

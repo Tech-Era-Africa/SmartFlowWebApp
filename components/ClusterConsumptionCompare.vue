@@ -1,286 +1,240 @@
 <template>
     <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-4">
-       
-       <!-- Loading State -->
-       <div v-if="consumptionStore.isLoadingConsumptionInsights" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-           <Card v-for="i in 6" :key="i" class="shadow-none">
-               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                   <CardTitle class="text-sm font-medium">
-                       <Skeleton class="h-4 w-24" />
-                   </CardTitle>
-                   <Skeleton class="h-4 w-4 rounded-full" />
-               </CardHeader>
-               <CardContent>
-                   <Skeleton class="h-6 w-16 mb-2" />
-                   <Skeleton class="h-4 w-32" />
-               </CardContent>
-           </Card>
-       </div>
-       
-       <!-- Content -->
-       <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            
-           
-           <!-- Efficiency Score -->
-           <Card class="shadow-none md:col-span-2 lg:col-span-3">
-               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                   <CardTitle class="text-sm font-medium">
-                       Overall Water Efficiency Score
-                   </CardTitle>
-                   <Award class="h-4 w-4 text-yellow-500" />
-               </CardHeader>
-               <CardContent>
-                   <div class="flex flex-col md:flex-row items-center justify-between">
-                       <div class="mb-4 md:mb-0">
-                           <div class="relative h-32 w-32">
-                               <RadialProgress :progress="consumptionStore.stats.efficiencyScore" :color="efficiencyColor" />
-                               <div class="absolute inset-0 flex items-center justify-center">
-                                   <span class="text-2xl font-bold">{{ consumptionStore.stats.efficiencyScore }}%</span>
-                               </div>
-                           </div>
-                       </div>
-                       <div class="flex-1 md:ml-6">
-                           <div class="space-y-4">
-                               <div>
-                                   <div class="flex justify-between mb-1">
-                                       <span class="text-sm">Collection Efficiency</span>
-                                       <span class="text-sm font-bold">{{ consumptionStore.stats.collectionEfficiency }}%</span>
-                                   </div>
-                                   <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                                       <div class="h-full bg-blue-500 rounded-full" :style="`width: ${consumptionStore.stats.collectionEfficiency}%`"></div>
-                                   </div>
-                               </div>
-                               <div>
-                                   <div class="flex justify-between mb-1">
-                                       <span class="text-sm">Conservation Rate</span>
-                                       <span class="text-sm font-bold">{{ consumptionStore.stats.conservationRate }}%</span>
-                                   </div>
-                                   <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                                       <div class="h-full bg-green-500 rounded-full" :style="`width: ${consumptionStore.stats.conservationRate}%`"></div>
-                                   </div>
-                               </div>
-                               <div>
-                                   <div class="flex justify-between mb-1">
-                                       <span class="text-sm">Usage Optimization</span>
-                                       <span class="text-sm font-bold">{{ consumptionStore.stats.usageOptimization }}%</span>
-                                   </div>
-                                   <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                                       <div class="h-full bg-purple-500 rounded-full" :style="`width: ${consumptionStore.stats.usageOptimization}%`"></div>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </CardContent>
-           </Card>
-           
-           <!-- Conservation Tips -->
-           <Card class="shadow-none md:col-span-2 lg:col-span-3">
-               <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                   <CardTitle class="text-sm font-medium">
-                       Improvement Opportunities
-                   </CardTitle>
-                   <Lightbulb class="h-4 w-4 text-yellow-500" />
-               </CardHeader>
-               <CardContent>
-                   <div class="grid gap-4 md:grid-cols-3">
-                       <div v-for="(tip, index) in improvementTips" :key="index" class="bg-gray-50 p-3 rounded-lg">
-                           <div class="flex items-start mb-2">
-                               <div class="mr-2 mt-1">
-                                   <component :is="tip.icon" class="h-4 w-4" :class="tip.iconColor" />
-                               </div>
-                               <h3 class="text-sm font-semibold">{{ tip.title }}</h3>
-                           </div>
-                           <p class="text-xs text-gray-600">{{ tip.description }}</p>
-                           <div class="mt-2 flex justify-between items-center">
-                               <span class="text-xs font-medium" :class="tip.savingsColor">{{ tip.potentialSavings }}</span>
-                               <Button size="sm" variant="ghost" class="h-7 text-xs">Learn More</Button>
-                           </div>
-                       </div>
-                   </div>
-               </CardContent>
-           </Card>
-       </div>
+        <!-- Header with Period Selector -->
+        <div class="flex justify-between items-center mb-2">
+            <div>
+                <h2 class="text-lg font-bold">Cluster Comparison</h2>
+                <p class="text-xs text-muted-foreground">Compare consumption patterns and efficiency metrics</p>
+            </div>
+            <PeriodFacetedFilter @onDateChanged="handleDateChange" />
+        </div>
+
+        <!-- Loading State -->
+        <div v-if="isLoading" class="flex items-center justify-center h-64">
+            <div class="flex flex-col items-center">
+                <div class="h-8 w-8 rounded-full border-4 border-t-blue-500 border-r-transparent border-b-transparent border-l-transparent animate-spin mb-2"></div>
+                <p class="text-sm text-muted-foreground">Loading cluster data...</p>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="error" class="flex flex-col items-center justify-center p-8 bg-red-50 rounded-lg">
+            <AlertCircle class="h-12 w-12 text-red-500 mb-4" />
+            <h3 class="text-lg font-semibold text-red-700">Unable to load comparison data</h3>
+            <p class="text-sm text-red-600 mb-4">{{ error.message || 'An error occurred while fetching data' }}</p>
+            <Button @click="refreshData" class="bg-red-100 text-red-700 hover:bg-red-200">Try Again</Button>
+        </div>
+
+        <!-- No Data State -->
+        <div v-else-if="!hasData" class="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg">
+            <Database class="h-12 w-12 text-gray-400 mb-4" />
+            <h3 class="text-lg font-semibold text-gray-700">No comparison data available</h3>
+            <p class="text-sm text-gray-600 mb-4">Try selecting a different time period or adding more devices to this cluster.</p>
+            <Button @click="refreshData" class="bg-gray-200 text-gray-700 hover:bg-gray-300">Refresh Data</Button>
+        </div>
+
+        <!-- Content -->
+        <div v-else>
+            <!-- Cluster Comparison Chart -->
+            <Card class="shadow-none mb-6">
+                <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle class="text-sm font-medium">
+                        Consumption by Cluster
+                    </CardTitle>
+                    <BarChart3 class="h-4 w-4 text-indigo-500" />
+                </CardHeader>
+                <CardContent>
+                    <div class="h-80">
+                        <ClientOnly>
+                            <apexchart
+                                type="bar"
+                                height="100%"
+                                :options="clusterComparisonOptions"
+                                :series="clusterComparisonSeries">
+                            </apexchart>
+                        </ClientOnly>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <!-- Efficiency Comparison -->
+            <Card class="shadow-none mb-6">
+                <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle class="text-sm font-medium">
+                        Efficiency Comparison
+                    </CardTitle>
+                    <Award class="h-4 w-4 text-yellow-500" />
+                </CardHeader>
+                <CardContent>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Efficiency Radar Chart -->
+                        <div class="h-64">
+                            <ClientOnly>
+                                <apexchart
+                                    type="radar"
+                                    height="100%"
+                                    :options="efficiencyRadarOptions"
+                                    :series="efficiencyRadarSeries">
+                                </apexchart>
+                            </ClientOnly>
+                        </div>
+
+                        <!-- Efficiency Rankings -->
+                        <div>
+                            <h3 class="text-sm font-medium mb-3">Cluster Rankings</h3>
+                            <div class="space-y-4">
+                                <div v-for="(cluster, index) in clusterRankings" :key="index" class="flex items-center">
+                                    <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center" :class="getClusterRankColor(index)">
+                                        <span class="text-white text-xs font-bold">{{ index + 1 }}</span>
+                                    </div>
+                                    <div class="ml-3 flex-grow">
+                                        <div class="flex justify-between">
+                                            <span class="text-sm font-medium">{{ cluster.name }}</span>
+                                            <span class="text-sm font-bold">{{ cluster.score }}%</span>
+                                        </div>
+                                        <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden mt-1">
+                                            <div class="h-full rounded-full" :style="`width: ${cluster.score}%`" :class="getClusterScoreColor(cluster.score)"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <!-- Consumption Trends -->
+            <Card class="shadow-none mb-6">
+                <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle class="text-sm font-medium">
+                        Consumption Trends
+                    </CardTitle>
+                    <div class="h-4 w-4 text-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <div class="h-64">
+                        <ClientOnly>
+                            <apexchart
+                                type="line"
+                                height="100%"
+                                :options="trendChartOptions"
+                                :series="trendChartSeries">
+                            </apexchart>
+                        </ClientOnly>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <!-- Anomaly Detection -->
+            <Card class="shadow-none">
+                <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle class="text-sm font-medium">
+                        Anomaly Detection
+                    </CardTitle>
+                    <div class="h-4 w-4 text-amber-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <div v-if="anomalies.length === 0" class="flex flex-col items-center justify-center py-8 text-center">
+                        <div class="h-12 w-12 text-green-500 mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        </div>
+                        <h3 class="text-base font-medium text-gray-700">No anomalies detected</h3>
+                        <p class="text-sm text-gray-500 mt-1">All clusters are operating within expected parameters</p>
+                    </div>
+                    <div v-else class="grid gap-4 md:grid-cols-2">
+                        <div v-for="(anomaly, index) in anomalies" :key="index" class="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                            <div class="flex items-start">
+                                <div class="mr-3 mt-1 p-2 rounded-full bg-amber-100">
+                                    <component :is="anomaly.icon" class="h-4 w-4 text-amber-500" />
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-semibold mb-1">{{ anomaly.title }}</h3>
+                                    <p class="text-xs text-gray-600 mb-2">{{ anomaly.description }}</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs font-medium text-gray-500">{{ anomaly.date }}</span>
+                                        <button class="px-2 py-1 text-xs bg-transparent hover:bg-amber-100 rounded">Investigate</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, defineComponent, h } from 'vue';
-import { 
-    Droplet, Gauge, Save, TrendingUp, DollarSign, 
-    Activity, Award, Lightbulb, MoreHorizontal 
+import {
+    Droplet, Award, BarChart3,
+    AlertCircle, Database, AlertTriangle
 } from 'lucide-vue-next';
+import { ref, onMounted, defineComponent, h } from 'vue';
 
-// Create dummy option
-const option = ref({
-    title: 'Water Management Insights',
-    subtitle: 'Track your collection, consumption, and savings'
-});
-
-// Create a consumptionStore with reactive data for the dashboard
-const consumptionStore = ref({
-    isLoadingConsumptionInsights: false,
-    stats: {
-        // Original stats from your template
-        waterUsed: 780,
-        waterUsedChange: -5,
-        waterUsedChangeDescription: "-5% since last period",
-        estimatedBill: true,
-        peakUsageAmount: 42,
-        peakUsageDate: "15 Feb 2025",
-        peakUsageGroup: "1",
-        averageConsumption: 25.6,
-        
-        // New stats for enhanced dashboard
-        waterCollected: 1250,
-        waterCollectedChange: 12,
-        waterSaved: 470,
-        waterSavedChange: 23,
-        collectionEfficiency: 85,
-        consumptionRate: 62,
-        conservationRate: 38,
-        usageOptimization: 72,
-        efficiencyScore: 73,
-        waterSavingsCost: 850,
-        costComparisonPercentage: 75
+// Import ClientOnly component for chart rendering
+const ClientOnly = defineComponent({
+    setup(_, { slots }) {
+        return () => h('div', {}, slots.default && slots.default());
     }
 });
 
-// Create a billStore to handle bill calculations
-const billStore = {
-    calculateTotalBill: ({ consumption }) => {
-        // Simple calculation for demo purposes
-        // In a real implementation, this would use proper billing rates
-        const baseRate = 1.5;
-        const additionalFees = 150;
-        return (consumption * baseRate + additionalFees).toFixed(2);
-    }
-};
-
-// Chart data
-const waterBalanceData = ref([
-    { month: 'Current Period', Collected: 1250, Consumed: 780, Saved: 470 },
-    { month: 'Previous Period', Collected: 1100, Consumed: 820, Saved: 280 }
-]);
-
-const usageTrendData = ref([
-    { month: 'Sep', Collected: 950, Consumed: 680, Saved: 270 },
-    { month: 'Oct', Collected: 980, Consumed: 720, Saved: 260 },
-    { month: 'Nov', Collected: 1050, Consumed: 750, Saved: 300 },
-    { month: 'Dec', Collected: 1120, Consumed: 820, Saved: 300 },
-    { month: 'Jan', Collected: 1100, Consumed: 820, Saved: 280 },
-    { month: 'Feb', Collected: 1250, Consumed: 780, Saved: 470 }
-]);
-
-// Computed values
-const efficiencyColor = computed(() => {
-    if (consumptionStore.value.stats.efficiencyScore >= 80) return 'text-green-500';
-    if (consumptionStore.value.stats.efficiencyScore >= 60) return 'text-yellow-500';
-    return 'text-red-500';
-});
-
-const costChangeDescription = computed(() => {
-    const percentage = consumptionStore.value.stats.costComparisonPercentage;
-    return percentage < 100 
-        ? `Spending ${100 - percentage}% less than previous period` 
-        : `Spending ${percentage - 100}% more than previous period`;
-});
-
-// Improvement tips
-const improvementTips = ref([
-    {
-        title: 'Optimize Collection',
-        description: 'Increase your water collection efficiency by expanding catchment areas by 10%.',
-        potentialSavings: '+120 kL potential',
-        icon: Droplet,
-        iconColor: 'text-blue-500',
-        savingsColor: 'text-blue-500'
-    },
-    {
-        title: 'Reduce Leakage',
-        description: 'Fix identified leaks in Block B to prevent unnecessary water loss.',
-        potentialSavings: '-85 kL consumption',
-        icon: Gauge,
-        iconColor: 'text-red-500',
-        savingsColor: 'text-green-500'
-    },
-    {
-        title: 'Optimize Usage Times',
-        description: 'Shift high-usage activities to off-peak hours for better distribution.',
-        potentialSavings: '+15% efficiency',
-        icon: Activity,
-        iconColor: 'text-purple-500',
-        savingsColor: 'text-purple-500'
-    }
-]);
-
-// Methods
-const exportData = () => {
-    // Implement export functionality
-    console.log('Exporting data...');
-};
-
-const printReport = () => {
-    // Implement print functionality
-    console.log('Printing report...');
-};
-
-const onDateChanged = (dates) => {
-    // Handle date change, would update data in actual implementation
-    console.log('Date changed:', dates);
-    
-    // In a real implementation, this would trigger a data refresh
-    // For demo, we'll simulate a loading state
-    consumptionStore.value.isLoadingConsumptionInsights = true;
-    
-    setTimeout(() => {
-        consumptionStore.value.isLoadingConsumptionInsights = false;
-    }, 1000);
-};
-
-// Function to get device group name (preserved from original code)
-const getDeviceGroupName = (groupId) => {
-    // In actual implementation, this would map to real group names
-    const groups = {
-        '1': 'Residential Block A',
-        '2': 'Residential Block B',
-        '3': 'Commercial Area',
-        '4': 'Public Facilities'
-    };
-    return groups[groupId] || groupId;
-};
-
-// Component implementations
-const BarChart = defineComponent({
-    props: ['data', 'categories', 'colors'],
+// Mock ApexCharts component
+const apexchart = defineComponent({
+    props: ['type', 'height', 'options', 'series'],
     setup(props) {
-        return () => h('div', { class: 'w-full h-full bg-gray-50 rounded-lg flex items-center justify-center' }, [
-            h('div', { class: 'text-sm text-gray-500' }, 'Bar Chart Visualization')
-        ]);
-    }
-});
-
-const LineChart = defineComponent({
-    props: ['data', 'categories', 'colors'],
-    setup(props) {
-        return () => h('div', { class: 'w-full h-full bg-gray-50 rounded-lg flex items-center justify-center' }, [
-            h('div', { class: 'text-sm text-gray-500' }, 'Line Chart Visualization')
-        ]);
-    }
-});
-
-const RadialProgress = defineComponent({
-    props: ['progress', 'color'],
-    setup(props) {
-        return () => h('div', { 
-            class: 'w-full h-full rounded-full border-4 border-gray-200 flex items-center justify-center' 
+        return () => h('div', {
+            class: 'h-full flex items-center justify-center bg-gray-50 rounded-lg'
         }, [
-            // h('div', { class: 'text-sm text-gray-500' }, `${props.progress}%`)
+            h('div', { class: 'text-center' }, [
+                h('div', { class: 'h-10 w-10 text-gray-300 mx-auto mb-2' }, [
+                    h('svg', {
+                        xmlns: 'http://www.w3.org/2000/svg',
+                        viewBox: '0 0 24 24',
+                        fill: 'none',
+                        stroke: 'currentColor',
+                        'stroke-width': '2',
+                        'stroke-linecap': 'round',
+                        'stroke-linejoin': 'round',
+                        class: 'h-full w-full'
+                    }, [
+                        props.type === 'bar' ? [
+                            h('line', { x1: '18', y1: '20', x2: '18', y2: '10' }),
+                            h('line', { x1: '12', y1: '20', x2: '12', y2: '4' }),
+                            h('line', { x1: '6', y1: '20', x2: '6', y2: '14' })
+                        ] : props.type === 'radar' ? [
+                            h('polygon', { points: '12 2 19.5 8.5 18 16 12 20 6 16 4.5 8.5 12 2' })
+                        ] : [
+                            h('polyline', { points: '22 12 18 12 15 21 9 3 6 12 2 12' })
+                        ]
+                    ])
+                ]),
+                h('p', { class: 'text-sm text-gray-500' }, `${props.type.charAt(0).toUpperCase() + props.type.slice(1)} chart would appear here`),
+                h('p', { class: 'text-xs text-gray-400' }, `Showing ${props.series.length} data series`)
+            ])
         ]);
     }
 });
 
-// Other required components for placeholder purposes
+
+
+// Button component
+const Button = defineComponent({
+    props: {
+        variant: { type: String, default: 'default' },
+        size: { type: String, default: 'default' }
+    },
+    setup(props, { slots }) {
+        return () => h('button', {
+            class: `px-4 py-2 rounded font-medium ${props.variant === 'outline' ? 'border border-gray-300 bg-transparent' : 'bg-gray-100 hover:bg-gray-200'} ${props.size === 'sm' ? 'text-xs py-1 px-2' : ''}`
+        }, slots.default && slots.default());
+    }
+});
+
+// Card components
 const Card = defineComponent({
     setup(_, { slots }) {
         return () => h('div', { class: 'bg-white border rounded-lg' }, slots.default && slots.default());
@@ -305,64 +259,333 @@ const CardTitle = defineComponent({
     }
 });
 
-const Skeleton = defineComponent({
-    setup(_, { attrs }) {
-        return () => h('div', { 
-            class: 'bg-gray-200 animate-pulse rounded',
-            style: { 
-                width: attrs.class && attrs.class.includes('w-') ? undefined : '100%',
-                height: attrs.class && attrs.class.includes('h-') ? undefined : '1rem'
-            }
-        });
-    }
-});
 
-const Button = defineComponent({
-    props: ['variant', 'size'],
-    setup(props, { slots }) {
-        return () => h('button', { 
-            class: 'px-3 py-1 rounded text-sm bg-gray-100 hover:bg-gray-200'
-        }, slots.default && slots.default());
-    }
-});
-
-const DropdownMenu = defineComponent({
-    setup(_, { slots }) {
-        return () => h('div', { class: 'relative' }, slots.default && slots.default());
-    }
-});
-
-const DropdownMenuTrigger = defineComponent({
-    props: ['asChild'],
-    setup(_, { slots }) {
-        return () => slots.default ? slots.default() : null;
-    }
-});
-
-const DropdownMenuContent = defineComponent({
-    props: ['align'],
-    setup(_, { slots }) {
-        return () => h('div', { 
-            class: 'absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg border py-1 z-10 hidden'
-        }, slots.default && slots.default());
-    }
-});
-
-const DropdownMenuItem = defineComponent({
-    setup(_, { slots }) {
-        return () => h('button', { 
-            class: 'w-full text-left px-4 py-2 text-sm hover:bg-gray-100'
-        }, slots.default && slots.default());
-    }
-});
 
 const PeriodFacetedFilter = defineComponent({
     emits: ['onDateChanged'],
-    setup(props, { emit }) {
-        return () => h('button', { 
-            class: 'text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded',
+    setup(_, { emit }) {
+        return () => h('button', {
+            class: 'text-xs h-8 px-3 py-1 rounded border border-gray-300 bg-transparent flex items-center',
             onClick: () => emit('onDateChanged', { start: new Date(), end: new Date() })
-        }, 'Last 30 Days ▾');
+        }, [
+            'Last 30 Days ',
+            h('svg', {
+                class: 'ml-1 h-3 w-3',
+                xmlns: 'http://www.w3.org/2000/svg',
+                viewBox: '0 0 24 24',
+                fill: 'none',
+                stroke: 'currentColor',
+                'stroke-width': '2',
+                'stroke-linecap': 'round',
+                'stroke-linejoin': 'round'
+            }, [
+                h('polyline', { points: '6 9 12 15 18 9' })
+            ])
+        ]);
     }
+});
+
+// Mock data for the dashboard
+const isLoading = ref(false);
+const error = ref(null);
+const hasData = ref(true);
+
+// Mock consumption data
+const consumptionData = ref({
+    unit: 'kL',
+    comparisonPeriod: 'vs last month',
+    currentPeriod: 'Feb 1 - Feb 28, 2024',
+    consumption: {
+        total: 780,
+        percentageChange: -5.2
+    },
+    collection: {
+        total: 1250,
+        percentageChange: 12.3
+    },
+    saved: 470
+});
+
+
+
+// Mock cluster rankings
+const clusterRankings = ref([
+    { id: 'c3', name: 'Commercial Area', score: 92 },
+    { id: 'c1', name: 'Residential Block A', score: 87 },
+    { id: 'c4', name: 'Public Facilities', score: 78 },
+    { id: 'c5', name: 'Industrial Zone', score: 65 },
+    { id: 'c2', name: 'Residential Block B', score: 58 }
+]);
+
+// Mock anomalies
+const anomalies = ref([
+    {
+        id: 'a1',
+        clusterId: 'c2',
+        title: 'Unusual consumption spike',
+        description: 'Residential Block B showed a 45% increase in consumption on Tuesday',
+        date: 'May 15, 2024',
+        icon: AlertTriangle
+    },
+    {
+        id: 'a2',
+        clusterId: 'c5',
+        title: 'Potential leak detected',
+        description: 'Industrial Zone has continuous flow during non-operational hours',
+        date: 'May 17, 2024',
+        icon: Droplet
+    }
+]);
+
+// Helper functions for cluster visualization
+const getClusterRankColor = (index) => {
+    const colors = [
+        'bg-green-500', // 1st place
+        'bg-teal-500',  // 2nd place
+        'bg-blue-500',  // 3rd place
+        'bg-indigo-500', // 4th place
+        'bg-purple-500'  // 5th place
+    ];
+    return colors[index] || 'bg-gray-500';
+};
+
+const getClusterScoreColor = (score) => {
+    if (score >= 90) return 'bg-green-500';
+    if (score >= 80) return 'bg-teal-500';
+    if (score >= 70) return 'bg-blue-500';
+    if (score >= 60) return 'bg-indigo-500';
+    return 'bg-purple-500';
+};
+
+// Computed values for efficiency metrics
+const collectionEfficiency = ref(85);
+const usageOptimization = ref(72);
+
+// Chart configurations and data
+const clusterComparisonSeries = ref([
+    {
+        name: 'Consumption (kL)',
+        data: [780, 650, 420, 380, 290]
+    },
+    {
+        name: 'Collection (kL)',
+        data: [1250, 980, 720, 510, 380]
+    },
+    {
+        name: 'Saved (kL)',
+        data: [470, 330, 300, 130, 90]
+    }
+]);
+
+const clusterComparisonOptions = ref({
+    chart: {
+        type: 'bar',
+        stacked: false,
+        toolbar: {
+            show: true
+        },
+        zoom: {
+            enabled: false
+        }
+    },
+    plotOptions: {
+        bar: {
+            horizontal: false,
+            columnWidth: '55%',
+            borderRadius: 4
+        },
+    },
+    dataLabels: {
+        enabled: false
+    },
+    stroke: {
+        show: true,
+        width: 2,
+        colors: ['transparent']
+    },
+    xaxis: {
+        categories: ['Commercial Area', 'Residential Block A', 'Public Facilities', 'Industrial Zone', 'Residential Block B'],
+    },
+    yaxis: {
+        title: {
+            text: 'Volume (kL)'
+        }
+    },
+    fill: {
+        opacity: 1
+    },
+    tooltip: {
+        y: {
+            formatter: function (val) {
+                return val + " kL"
+            }
+        }
+    },
+    colors: ['#3b82f6', '#06b6d4', '#10b981']
+});
+
+const efficiencyRadarSeries = ref([
+    {
+        name: 'Commercial Area',
+        data: [92, 88, 95, 85, 98]
+    },
+    {
+        name: 'Residential Block A',
+        data: [87, 90, 80, 95, 82]
+    },
+    {
+        name: 'Public Facilities',
+        data: [78, 85, 75, 70, 80]
+    }
+]);
+
+const efficiencyRadarOptions = ref({
+    chart: {
+        type: 'radar',
+        toolbar: {
+            show: true
+        },
+    },
+    xaxis: {
+        categories: ['Overall Efficiency', 'Collection Efficiency', 'Conservation Rate', 'Usage Optimization', 'Maintenance']
+    },
+    yaxis: {
+        show: false,
+        max: 100
+    },
+    fill: {
+        opacity: 0.3
+    },
+    stroke: {
+        width: 2
+    },
+    markers: {
+        size: 4
+    },
+    colors: ['#10b981', '#3b82f6', '#6366f1']
+});
+
+const trendChartSeries = ref([
+    {
+        name: 'Commercial Area',
+        data: [42, 45, 38, 40, 45, 50, 48, 52, 55, 58, 56, 60]
+    },
+    {
+        name: 'Residential Block A',
+        data: [35, 38, 32, 36, 40, 42, 45, 48, 44, 42, 40, 45]
+    },
+    {
+        name: 'Public Facilities',
+        data: [28, 30, 25, 28, 32, 35, 30, 28, 32, 35, 38, 36]
+    },
+    {
+        name: 'Industrial Zone',
+        data: [25, 28, 22, 25, 30, 32, 28, 25, 28, 30, 32, 30]
+    },
+    {
+        name: 'Residential Block B',
+        data: [20, 22, 18, 20, 24, 26, 22, 20, 22, 24, 26, 24]
+    }
+]);
+
+const trendChartOptions = ref({
+    chart: {
+        type: 'line',
+        toolbar: {
+            show: true
+        },
+        zoom: {
+            enabled: true
+        }
+    },
+    dataLabels: {
+        enabled: false
+    },
+    stroke: {
+        curve: 'smooth',
+        width: 2
+    },
+    grid: {
+        row: {
+            colors: ['#f3f3f3', 'transparent'],
+            opacity: 0.5
+        },
+    },
+    xaxis: {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    },
+    yaxis: {
+        title: {
+            text: 'Consumption (kL)'
+        }
+    },
+    tooltip: {
+        y: {
+            formatter: function (val) {
+                return val + " kL"
+            }
+        }
+    },
+    colors: ['#10b981', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899']
+});
+
+// Methods
+const handleDateChange = (dates) => {
+    console.log('Date changed:', dates);
+    refreshData();
+};
+
+const refreshData = () => {
+    isLoading.value = true;
+
+    // Simulate API call
+    setTimeout(() => {
+        isLoading.value = false;
+
+        // Randomly update some values to simulate data refresh
+        consumptionData.value.consumption.total = 780 + (Math.random() * 100 - 50);
+        consumptionData.value.collection.total = 1250 + (Math.random() * 150 - 75);
+        consumptionData.value.saved = 470 + (Math.random() * 80 - 40);
+
+        // Update efficiency metrics
+        collectionEfficiency.value = Math.min(100, Math.max(50, collectionEfficiency.value + (Math.random() * 10 - 5)));
+        usageOptimization.value = Math.min(100, Math.max(50, usageOptimization.value + (Math.random() * 10 - 5)));
+
+        // Update cluster rankings
+        clusterRankings.value = clusterRankings.value.map(cluster => ({
+            ...cluster,
+            score: Math.min(100, Math.max(50, cluster.score + (Math.random() * 10 - 5)))
+        }));
+
+        // Sort rankings by score
+        clusterRankings.value.sort((a, b) => b.score - a.score);
+
+        // Update chart data
+        clusterComparisonSeries.value = clusterComparisonSeries.value.map(series => ({
+            ...series,
+            data: series.data.map(val => Math.max(0, val + (Math.random() * 50 - 25)))
+        }));
+
+        efficiencyRadarSeries.value = efficiencyRadarSeries.value.map(series => ({
+            ...series,
+            data: series.data.map(val => Math.min(100, Math.max(50, val + (Math.random() * 10 - 5))))
+        }));
+
+        trendChartSeries.value = trendChartSeries.value.map(series => ({
+            ...series,
+            data: series.data.map(val => Math.max(0, val + (Math.random() * 5 - 2.5)))
+        }));
+
+        // Randomly show or hide anomalies
+        if (Math.random() > 0.7) {
+            anomalies.value = [];
+        }
+    }, 1500);
+};
+
+// Initialize data on component mount
+onMounted(() => {
+    // In a real implementation, this would fetch data from the API
+    // For now, we're using the mock data defined above
 });
 </script>

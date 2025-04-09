@@ -5,14 +5,14 @@
     <div class="w-full relative bg-blue-50 rounded-xl p-5 flex flex-col justify-between transition ease-in-out delay-150">
         <div class="absolute left-5 top-5 flex flex-col gap-5">
             <div>
-                <p class="text-xs font-bold text-black">EUI</p> 
+                <p class="text-xs font-bold text-black">EUI</p>
             <p class="text-muted-foreground text-xs">{{ values.eui }}</p>
             </div>
             <div>
-                <p class="text-xs font-bold text-black">Device Id</p> 
+                <p class="text-xs font-bold text-black">Device Id</p>
             <p class="text-muted-foreground text-xs">{{ values.deviceId }}</p>
             </div>
-          
+
         </div>
         <div class="w-40 mx-auto ">
             <img class="w-full h-full object-cover" src="/img/lorawan.png" />
@@ -115,9 +115,10 @@ import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { Loader2 } from 'lucide-vue-next'
 import type { IDevice } from '~/stores/device/model/device.model';
+import { useToast } from '~/components/ui/toast/use-toast';
 
 const props = defineProps<{ clusterId: string }>()
-const emits = defineEmits(['update:open'])
+const emits = defineEmits(['update:open', 'device-added'])
 
 const newDevice = ref<IDevice>({} as IDevice)
 const deviceStore = useDeviceStore()
@@ -126,17 +127,34 @@ const addNewDevice = async (deviceData:{eui:string, deviceId:string, deviceName:
     // Update the new device ref
     newDevice.value = {...newDevice.value, ...deviceData, name:deviceData.deviceName}
 
-    await deviceStore.addNewDevice(newDevice.value, props.clusterId)
+    try {
+        await deviceStore.addNewDevice(newDevice.value, props.clusterId)
 
-    // Handle success
-    if (deviceStore.success_AddingNewDevice) {
-        emits('update:open',false)
-        useRouter().go(0); //TODO!: GIVE THIS A BETTER EXPERIENCE
-        return;
+        // Handle success
+        if (deviceStore.success_AddingNewDevice) {
+            // Close the dialog
+            emits('update:open', false)
+
+            // Show success toast
+            const toast = useToast()
+            toast.success({
+                title: 'Device Added',
+                description: `${deviceData.deviceName} has been successfully added.`
+            })
+
+            // Refresh the device list without full page reload
+            // This will trigger a refetch of devices in the parent component
+            emits('device-added')
+            return
+        }
+    } catch (error) {
+        // Handle error with toast
+        const toast = useToast()
+        toast.error({
+            title: 'Error',
+            description: 'Could not add device. Please try again.'
+        })
     }
-
-    // Handle error
-    alert("Could not add device. Something went wrong.")
 }
 
 // FORM SETTINGS

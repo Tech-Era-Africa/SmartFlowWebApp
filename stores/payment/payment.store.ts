@@ -20,12 +20,12 @@ export const usePaymentStore = defineStore({
 
         this.paymentInitApiState = ApiResponseState.LOADING;
 
-        // Update the callback url 
+        // Update the callback url
         paymentOption.callback_url = `${useRuntimeConfig().public.APP_BASE_URL}/billing/status/${paymentOption.billId}`
         paymentOption.reference = `${paymentOption.billId}${Date.now()}`
 
         const data: any = await useStoreFetchRequest(`https://api.paystack.co/transaction/initialize`, 'POST', paymentOption, {
-          "Authorization": "Bearer sk_live_60441090c21e322edfd443aff8d065265097fc72", //TODO!: NEED TO FIGURE THIS OUT
+          "Authorization": `Bearer ${useRuntimeConfig().PAYSTACK_SECRET_KEY}`,
           "Content-Type": "application/json"
         });
 
@@ -43,15 +43,15 @@ export const usePaymentStore = defineStore({
     async verifyPayment(paymentRef: string) {
       try{
 
-   
+
         this.verifyTxApiState = ApiResponseState.LOADING;
 
         const data: any = await useStoreFetchRequest(`https://api.paystack.co/transaction/verify/${paymentRef}`, 'GET', null, {
-          "Authorization": "Bearer sk_live_60441090c21e322edfd443aff8d065265097fc72",
+          "Authorization": `Bearer ${useRuntimeConfig().PAYSTACK_SECRET_KEY}`,
           "Content-Type": "application/json"
         });
-  
-  
+
+
         this.verifyTxApiState = data.data.status == 'success' ? ApiResponseState.SUCCESS : ApiResponseState.FAILED;
 
         return data
@@ -79,7 +79,7 @@ export const usePaymentStore = defineStore({
       }
     },
 
-   
+
   },
 
   getters: {

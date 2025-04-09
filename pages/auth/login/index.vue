@@ -7,6 +7,17 @@
                     <h1 class="mt-12 text-3xl font-bold text-gray-900">Welcome Back</h1>
                     <p class="mt-4 text-sm font-medium text-gray-500">Monitor your water consumption with ease and make
                         insightful decisions.</p>
+
+                    <!-- Session expiry alert -->
+                    <Alert v-if="sessionExpiredReason" class="mt-4" variant="destructive">
+                        <AlertCircle class="h-4 w-4" />
+                        <AlertTitle>Session Expired</AlertTitle>
+                        <AlertDescription>
+                            {{ sessionExpiredReason === 'inactivity' ?
+                                'Your session has expired due to inactivity.' :
+                                'Your authentication session has expired.' }}
+                        </AlertDescription>
+                    </Alert>
                 </div>
 
                 <!-- <div class="mt-12">
@@ -29,7 +40,7 @@
                 </div>
             </div> -->
 
-            
+
                     <div class="space-y-4">
                         <div>
                             <label for="" class="text-sm font-bold text-gray-900"> Email </label>
@@ -47,7 +58,7 @@
                                     > Forgot Password? </NuxtLink>
                             </div>
                             <div class="mt-2">
-                                <Input type="password" name="" placeholder="Password (min. 8 character)" v-model="password" 
+                                <Input type="password" name="" placeholder="Password (min. 8 character)" v-model="password"
                                     class="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600" />
                             </div>
                         </div>
@@ -72,7 +83,7 @@
                         </Button>
                         </div>
                     </div>
-        
+
 
                 <!-- <div class="mt-6 text-center">
                 <p class="text-sm font-medium text-gray-900">Don't have an account? <a href="#" title="" class="font-bold hover:underline"> Sign up now </a></p>
@@ -84,8 +95,9 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth/auth.store';
-import { Loader2 } from 'lucide-vue-next'
+import { Loader2, AlertCircle } from 'lucide-vue-next'
 import { toast } from '@/components/ui/toast';
+import { onMounted, ref } from 'vue';
 
 definePageMeta({
     middleware: "already-auth"
@@ -101,6 +113,19 @@ useHead(
 const authStore = useAuthStore()
 const email = ref("")
 const password = ref("")
+const sessionExpiredReason = ref<'expired' | 'inactivity' | null>(null)
+
+// Check if session expired on component mount
+onMounted(() => {
+    if (process.client) {
+        const sessionExpired = localStorage.getItem('session_expired');
+        if (sessionExpired === 'expired' || sessionExpired === 'inactivity') {
+            sessionExpiredReason.value = sessionExpired as 'expired' | 'inactivity';
+            // Clear the flag
+            localStorage.removeItem('session_expired');
+        }
+    }
+})
 
 const login = async () => {
     await authStore.loginWithEmail({ email : email.value, password : password.value })

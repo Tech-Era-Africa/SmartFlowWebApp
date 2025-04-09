@@ -33,13 +33,19 @@ export const useBillStore = defineStore({
     // BILLING WIDGET
     billingWidget:{
       billTitle: "Bill",
-      billTypeId : "rxc51QYu7l", //Defaults to commercial TODO!: MAKE DYNAMIC
+      billTypeId : "", // Will be set dynamically based on the selected bill type
       devices: [] as any[],
       clusterId : "",
       totalConsumption: 0,
       startDate: new Date(new Date().getFullYear(), 0, 1).toISOString(),
       endDate: new Date(new Date().getFullYear(), 11, 31).toISOString(),
-  }
+  },
+
+    // Bill types
+    billTypes: [
+      { id: "rxc51QYu7l", name: "Commercial" },
+      { id: "hXR7sQI3FI", name: "Residential" }
+    ]
   }),
   actions: {
 
@@ -55,7 +61,7 @@ export const useBillStore = defineStore({
         const data = await useStoreFetchRequest("/api/bill", 'POST', billOption);
         this.billApiState = ApiResponseState.SUCCESS;
         this.createdBill = data as any;
-        
+
       } catch (error: any) {
         this.billApiFailure.message = error.message;
         this.billApiState = ApiResponseState.FAILED;
@@ -79,9 +85,35 @@ export const useBillStore = defineStore({
       }
     },
 
-    // TODO!: DO THIS PROPERLY
+    // Update bill data with proper type checking
     async updateBillData(billData:any){
-      this.billingWidget = billData
+      // If billTypeId is not provided, set it to the default commercial type
+      if (!billData.billTypeId) {
+        billData.billTypeId = this.billTypes[0].id; // Default to commercial
+      }
+
+      this.billingWidget = billData;
+    },
+
+    // Get bill type by ID
+    getBillTypeName(billTypeId: string): string {
+      const billType = this.billTypes.find(type => type.id === billTypeId);
+      return billType ? billType.name : 'Unknown';
+    },
+
+    // Set bill type by name
+    setBillTypeByName(typeName: string): string {
+      const billType = this.billTypes.find(type =>
+        type.name.toLowerCase() === typeName.toLowerCase());
+
+      if (billType) {
+        this.billingWidget.billTypeId = billType.id;
+        return billType.id;
+      }
+
+      // Default to commercial if not found
+      this.billingWidget.billTypeId = this.billTypes[0].id;
+      return this.billTypes[0].id;
     },
 
     // !DEPRECATED
@@ -109,7 +141,7 @@ export const useBillStore = defineStore({
         if (!billId) throw Error("Bill id required")
 
         this.fetchBillApiState = ApiResponseState.LOADING;
-        
+
         const data: any = await useStoreFetchRequest(`/api/bill/${billId}`, 'GET');
 
         // Throw error exception
@@ -120,7 +152,7 @@ export const useBillStore = defineStore({
         this.fetchBillApiState = ApiResponseState.SUCCESS;
         this.bill = BillModel.fromMap(data.data)
 
-     
+
 
       } catch (error: any) {
         console.log(error)
