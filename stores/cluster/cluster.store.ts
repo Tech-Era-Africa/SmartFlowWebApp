@@ -3,6 +3,7 @@ import { useUserStore } from '../auth/user/user.store';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 import type { ICluster } from './model/cluster.model';
 
+
 export const useClusterStore = defineStore('cluster', {
     state: () => ({
         newClusterApiState: ApiResponseState.NULL,
@@ -45,7 +46,7 @@ export const useClusterStore = defineStore('cluster', {
             }
         },
 
-        async getAllOrgClusters(): Promise<ICluster[]> {
+        async getClusters(): Promise<ICluster[]> {
             return new Promise(async (resolve, reject) => {
                 try {
                     this.getClustersApiState = ApiResponseState.LOADING;
@@ -70,29 +71,32 @@ export const useClusterStore = defineStore('cluster', {
 
         },
 
-        async getClusterDevices(clusterId: string): Promise<any[]> {
+        async getClusterDetails(clusterId: string): Promise<ICluster> {
             return new Promise(async (resolve, reject) => {
                 try {
-                    this.clusterDevicesApiState = ApiResponseState.LOADING;
-                    const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/clusters/${clusterId}/devices`, {
+
+                    const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/clusters`, {
                         method: 'GET',
                         headers: {
                             "Authorization": `Bearer ${useUserStore().token}`
+                        },
+                        query: {
+                            "filter[id]": clusterId
                         }
                     });
 
                     if (error.value) throw error.value;
 
-                    this.clusterDevices = data.value;
-                    this.clusterDevicesApiState = ApiResponseState.SUCCESS;
-                    resolve(this.clusterDevices);
+                    if(data.value.length == 0) throw Error("Cluster not found")
+
+                    return resolve(data.value[0]);
                 } catch (error: any) {
-                    this.clusterDevicesApiFailure.message = error.message;
-                    this.clusterDevicesApiState = ApiResponseState.FAILED;
-                    reject(error);
+                    return reject(error);
                 }
             });
         },
+
+    
     }, 
 
     

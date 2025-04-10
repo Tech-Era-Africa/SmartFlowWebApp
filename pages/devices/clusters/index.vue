@@ -102,7 +102,7 @@ const deviceStore = useDeviceStore()
 const clusterStore = useClusterStore()
 
 // Load the devices clusters
-const {  error, data:clusters, refresh, status } = await useAsyncData<ICluster[]>('device_clusters', () => clusterStore.getAllOrgClusters(), {lazy:true})
+const {  error, data:clusters, refresh, status } = await useAsyncData<ICluster[]>('device_clusters', () => clusterStore.getClusters(), {lazy:true})
 
 // NEW CLUSTER DIALOG CONTROL
 const isClusterDialogueOpen = ref(false)

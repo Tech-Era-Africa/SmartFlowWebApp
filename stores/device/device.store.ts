@@ -5,6 +5,24 @@ import { UserModel, type User } from '~/stores/auth/user/model/user.model';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 import { useUserStore } from '../auth/user/user.store';
 
+interface ClusterDeviceResponse {
+    imei: string;
+    createdAt: string;
+    updatedAt: string;
+    lastAt: string;
+    expireAt: string;
+    name: string;
+    deviceId: string;
+    consumptionReading: number;
+    priority: string;
+    description: string;
+    clusterInfo?: {
+        id:string;
+        name:string;
+    };
+}
+
+
 export const useDeviceStore = defineStore({
   id: 'deviceStore',
   state: () => ({
@@ -155,12 +173,11 @@ export const useDeviceStore = defineStore({
       }
     },
 
-    async getDevicesByGroup(groupId: string) {
+    async getClusterDevices(groupId: string) {
       return new Promise<IDevice[]>(async (resolve, reject) => {
         try {
-          this.getDevicesApiState = ApiResponseState.LOADING;
 
-          const { data, error } = await useFetch(`${useRuntimeConfig().public.API_BASE_URL}/device/by/group`, {
+          const { data, error } = await useFetch(`${useRuntimeConfig().public.API_BASE_URL}/devices/cluster`, {
             method: 'GET',
             query: {
               id: groupId
@@ -172,21 +189,11 @@ export const useDeviceStore = defineStore({
 
           // Handle errors
           if (error?.value) {
-            this.getDevicesApiState = ApiResponseState.FAILED;
-            this.getDevicesApiFailure.message = error.value.data?.error || 'Failed to fetch devices';
-            this.devices = [];
-            return reject(error.value);
+            throw new Error(error.value.data?.error || 'Failed to fetch devices');
           }
 
-          this.devices = (data.value as any).groupDevices.map((data: { device: any; }) => DeviceModel.fromMap(data.device));
-          this.deviceGroupName = (data.value as any).groupName;
-          this.getDevicesApiState = ApiResponseState.SUCCESS;
-
-          return resolve(this.devices);
+          return resolve(data.value as any);
         } catch (error: any) {
-          this.devices = []; // Default to empty
-          this.getDevicesApiFailure.message = error.message;
-          this.getDevicesApiState = ApiResponseState.FAILED;
           return reject(error);
         }
       });

@@ -70,7 +70,7 @@ const chartOptions = computed(() => ({
 
 </script>
 <template>
-    <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
+    <div :class="$attrs.class" class="w-full h-full bg-white rounded-xl p-5 flex flex-col gap-2">
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="font-bold text-lg">{{ option.title ?? 'Water Consumption' }}</h1>

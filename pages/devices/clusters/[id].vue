@@ -8,6 +8,7 @@ import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 import { useClusterStore } from '~/stores/cluster/cluster.store';
 // import { useToast } from '~/components/ui/toast/use-toast';
 import ClusterInsights from '~/components/ClusterInsights.vue';
+import type { ICluster } from '~/stores/cluster/model/cluster.model';
 
 useHead({ title: "Devices" })
 
@@ -17,47 +18,17 @@ const clusterStore = useClusterStore()
 const billStore = useBillStore()
 const clusterId = useRoute().params.id
 
-const consumptionStatOption = ref<{ deviceId: string, title?: string, isLoading?: boolean, min: number, max: number, sum: number }>({} as any)
+// Load cluster details
+const { data: clusterData, refresh: refreshClusterDetails, status: statusClusterDetails } = await useAsyncData<ICluster>('clusterDetails', () => clusterStore.getClusterDetails(clusterId.toString()), { lazy: true, immediate: true })
 
-// Define date range for consumption data
-const currentDate = new Date()
-const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1) // First day of current month
-const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0) // Last day of current month
+//Load cluster devices
+const { data: clusterDevices, refresh, status } = await useAsyncData<any>('clusterDevices', () => deviceStore.getClusterDevices(clusterId[0]), { lazy: true })
 
-// Load cluster devices
-const { data:clusterDevices, refresh, status } = await useAsyncData<any>('clusterDevices', () => clusterStore.getClusterDevices(clusterId.toString()), { lazy: true })
-
-// We use refresh in the refreshDevices function
 
 const billWidgetOption = ref<IBillOptionDTO>({ billTypeId: billStore.billTypes[0].id } as IBillOptionDTO)
 
-const validStatNumber = (num: number) => num > 0 ? num : 0
 
-const isSheetDialogueOpen = ref(false)
-const isNewDeviceDialogOpen = ref(false)
 
-const handleOnSheetDialogOpen = (isOpen: boolean) => {
-    if (!deviceStore.selectedDevice) isSheetDialogueOpen.value = isOpen
-    if (!isOpen) deviceStore.selectedDevice = null!
-}
-
-const handleNewDeviceDialogOpenUpdate = (state: boolean) => isNewDeviceDialogOpen.value = state
-
-const openSheetDrawer = async (device: IDevice) => {
-    isSheetDialogueOpen.value = true
-    deviceStore.selectDevice(device)
-    billStore.getCurrentPaidBills(device.objectId)
-}
-
-// Refresh devices when a new device is added
-const refreshDevices = async () => {
-    // Refresh the device list
-    await refresh()
-
-    // Update chart data
-    await deviceStore.getClusterConsumptionTrend(clusterId.toString(), startDate.toISOString(), endDate.toISOString())
-    await deviceStore.getClusterTotalConsumption(clusterId.toString(), startDate.toISOString(), endDate.toISOString())
-}
 
 
 
@@ -76,35 +47,22 @@ const refreshDevices = async () => {
                                 <ArrowLeftCircle></ArrowLeftCircle>
                             </Button>
                             <div>
-                                <Skeleton  v-if="status == 'pending'" class="w-500 h-10 rounded-lg"></Skeleton>
+                                <Skeleton v-if="statusClusterDetails == 'pending'" class="w-500 h-10 rounded-lg">
+                                </Skeleton>
                                 <template v-else>
-                                    <Badge v-if="clusterStore.clusterDevices?.cluster?.type"
-                                           :class="clusterStore.clusterDevices.cluster.type.id == 1 ? 'hover:bg-transparent bg-green-100 text-green-600' : 'hover:bg-transparent bg-blue-100 text-blue-600'"
-                                           class="rounded-sm border-none outline-none my-3 text-xs inline-flex w-fit">
-                                        {{ clusterStore.clusterDevices.cluster.type.name }}
+                                    <Badge v-if="clusterData?.type"
+                                        :class="clusterData?.type.id == 1 ? 'hover:bg-transparent bg-green-100 text-green-600' : 'hover:bg-transparent bg-blue-100 text-blue-600'"
+                                        class="rounded-sm border-none outline-none my-3 text-xs inline-flex w-fit">
+                                        {{ clusterData?.type.name }}
                                     </Badge>
-                                    <h1 class="text-3xl font-extrabold">{{ clusterStore.clusterDevices?.cluster?.name || 'Cluster' }}</h1>
+                                    <h1 class="text-3xl font-extrabold">{{ clusterData?.name || 'Cluster' }}</h1>
                                 </template>
                             </div>
                         </div>
-
-                        <div class="flex items-center gap-4">
-                            <Dialog :open="isNewDeviceDialogOpen" @update:open="handleNewDeviceDialogOpenUpdate">
-                                <DialogTrigger>
-                                    <Button variant="outline" class="gap-2">Add New Device <Plus :size="16"></Plus>
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent class="sm:max-h-[95vh] overflow-y-auto">
-                                    <NewDevice :cluster-id="clusterId.toString()"
-                                        @update:open="handleNewDeviceDialogOpenUpdate"
-                                        @device-added="refreshDevices"></NewDevice>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
                     </div>
 
-                     <!-- LOADING -->
-                     <template v-if="status == 'pending'">
+                    <!-- LOADING -->
+                    <template v-if="statusClusterDetails == 'pending'">
                         <div class="flex flex-col  gap-4 p-5">
                             <div class="flex  w-full">
                                 <div class="w-full md:w-2/3 md:mr-4">
@@ -127,34 +85,35 @@ const refreshDevices = async () => {
                     </template>
                     <!-- end of LOADING -->
 
-                    <!-- DEVICES -->
-                    <template v-else-if="clusterDevices?.devices?.length === 0">
-                        <div class="w-full h-[400px] flex flex-col justify-center items-center bg-gray-50 rounded-lg">
-                            <p class="text-xl font-semibold text-gray-600">No Devices Found In This Group</p>
-                            <p class="text-gray-400 mt-2">Add a new device to get started</p>
-                            <Button @click="isNewDeviceDialogOpen = true" class="mt-6" variant="outline">
-                                Add New Device <Plus class="ml-2" :size="16"></Plus>
-                            </Button>
-                        </div>
-                    </template>
+                    <div v-if="statusClusterDetails == 'success' && clusterData?.device_count == 0" class="w-full h-[400px] flex flex-col justify-center items-center bg-gray-50 rounded-lg">
+                        <p class="text-xl font-semibold text-gray-600">No Devices Found In This Cluster</p>
+                        <p class="text-gray-400 mt-2">Add a new device to get started</p>
+                        <Button  class="mt-6" variant="outline">
+                            Add New Device <Plus class="ml-2" :size="16"></Plus>
+                        </Button>
+                    </div>
 
                     <template v-else>
+
+
                         <!-- Insights -->
                         <section class="mb-6">
                             <div class="flex gap-5 items-center  mb-5 ml-5">
                                 <h1 class="font-bold text-lg">Insights</h1>
                                 <PeriodFacetedFilter></PeriodFacetedFilter>
                             </div>
-                           
-                            <ClusterInsights :cluster-id="clusterId.toString()" />
+
+                            <ClusterInsights cluster-id="" />
                         </section>
                         <!-- end of Insights -->
 
                         <!-- TREND -->
                         <section class="flex w-full gap-4 mb-10">
                             <div class="w-2/3">
-                                <WaterConsumptionChart :option="{ title: 'Consumption Trend', subtitle: 'Track your collection, consumption, and savings' }"
-                                    ></WaterConsumptionChart>
+                                <WaterConsumptionChart
+                                    class="border-[0.5px]"
+                                    :option="{ title: 'Consumption Trend', subtitle: 'Track your collection, consumption, and savings' }">
+                                </WaterConsumptionChart>
                             </div>
 
                             <TotalPayableBillWidget class="flex-1" :option="billWidgetOption">
@@ -163,43 +122,18 @@ const refreshDevices = async () => {
                                     <p class="font-bold flex justify-end items-center gap-2">
                                         <span v-if="deviceStore.loading_TotalClusterConsumption"
                                             class="loading loading-spinner loading-xs text-gray-400"></span>
-                                        <span>{{ validStatNumber(deviceStore.totalClusterConsumption.sum).toFixed(2) }}k L</span>
+                                        <span>{{ 0 }}k L</span>
                                     </p>
                                 </div>
                             </TotalPayableBillWidget>
                         </section>
                         <!-- end of TREND -->
-                        <!-- DEVICES -->
-                        <section>
-                            <h1 class="font-bold text-lg mb-5 ml-5">{{ 'Devices' }}</h1>
-                            <Sheet :open="false" @update:open="handleOnSheetDialogOpen">
-                                <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-5 grid gap-2">
-                                    <DeviceCard
-                                        class="cursor-pointer transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-[1.005]  duration-300"
-                                        :option="device" @click="openSheetDrawer(device)"
-                                        v-for="device in clusterDevices?.devices || []"></DeviceCard>
-                                </div>
-                                <SheetContent class=" bg-white overflow-y-auto md:max-w-[600px] flex flex-col">
-                                    <template v-if="deviceStore.selectedDevice">
-                                        <SingleDeviceMonitoring :option="{ device: deviceStore.selectedDevice }">
-                                        </SingleDeviceMonitoring>
-                                        <WaterConsumptionChart :option="{ title: 'Consumption Trend', subtitle: 'Track your collection, consumption, and savings'}"></WaterConsumptionChart>
-                                        <ConsumptionStats :option="consumptionStatOption">
-                                        </ConsumptionStats>
-                                    </template>
-                                </SheetContent>
-                            </Sheet>
-                        </section>
-                        <!-- end of DEVICES -->
+
+
                     </template>
-
-
-                    <!-- end of DEVICES -->
-
 
                 </div>
             </div>
         </section>
     </NuxtLayout>
 </template>
-
