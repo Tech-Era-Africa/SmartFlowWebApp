@@ -18,9 +18,10 @@
 
             </div>
             <div class="h-auto">
-                <ClusterConsumptionCompare :option="consumptionChart"></ClusterConsumptionCompare>
+                <!-- <ClusterConsumptionCompare :option="consumptionChart"></ClusterConsumptionCompare> -->
+                 <WaterUsageInsights></WaterUsageInsights>
             </div>
-            <div class="w-full max-h-96 flex flex-col lg:flex-row   p-2 gap-4">
+            <!-- <div class="w-full max-h-96 flex flex-col lg:flex-row   p-2 gap-4">
 
                 <div class="w-full lg:w-3/5 h-auto">
                     <DeviceMonitoring title="All Devices"></DeviceMonitoring>
@@ -29,7 +30,7 @@
                     <DevicesSummary></DevicesSummary>
                 </div>
 
-            </div>
+            </div> -->
             <div class="h-20">
 
             </div>
@@ -39,6 +40,7 @@
 </template>
 
 <script setup lang="ts">
+import WaterUsageInsights from '~/components/WaterUsageInsights.vue';
 import { useDeviceStore } from '~/stores/device/device.store';
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 

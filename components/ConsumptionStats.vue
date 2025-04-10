@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+
 import { useConsumptionStore } from '~/stores/consumption/consumption.store';
 import { useBillStore } from '~/stores/bill/bill.store';
+import { Droplet, Gauge, Save, DollarSign } from 'lucide-vue-next';
 
 const consumptionStore = useConsumptionStore();
 const billStore = useBillStore();
@@ -22,20 +23,20 @@ consumptionStore.$subscribe((mutation, state) => {
 // Keeps track of the percentage of water consumed against the amount stored
 const percentageOfConsumed = computed(() => {
     if(!data.value?.consumption?.total || !data.value?.collection?.total) return 0;
-    return (data.value?.consumption?.total / data.value?.collection?.total) * 100;
+    return Math.round((data.value?.consumption?.total / data.value?.collection?.total) * 100);
 });
 
 // Keeps track of the percentage of water collected against the target
 const percentageCollectedAgainstTarget = computed(() => {
-    const target = 100000
+    const target = 1000000
     if(!data.value?.collection?.total || !data.value?.collection?.total) return 0;
-    return (data.value?.collection?.total / target) * 100;
+    return Math.round((data.value?.collection?.total / target) * 100);
 });
 
 //Conservation rate = total saved / total collected * 100
 const conservationRate = computed(() => {
     if(!data.value?.saved || !data.value?.collection?.total) return 0;
-    return (data.value?.saved / data.value?.collection?.total) * 100;
+    return Math.round((data.value?.saved / data.value?.collection?.total) * 100);
 });
 
 //Saved bill = total consumed
@@ -50,8 +51,13 @@ const percentageSaved = computed(() => {
 });
 
 const savedMessage = computed(() => {
-    return `You saved GHC${savedBill.value} by conserving ${data.value?.saved} kL of water compared to the previous period`;
+    return `You saved ${currencyFormat(savedBill.value)} by conserving ${data.value?.saved} kL of water compared to the previous period`;
 });
+
+const currencyFormat = (number: number) => new Intl.NumberFormat('en-GH', {
+    style: 'currency',
+    currency: 'GHS'
+}).format(number);
 
 </script>
 <template>
@@ -70,7 +76,7 @@ const savedMessage = computed(() => {
                </CardContent>
            </Card>
        </div>
-       <div v-else class="grid gap-4 md:grid-cols-2">
+       <div v-if="status == 'success'"  class="grid gap-4 md:grid-cols-2">
           
            <!-- Water Collection -->
            <Card class="shadow-none transition-opacity duration-300">
@@ -157,13 +163,13 @@ const savedMessage = computed(() => {
                        <div>
                            <p class="text-sm text-muted-foreground">Water Bill</p>
                            <p class="text-lg font-bold">
-                               GHC{{ billStore.calculateTotalBill({ consumption: data?.consumption.total ?? 0 }) }}
+                               {{ currencyFormat(billStore.calculateTotalBill({ consumption: data?.consumption.total ?? 0 })) }}
                            </p>
                        </div>
                        <div>
                            <p class="text-sm text-muted-foreground">Savings</p>
                            <p class="text-lg font-bold text-green-500">
-                               GHC{{ savedBill }}
+                               {{ currencyFormat(savedBill) }}
                            </p>
                        </div>
                    </div>

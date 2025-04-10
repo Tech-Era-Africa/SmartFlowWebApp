@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { useUserStore } from '~/stores/auth/user/user.store'
 import { useBillStore } from '~/stores/bill/bill.store'
-import { ApiResponseState } from '~/utils/enum/apiResponse.enum'
 
 interface ConsumptionTrend {
   total_consumption_change: number
@@ -30,15 +29,27 @@ interface ConsumptionInsightResponse {
   saved: number;
 }
 
+interface ConsumptionInsightHighestConsumptionByCluster {
+  period:{
+    startDate: string;
+    endDate: string;
+  },
+  cluster: {
+    clusterId: string;
+    total: number;
+  }
+}
 
 
 export const useConsumptionStore = defineStore('consumption', {
   state: () => ({
    startDate: null as string | null,
    endDate: null as string | null,
+   collectionTarget: 100000
   }),
 
   actions: {
+
     async getConsumptionTrend(
       options: {
         clusterId?: string,
@@ -52,7 +63,7 @@ export const useConsumptionStore = defineStore('consumption', {
         // Get the current user's organization ID from the bill store which has this information
         const orgId = useBillStore().createdBill?.organisation?.objectId || "";
 
-        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/trend`, {
+        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/mock/consumption/trend`, {
           method: 'GET',
           query: {
             orgId,
@@ -120,9 +131,44 @@ export const useConsumptionStore = defineStore('consumption', {
         const currentDate = new Date();
 
         // Get the current user's organization ID from the bill store which has this information
-        const orgId = useBillStore().createdBill?.organisation?.objectId || "";
+        const orgId = "hXR7sQI3FI";
 
-        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/insight`, {
+        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/mock/consumption/insight`, {
+          method: 'GET',
+          query: {
+            orgId,
+            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+          },
+          headers: {
+            "Authorization": `Bearer ${useUserStore().token}`
+          }
+        })
+
+        if (error.value) {
+          throw new Error(error.value.data?.error || 'Failed to fetch total water consumption')
+        }
+
+        return data.value;
+
+      } catch (error: any) {
+        throw error;
+      }
+    },
+
+    async getHighestConsumptionCluster(
+      options: {
+        clusterId?: string,
+        deviceId?: string
+      } = {}): Promise<ConsumptionInsightHighestConsumptionByCluster> {
+
+      try {
+        const currentDate = new Date();
+
+        // Get the current user's organization ID from the bill store which has this information
+        const orgId = "hXR7sQI3FI";
+
+        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/cluster/highest`, {
           method: 'GET',
           query: {
             orgId,
