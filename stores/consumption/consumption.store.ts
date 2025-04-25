@@ -47,6 +47,7 @@ interface ConsumptionInsightHighestConsumptionByCluster {
   cluster: {
     clusterId: string;
     total: number;
+    name:string;
   }
 }
 
@@ -55,7 +56,7 @@ export const useConsumptionStore = defineStore('consumption', {
   state: () => ({
    startDate: null as string | null,
    endDate: null as string | null,
-   collectionTarget: 100000,
+   collectionTarget: 8400,
   }),
 
   actions: {
@@ -217,9 +218,114 @@ export const useConsumptionStore = defineStore('consumption', {
         const currentDate = new Date();
 
         // Get the current user's organization ID from the bill store which has this information
-        const orgId = "hXR7sQI3FI";
+        const orgId = 1;
 
         const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/cluster/highest`, {
+          method: 'GET',
+          query: {
+            orgId,
+            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+          },
+          headers: {
+            "Authorization": `Bearer ${useUserStore().token}`
+          }
+        })
+
+        if (error.value) {
+          throw new Error(error.value.data?.error || 'Failed to fetch total water consumption')
+        }
+
+        return data.value;
+
+      } catch (error: any) {
+        throw error;
+      }
+    },
+
+    async getLowestConsumptionCluster(
+      options: {
+        clusterId?: string,
+        deviceId?: string
+      } = {}): Promise<ConsumptionInsightHighestConsumptionByCluster> {
+
+      try {
+        const currentDate = new Date();
+
+        // Get the current user's organization ID from the bill store which has this information
+        const orgId = 1;
+
+        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/cluster/lowest`, {
+          method: 'GET',
+          query: {
+            orgId,
+            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+          },
+          headers: {
+            "Authorization": `Bearer ${useUserStore().token}`
+          }
+        })
+
+        if (error.value) {
+          throw new Error(error.value.data?.error || 'Failed to fetch total water consumption')
+        }
+
+        return data.value;
+
+      } catch (error: any) {
+        throw error;
+      }
+    },
+
+    async getLowestCollectionCluster(
+      options: {
+        clusterId?: string,
+        deviceId?: string
+      } = {}): Promise<ConsumptionInsightHighestConsumptionByCluster> {
+
+      try {
+        const currentDate = new Date();
+
+        // Get the current user's organization ID from the bill store which has this information
+        const orgId = 1;
+
+        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/cluster/lowest/collection`, {
+          method: 'GET',
+          query: {
+            orgId,
+            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+          },
+          headers: {
+            "Authorization": `Bearer ${useUserStore().token}`
+          }
+        })
+
+        if (error.value) {
+          throw new Error(error.value.data?.error || 'Failed to fetch total water consumption')
+        }
+
+        return data.value;
+
+      } catch (error: any) {
+        throw error;
+      }
+    },
+
+    async getHighestCollectionCluster(
+      options: {
+        clusterId?: string,
+        deviceId?: string
+      } = {}): Promise<ConsumptionInsightHighestConsumptionByCluster> {
+
+      try {
+        const currentDate = new Date();
+
+        // Get the current user's organization ID from the bill store which has this information
+        const orgId = 1;
+
+        const { data, error } = await useFetch<any>(`${useRuntimeConfig().public.API_BASE_URL}/metrics/consumption/cluster/highest/collection`, {
           method: 'GET',
           query: {
             orgId,

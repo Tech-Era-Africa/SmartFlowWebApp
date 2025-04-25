@@ -40,7 +40,7 @@
         <!-- Content -->
         <div v-else>
             <!-- Water Usage Visualization -->
-            <WaterUsageVisualization />
+            <!-- <WaterUsageVisualization /> -->
 
             <!-- Building Comparison -->
             <BuildingComparison />

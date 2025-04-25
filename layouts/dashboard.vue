@@ -19,7 +19,7 @@
     </section>
 
     <!-- SmartAI Widget -->
-    <SmartAIWidget />
+    <!-- <SmartAIWidget /> -->
   </section>
   
 </template>

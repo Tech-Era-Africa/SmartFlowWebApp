@@ -13,7 +13,7 @@
                     <pre></pre>
                     <ConsumptionStats class="h-full">
                     </ConsumptionStats>
-                    <SmartCredit></SmartCredit>
+                    <!-- <SmartCredit></SmartCredit> -->
                 </div>
 
             </div>
@@ -35,12 +35,12 @@
 
         </section>
 
-        <!-- Tutorial Popup -->
+        <!-- Tutorial Popup
         <TutorialPopup
             ref="tutorialPopupRef"
             :tutorial-steps="tutorialSteps"
             @close="handleTutorialClose"
-        />
+        /> -->
     </NuxtLayout>
 </template>
 

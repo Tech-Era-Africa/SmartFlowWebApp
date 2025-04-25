@@ -1,5 +1,6 @@
 <template>
  <div class="bg-white rounded-lg mb-6">
+  
                 <div class="p-4 pb-0">
                     <div class="flex flex-row items-center justify-between space-y-0 pb-2">
                         <h3 class="text-sm font-medium">How Your Clusters Compare</h3>
@@ -33,7 +34,7 @@
                             <h4 class="text-sm font-medium text-gray-700">Water Usage Champions</h4>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div v-if="!highestConsumption?.cluster" class="bg-blue-50 p-4 rounded-lg border border-blue-100 flex flex-col items-center justify-center text-center h-full">
+                            <div v-if="!lowestConsumption?.cluster" class="bg-blue-50 p-4 rounded-lg border border-blue-100 flex flex-col items-center justify-center text-center h-full">
                                 <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mb-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600">
                                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -44,11 +45,11 @@
                             </div>
                             <div v-else class="bg-blue-50 p-4 rounded-lg border border-blue-100">
                                 <div class="flex items-center justify-between mb-2">
-                                    <div class="text-sm font-bold text-gray-800">{{ highestConsumption?.cluster?.clusterId }}</div>
+                                    <div class="text-sm font-bold text-gray-800">{{ lowestConsumption?.cluster?.name }}</div>
                                     <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">Lowest Use</span>
                                 </div>
-                                <div class="text-2xl font-bold text-blue-600 mb-1">{{ highestConsumption?.cluster?.total}}</div>
-                                <div class="text-xs text-gray-600">liters this month</div>
+                                <div class="text-2xl font-bold text-blue-600 mb-1">{{ lowestConsumption?.cluster?.total}}</div>
+                                <div class="text-xs text-gray-600">kilo liters this month</div>
                                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mr-1"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
                                     <span>That's only {{ Math.round(clusterData.lowestConsumption.value / 3) }} toilet flushes</span>
@@ -65,11 +66,11 @@
                             </div>
                             <div v-else class="bg-green-50 p-4 rounded-lg border border-green-100">
                                 <div class="flex items-center justify-between mb-2">
-                                    <div class="text-sm font-bold text-gray-800">{{ highestCollection?.cluster?.clusterId || clusterData.highestCollection.name }}</div>
+                                    <div class="text-sm font-bold text-gray-800">{{ highestCollection?.cluster?.name }}</div>
                                     <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Most Collected</span>
                                 </div>
                                 <div class="text-2xl font-bold text-green-600 mb-1">{{ highestCollection?.cluster?.total || clusterData.highestCollection.value }}</div>
-                                <div class="text-xs text-gray-600">liters collected</div>
+                                <div class="text-xs text-gray-600">kilo liters collected</div>
                                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500 mr-1"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
                                     <span>Enough for {{ Math.round((highestCollection?.cluster?.total || clusterData.highestCollection.value) / 50) }} showers</span>
@@ -100,11 +101,11 @@
                             </div>
                             <div v-else class="bg-red-50 p-4 rounded-lg border border-red-100">
                                 <div class="flex items-center justify-between mb-2">
-                                    <div class="text-sm font-bold text-gray-800">{{ highestConsumption?.cluster?.clusterId || clusterData.highestConsumption.name }}</div>
+                                    <div class="text-sm font-bold text-gray-800">{{ highestConsumption?.cluster?.name }}</div>
                                     <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">High Usage</span>
                                 </div>
                                 <div class="text-2xl font-bold text-red-600 mb-1">{{ highestConsumption?.cluster?.total || clusterData.highestConsumption.value }}</div>
-                                <div class="text-xs text-gray-600">liters this month</div>
+                                <div class="text-xs text-gray-600">kilo liters this month</div>
                                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500 mr-1"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                     <span>That's like {{ Math.round((highestConsumption?.cluster?.total || clusterData.highestConsumption.value) / 150) }} bathtubs full</span>
@@ -121,11 +122,11 @@
                             </div>
                             <div v-else class="bg-amber-50 p-4 rounded-lg border border-amber-100">
                                 <div class="flex items-center justify-between mb-2">
-                                    <div class="text-sm font-bold text-gray-800">{{ lowestCollection?.cluster?.clusterId || clusterData.lowestCollection.name }}</div>
+                                    <div class="text-sm font-bold text-gray-800">{{ lowestCollection?.cluster?.name }}</div>
                                     <span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">Low Collection</span>
                                 </div>
                                 <div class="text-2xl font-bold text-amber-600 mb-1">{{ lowestCollection?.cluster?.total || clusterData.lowestCollection.value }}</div>
-                                <div class="text-xs text-gray-600">liters collected</div>
+                                <div class="text-xs text-gray-600">kilo liters collected</div>
                                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500 mr-1"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                     <span>Only {{ Math.round((lowestCollection?.cluster?.total || clusterData.lowestCollection.value) / 10) }} water bottles</span>
@@ -178,17 +179,17 @@ const { data:highestConsumption, refresh:refreshHighestConsumption, status:highe
 
 //Lowest consumption
 const { data:lowestConsumption, refresh:lowestConsumptionRefresh, status:lowestConsumptionStatus, error:lowestConsumptionError } = useAsyncData('lowestConsumptionCluster', async () => {
-    return await consumptionStore.getHighestConsumptionCluster();
+    return await consumptionStore.getLowestConsumptionCluster();
 }, { immediate: true, lazy: true });
 
 //Highest collection
 const { data:highestCollection, refresh:highestCollectionRefresh, status:highestCollectionStatus, error:highestCollectionError } = useAsyncData('highestCollectionCluster', async () => {
-    return await consumptionStore.getHighestConsumptionCluster();
+    return await consumptionStore.getHighestCollectionCluster();
 }, { immediate: true, lazy: true });
 
 //Lowest collection
 const { data:lowestCollection, refresh:lowestCollectionRefresh, status:lowestCollectionStatus, error:lowestCollectionError } = useAsyncData('lowestCollectionCluster', async () => {
-    return await consumptionStore.getHighestConsumptionCluster();
+    return await consumptionStore.getLowestCollectionCluster();
 }, { immediate: true, lazy: true });
 
 // Check if we have any real data from the API

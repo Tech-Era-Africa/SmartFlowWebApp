@@ -1,15 +1,28 @@
 <template>
-   
+
     <div class="w-full min-h-[100px] bg-[#E5FFE4] rounded-xl p-5 flex flex-col gap-2">
         <div class="flex flex-col items-start">
-            <div>
-                <h1 class="font-bold text-lg">Total Payable Bill</h1> 
+            <div class="flex justify-between w-full items-center">
+                <h1 class="font-bold text-lg">Total Payable Bill</h1>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <Badge variant="outline" class="flex items-center gap-1">
+                                <FlaskConicalIcon class="h-3 w-3" />
+                                Experimental
+                            </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent class="max-w-xs">
+                            <p>This feature is experimental and the values shown may not be accurate. Please do not use this data in any official reports until the feature is fully released and stable.</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             </div>
         </div>
-        <div class="flex gap-1 items-center text-muted-foreground">
+        <!-- <div class="flex gap-1 items-center text-muted-foreground">
             <CalendarDays class="h-4 w-4" />
             <p class="text-xs my-2">{{ useFormatDateHuman(new Date(billStore.billingWidget.startDate)) }} - {{ useFormatDateHuman(new Date(billStore.billingWidget.endDate)) }}</p>
-        </div>
+        </div> -->
         <div class="flex-1 flex flex-col lg:flex-row gap-2">
             <Stat :option="{ title: 'Amount', value: `${formatAmount(totalCurrentCharge())}`, clearBg: true }">
                 <slot />
@@ -41,7 +54,7 @@
         </Select>
         <Dialog :open="isModalOpen" @update:open="handleModalOpen">
             <DialogTrigger>
-                <Button :disabled="totalCurrentCharge() === 0" class="w-full mt-5">Calculate Bill</Button>
+                <!-- <Button :disabled="totalCurrentCharge() === 0" class="w-full mt-5">Calculate Bill</Button> -->
             </DialogTrigger>
             <DialogContent class="sm:max-h-[95vh] sm:max-w-[45vw] overflow-y-auto">
                 <div class="mt-4">

@@ -26,13 +26,50 @@
       </CardContent>
     </Card>
 
+      <!-- Average Daily Consumption Card -->
+      <Card class="bg-white shadow-none border-[0.5px]">
+      <CardHeader class="pb-2">
+        <CardTitle class="text-sm font-medium">Average Daily Consumption</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div class="flex items-center">
+          <div class="mr-2">
+            <DropletIcon class="h-10 w-10 text-blue-500" />
+          </div>
+          <div>
+            <div class="text-2xl font-bold">{{ averageConsumption?.averageDailyConsumption }} {{ averageConsumption?.unit }}/day</div>
+            <p class="text-xs text-muted-foreground flex items-center">
+              <span :class="avgDailyChange >= 0 ? 'text-red-500' : 'text-green-500'" class="flex items-center">
+                <TrendingUpIcon v-if="avgDailyChange >= 0" class="h-3 w-3 mr-1" />
+                <TrendingDownIcon v-else class="h-3 w-3 mr-1" />
+                {{ Math.abs(avgDailyChange).toFixed(1) }}%
+              </span>
+              <span class="ml-1">vs previous period</span>
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
     <!-- Leakage Risk Card -->
-    <Card class="bg-white shadow-none border-[0.5px] opacity-45">
+    <Card class="bg-white shadow-none border-[0.5px]">
       <CardHeader class="pb-2">
         <CardTitle class="text-sm font-medium">
           <div class="flex justify-between">
             <p>Leakage Risk</p>
-            <Badge variant="outline">Coming Soon</Badge>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge variant="outline" class="flex items-center gap-1 border-orange-500 border-[0.5px]">
+                    <FlaskConicalIcon class="h-3 w-3" />
+                    Experimental
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent class="max-w-xs">
+                  <p>This feature is experimental and the values shown may not be accurate. Please do not use this data in any official reports until the feature is fully released and stable.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </CardTitle>
       </CardHeader>
@@ -63,59 +100,34 @@
       </CardContent>
     </Card>
 
-    <!-- Average Daily Consumption Card -->
-    <Card class="bg-white shadow-none border-[0.5px]">
-      <CardHeader class="pb-2">
-        <CardTitle class="text-sm font-medium">Average Daily Consumption</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div class="flex items-center">
-          <div class="mr-2">
-            <DropletIcon class="h-10 w-10 text-blue-500" />
-          </div>
-          <div>
-            <div class="text-2xl font-bold">{{ averageConsumption?.averageDailyConsumption }} {{ averageConsumption?.unit }}/day</div>
-            <p class="text-xs text-muted-foreground flex items-center">
-              <span :class="avgDailyChange >= 0 ? 'text-red-500' : 'text-green-500'" class="flex items-center">
-                <TrendingUpIcon v-if="avgDailyChange >= 0" class="h-3 w-3 mr-1" />
-                <TrendingDownIcon v-else class="h-3 w-3 mr-1" />
-                {{ Math.abs(avgDailyChange).toFixed(1) }}%
-              </span>
-              <span class="ml-1">vs previous period</span>
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+
   </div>
 
   <!-- Detailed Insights -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-    <!-- Usage Patterns -->
-    <Card class="bg-white shadow-none border-[0.5px]">
-      <CardHeader>
-        <CardTitle class="font-bold text-lg">Daily Consumption</CardTitle>
-        <CardDescription>Water usage and collection for the current week</CardDescription>
-      </CardHeader>
-      <CardContent class="h-[300px]">
-        <div v-if="dailyChartStatus === 'pending'" class="flex justify-center items-center h-full">
-          <Loader2Icon class="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-        <div v-else-if="!hasDailyData" class="flex flex-col items-center justify-center h-full text-center">
-          <ChartLineIcon class="h-12 w-12 text-gray-300 mb-2" />
-          <p class="text-sm text-muted-foreground">No usage data available for this period</p>
-          <p class="text-xs text-muted-foreground mt-1">Try adjusting your date range</p>
-        </div>
-        <ClientOnly v-else>
-          <apexchart height="100%" width="100%" :options="dailyChartOptions" :series="dailyChartSeries" />
-        </ClientOnly>
-      </CardContent>
-    </Card>
+
 
     <!-- Anomaly Detection -->
     <Card class="bg-white shadow-none border-[0.5px]">
       <CardHeader>
-        <CardTitle class="font-bold text-lg">Anomaly Detection</CardTitle>
+        <CardTitle class="font-bold text-lg">
+          <div class="flex justify-between">
+            <p> Anomaly Detection</p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge variant="outline" class="flex items-center gap-1 border-orange-500 border-[0.5px]">
+                    <FlaskConicalIcon class="h-3 w-3" />
+                    Experimental
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent class="max-w-xs">
+                  <p>This feature is experimental and the values shown may not be accurate. Please do not use this data in any official reports until the feature is fully released and stable.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+         </CardTitle>
         <CardDescription>Unusual consumption patterns detected</CardDescription>
       </CardHeader>
       <CardContent>
@@ -140,12 +152,27 @@
         </div>
       </CardContent>
     </Card>
-  </div>
 
-  <!-- Recommendations -->
+    <!-- Recommendations -->
   <Card class="bg-white shadow-none border-[0.5px]">
     <CardHeader>
-      <CardTitle class="font-bold text-lg">Recommendations</CardTitle>
+      <CardTitle class="font-bold text-lg">
+        <div class="flex justify-between">
+            <p> Recommendations</p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge variant="outline" class="flex items-center gap-1 border-orange-500 border-[0.5px]">
+                    <FlaskConicalIcon class="h-3 w-3" />
+                    Experimental
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent class="max-w-xs">
+                  <p>This feature is experimental and the values shown may not be accurate. Please do not use this data in any official reports until the feature is fully released and stable.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div></CardTitle>
       <CardDescription>Suggestions to improve efficiency</CardDescription>
     </CardHeader>
     <CardContent>
@@ -165,6 +192,30 @@
       </div>
     </CardContent>
   </Card>
+  </div>
+
+   <!-- Usage Patterns -->
+   <Card class="bg-white shadow-none border-[0.5px]">
+      <CardHeader>
+        <CardTitle class="font-bold text-lg">Daily Consumption</CardTitle>
+        <CardDescription>Water usage and collection for the current week</CardDescription>
+      </CardHeader>
+      <CardContent class="h-[300px]">
+        <div v-if="dailyChartStatus === 'pending'" class="flex justify-center items-center h-full">
+          <Loader2Icon class="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+        <div v-else-if="!hasDailyData" class="flex flex-col items-center justify-center h-full text-center">
+          <ChartLineIcon class="h-12 w-12 text-gray-300 mb-2" />
+          <p class="text-sm text-muted-foreground">No usage data available for this period</p>
+          <p class="text-xs text-muted-foreground mt-1">Try adjusting your date range</p>
+        </div>
+        <ClientOnly v-else>
+          <apexchart height="100%" width="100%" :options="dailyChartOptions" :series="dailyChartSeries" />
+        </ClientOnly>
+      </CardContent>
+    </Card>
+
+
 </template>
 
 <script setup lang="ts">
@@ -178,8 +229,15 @@ import {
   CheckCircleIcon,
   AlertCircleIcon,
   LightbulbIcon,
-  ChartLine as ChartLineIcon
+  ChartLine as ChartLineIcon,
+  FlaskConical as FlaskConicalIcon
 } from 'lucide-vue-next';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import { useConsumptionStore } from '~/stores/consumption/consumption.store';
 import { useClusterStore } from '~/stores/cluster/cluster.store';
 
