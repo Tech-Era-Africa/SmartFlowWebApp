@@ -3,7 +3,7 @@
     <div class="w-full min-h-[100px] bg-[#E5FFE4] rounded-xl p-5 flex flex-col gap-2">
         <div class="flex flex-col items-start">
             <div>
-                <h1 class="font-bold text-lg">Total Payable Bill</h1>
+                <h1 class="font-bold text-lg">Total Payable Bill</h1> 
             </div>
         </div>
         <div class="flex gap-1 items-center text-muted-foreground">
