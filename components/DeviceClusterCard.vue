@@ -10,31 +10,48 @@
             </CardDescription>
         </CardHeader>
         <CardContent class="p-2 w-[150px]">
-            <apexchart :key="chart4Options.series" :options="chart4Options" :series="chart4Options.series">
+            <apexchart :key="option.id" :options="chart4Options" :series="processedChartSeries">
             </apexchart>
         </CardContent>
-       
+
     </Card>
 </template>
 <script setup lang="ts">
-import { useDeviceStore } from '~/stores/device/device.store';
 import Card from './ui/card/Card.vue';
 import type { ICluster } from '~/stores/cluster/model/cluster.model';
+import { useConsumptionStore } from '~/stores/consumption/consumption.store';
 
 const props = defineProps<{
     option: ICluster
 }>()
 
-const deviceStore = useDeviceStore()
-const chartData = ref()
+const consumptionStore = useConsumptionStore()
 
-onBeforeMount(() => {
-    // Get the chart data
-    const currentDate = new Date();
-    const startDate = new Date(currentDate.getFullYear(), 0, 1);
-    const endDate = new Date(currentDate.getFullYear(), 11, 31);
-    chartData.value = deviceStore.getClusterConsumptionTrend(props.option.id, startDate.toISOString(), endDate.toISOString())
-})
+const { data: usageChartSeries, refresh, status, error: usageError } = useAsyncData(
+    'deviceClusterCard_' + props.option.id.toString(),
+    async () => {
+        return await consumptionStore.getConsumptionTrend({
+            clusterId: props.option.id.toString(),
+        });
+    },
+    { immediate: true, lazy: true }
+);
+
+
+const processedChartSeries = computed(() => {
+    const series = [];
+
+    // Add Water Used series if data is available
+    if (usageChartSeries.value && usageChartSeries.value.length > 0) {
+        series.push({
+            data: usageChartSeries.value.map(point => ({
+                x: new Date(point.date_bin).getTime(),
+                y: point.total_consumption_change
+            }))
+        });
+    }
+    return series;
+});
 
 // CHART SETTTINGS
 const chart4Options = ref({
@@ -49,7 +66,6 @@ const chart4Options = ref({
             enabled: false // Disable zooming
         }
     },
-    series: [],
     markers: {
         size: 0 // Hide markers
     },
@@ -103,16 +119,6 @@ const chart4Options = ref({
 
 })
 // end of CHART SETTING
-
-
-
-watchEffect(async() => {
-    // Listens for when there is data in the chartData and sends it to the chart
-    if (chartData.value) {
-        chart4Options.value.series = await chartData.value
-    }
-})
-
 
 
 

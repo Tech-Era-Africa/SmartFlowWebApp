@@ -17,5 +17,9 @@
       </div>
       <slot></slot>
     </section>
+
+    <!-- SmartAI Widget -->
+    <SmartAIWidget />
   </section>
+  
 </template>

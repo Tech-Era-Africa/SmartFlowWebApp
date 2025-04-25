@@ -14,6 +14,7 @@ export const useClusterStore = defineStore('cluster', {
         clusterDevices: {} as any,
         clusterDevicesApiState: ApiResponseState.NULL,
         clusterDevicesApiFailure: { message: "" },
+        selectedClusterTotalConsumption : 0
     }),
 
     actions: {
@@ -96,16 +97,25 @@ export const useClusterStore = defineStore('cluster', {
             });
         },
 
-    
-    }, 
+        updateSelectedClusterTotalConsumption(totalConsumption : number){
+            this.selectedClusterTotalConsumption = totalConsumption
+        },
 
-    
+        // Keep the old method for backward compatibility
+        updateSelectedClusterTotalConsumtion(totalConsumption : number){
+            this.updateSelectedClusterTotalConsumption(totalConsumption)
+        }
+
+
+    },
+
+
 
     getters: {
         isAddingNewCluster: (state) => state.newClusterApiState === ApiResponseState.LOADING,
         failed_AddingNewCluster: (state) => state.newClusterApiState === ApiResponseState.FAILED,
         success_AddingNewCluster: (state) => state.newClusterApiState === ApiResponseState.SUCCESS,
-        
+
         isLoadingClusters: (state) => state.getClustersApiState === ApiResponseState.LOADING,
         failed_LoadingClusters: (state) => state.getClustersApiState === ApiResponseState.FAILED,
         success_LoadingClusters: (state) => state.getClustersApiState === ApiResponseState.SUCCESS,

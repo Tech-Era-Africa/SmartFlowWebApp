@@ -42,7 +42,7 @@ const conservationRate = computed(() => {
 //Saved bill = total consumed
 const savedBill = computed(() => {
     if(!data.value?.consumption?.total || !data.value?.saved) return 0;
-    return billStore.calculateTotalBill({ consumption: data.value?.consumption.total ?? 0 }) - billStore.calculateTotalBill({ consumption: data.value?.saved ?? 0 })
+    return billStore.calculateTotalBill({ consumption: data.value?.saved ?? 0 }) 
 });
 
 const percentageSaved = computed(() => {
@@ -77,6 +77,8 @@ const currencyFormat = (number: number) => new Intl.NumberFormat('en-GH', {
            </Card>
        </div>
        <div v-if="status == 'success'"  class="grid gap-4 md:grid-cols-2">
+
+            
           
            <!-- Water Collection -->
            <Card class="shadow-none transition-opacity duration-300">

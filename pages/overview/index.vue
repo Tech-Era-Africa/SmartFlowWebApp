@@ -11,7 +11,7 @@
                 </div>
                 <div class="flex flex-col gap-2 flex-1 flex-grow">
                     <pre></pre>
-                    <ConsumptionStats @on-date-changed="handleWaterConsumptionStatsDateChanged"class="h-full">
+                    <ConsumptionStats class="h-full">
                     </ConsumptionStats>
                     <SmartCredit></SmartCredit>
                 </div>
@@ -31,18 +31,7 @@
                 </div>
 
             </div> -->
-            <div class="h-20 flex justify-end p-4">
-                <button
-                    @click="showTutorial"
-                    class="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors shadow-sm"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polygon points="10 8 16 12 10 16 10 8"></polygon>
-                    </svg>
-                    Watch Tutorial
-                </button>
-            </div>
+          
 
         </section>
 
@@ -104,9 +93,7 @@ const showTutorial = () => {
   }
 };
 
-const handleWaterConsumptionStatsDateChanged = (date: { start: Date, end: Date }) => {
-    deviceStore.getMinMaxConsumption(date.start.toISOString(), date.end.toISOString())
-}
+
 
 const consumptionChart = ref<IWaterConsumptionChart>({
     title: "Water Management Insights",

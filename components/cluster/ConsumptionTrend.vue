@@ -7,33 +7,22 @@ import { useConsumptionStore } from '~/stores/consumption/consumption.store';
 
 const props = defineProps<{
     option: IWaterConsumptionChart;
+    clusterId: string;
 }>();
 
 const consumptionStore = useConsumptionStore();
 
 // Fetch water usage trend data
-const { data: usageChartSeries, refresh: refreshUsage, status: usageStatus, error: usageError } = useAsyncData('usageTrend', async () => {
-    return await consumptionStore.getConsumptionTrend({ consumption_type: 1 }); // 1 for usage
-}, { immediate: true, lazy: true });
+const { data: usageChartSeries, refresh, status, error: usageError } = useAsyncData(
+    'clusterConsumptionTrend_' + props.clusterId,
+    async () => {
+        return await consumptionStore.getConsumptionTrend({
+            clusterId: props.clusterId,
+        });
+    },
+    { immediate: true, lazy: true }
+);
 
-// Fetch water collection trend data
-const { data: collectionChartSeries, refresh: refreshCollection, status: collectionStatus, error: collectionError } = useAsyncData('collectionTrend', async () => {
-    return await consumptionStore.getConsumptionTrend({ consumption_type: 2 }); // 2 for collection
-}, { immediate: true, lazy: true });
-
-// Combined status for loading state
-const status = computed(() => {
-    if (usageStatus.value === 'pending' || collectionStatus.value === 'pending') {
-        return 'pending';
-    }
-    return 'success';
-});
-
-// Combined refresh function
-const refresh = () => {
-    refreshUsage();
-    refreshCollection();
-};
 
 const processedChartSeries = computed(() => {
     const series = [];
@@ -48,26 +37,12 @@ const processedChartSeries = computed(() => {
             }))
         });
     }
-
-    // Add Water Collected series if data is available
-    if (collectionChartSeries.value && collectionChartSeries.value.length > 0) {
-        series.push({
-            name: 'Water Collected',
-            data: collectionChartSeries.value.map(point => ({
-                x: new Date(point.date_bin).getTime(),
-                y: point.total_consumption_change
-            }))
-        });
-    }
-
     return series;
 });
 
 const hasData = computed(() => {
-    return (usageChartSeries.value && usageChartSeries.value.length > 0) ||
-           (collectionChartSeries.value && collectionChartSeries.value.length > 0);
+    return (usageChartSeries.value && usageChartSeries.value.length > 0);
 });
-
 
 // Listen to when the dates change and refresh
 // Subscribe to changes in the store's state
@@ -77,8 +52,10 @@ consumptionStore.$subscribe((_, state) => {
     }
 });
 
+
 // Update the start and end once there is a change in period
 const handleDateChange = ({ start, end }: { start: Date; end: Date }) => {
+
     consumptionStore.updatePeriod(start.toISOString(), end.toISOString());
 
 };

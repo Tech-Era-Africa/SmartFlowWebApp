@@ -136,12 +136,12 @@ const tankLevel = computed(() => {
 //Saved bill = total consumed
 const savedBill = computed(() => {
     if(!data.value?.consumption?.total || !data.value?.saved) return 0;
-    return billStore.calculateTotalBill({ consumption: data.value?.consumption.total ?? 0 }) - billStore.calculateTotalBill({ consumption: data.value?.saved ?? 0 })
+    return billStore.calculateTotalBill({ consumption: data.value?.saved ?? 0 })
 });
 
 const percentageSaved = computed(() => {
     if(!data.value?.saved || !data.value?.consumption?.total) return 0;
-    return (data.value?.saved / data.value?.consumption?.total) * 100;
+    return Math.round((data.value?.saved / data.value?.consumption?.total) * 100);
 });
 
 // Water data

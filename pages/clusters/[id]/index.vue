@@ -1,20 +1,17 @@
-<script setup lang="ts">
+ <script setup lang="ts">
 import { useBillStore } from '~/stores/bill/bill.store';
 import { useDeviceStore } from '~/stores/device/device.store';
 import { ArrowLeftCircle, Plus } from 'lucide-vue-next'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog'
 import { Label } from '~/components/ui/label'
 import { Input } from '~/components/ui/input'
-// import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
-// import type { IDevice } from '~/stores/device/model/device.model';
 import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 import { useClusterStore } from '~/stores/cluster/cluster.store';
-// import { useToast } from '~/components/ui/toast/use-toast';
 import ClusterInsights from '~/components/ClusterInsights.vue';
 import type { ICluster } from '~/stores/cluster/model/cluster.model';
 import type { ClusterDeviceResponse } from '~/stores/device/device.store';
 
-useHead({ title: "Devices" })
+useHead({ title: "Cluster" })
 
 const deviceStore = useDeviceStore()
 const clusterStore = useClusterStore()
@@ -29,7 +26,7 @@ const { data: clusterData, refresh: refreshClusterDetails, status: statusCluster
 const { data: clusterDevices, refresh: refreshDevices, status } = await useAsyncData<ClusterDeviceResponse[]>('clusterDevices', () => deviceStore.getClusterDevices(clusterId.toString()), { lazy: true, immediate: true })
 
 
-const billWidgetOption = ref<IBillOptionDTO>({ billTypeId: billStore.billTypes[0].id } as IBillOptionDTO)
+const billWidgetOption = ref<IBillOptionDTO>({ billTypeId: billStore.billTypes[0].id, totalConsumption: clusterStore.selectedClusterTotalConsumption } as IBillOptionDTO)
 
 // Handle adding a new device to the cluster
 const isAddDeviceDialogOpen = ref(false)
@@ -53,7 +50,7 @@ const refreshData = async () => {
 
 <template>
     <NuxtLayout name="dashboard">
-        <Header name="Devices"></Header>
+        <Header name=""></Header>
         <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0 min-h-[400px]">
             <div class="w-full flex h-full p-2 gap-4">
                 <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-5">
@@ -119,26 +116,25 @@ const refreshData = async () => {
                                 <PeriodFacetedFilter></PeriodFacetedFilter>
                             </div>
 
-                            <ClusterInsights cluster-id="" />
+                            <ClusterInsights :cluster-id="clusterId.toString()" />
                         </section>
                         <!-- end of Insights -->
 
                         <!-- TREND -->
                         <section class="flex w-full gap-4 mb-10">
                             <div class="w-2/3">
-                                <WaterConsumptionChart
-                                    class="border-[0.5px]"
-                                    :option="{ title: 'Consumption Trend', subtitle: 'Track your collection, consumption, and savings' }">
-                                </WaterConsumptionChart>
+                                <ClusterConsumptionTrend class="border-[0.5px]" :cluster-id="clusterId.toString()"
+                                :option="{ title: 'Consumption Trend', subtitle: 'Track your consumption' }"/>
+
                             </div>
 
                             <TotalPayableBillWidget class="flex-1" :option="billWidgetOption">
                                 <div class="text-right">
                                     <p class="text-xs text-gray-500">Consumption</p>
                                     <p class="font-bold flex justify-end items-center gap-2">
-                                        <span v-if="true"
+                                        <span v-if="statusClusterDetails === 'pending'"
                                             class="loading loading-spinner loading-xs text-gray-400"></span>
-                                        <span>{{ 0 }}k L</span>
+                                        <span>{{ clusterStore.selectedClusterTotalConsumption }}k L</span>
                                     </p>
                                 </div>
                             </TotalPayableBillWidget>

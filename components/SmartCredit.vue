@@ -1,7 +1,7 @@
 <template>
     <div class="flex gap-2">
         <Stat
-            :option="{ title: 'Smart Credits', value: `GHC ${billingStore.accountCredit - deviceStore.sumTotalUsageFromDevices()}`, clearBg: true, isLoading: billingStore.loading_AccountCredit || deviceStore.isGettingDevices, hasError: billingStore.failed_AccountCredit }">
+            :option="{ title: 'Smart Credits', value: `GHC ${0}`, clearBg: true, isLoading: false }">
             <div class="text-right">
                 <Dialog>
                     <DialogTrigger>
@@ -52,7 +52,7 @@
             <template #bottom>
                 <div class="mt-2">
                     <p class="text-muted-foreground text-xs">Usage: {{
-                deviceStore.sumTotalUsageFromDevices().toFixed(2) }}</p>
+                0 }}</p>
                 </div>
             </template>
         </Stat>

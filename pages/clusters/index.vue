@@ -6,7 +6,7 @@
         <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
           <div class="flex flex-row justify-between gap-2 items-center">
             <div>
-              <h1 class="font-bold text-lg">Clusters</h1>
+              <!-- <h1 class="font-bold text-lg">Clusters</h1> -->
               <div class="my-2">
                 <ClusterTypeFacetedFilter></ClusterTypeFacetedFilter>
               </div>
@@ -21,7 +21,7 @@
           <!-- CLUSTERS -->
           <template v-if="clusters">
             <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-3 grid gap-2">
-              <NuxtLink :to="`/devices/clusters/${cluster.id}`" v-for="cluster in clusters">
+              <NuxtLink :to="`/clusters/${cluster.id}`" v-for="cluster in clusters">
                 <DeviceClusterCard
                   :option="cluster">
                 </DeviceClusterCard>
@@ -91,8 +91,8 @@ import { PlusCircle, Loader2 } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-import { useClusterStore } from '../../../stores/cluster/cluster.store';
-import { useDeviceStore } from '../../../stores/device/device.store';
+import { useClusterStore } from '../../stores/cluster/cluster.store';
+import { useDeviceStore } from '../../stores/device/device.store';
 import { type ICluster } from '~/stores/cluster/model/cluster.model';
 import {ClusterTypeFacetedFilter} from '~/components/cluster';
 
