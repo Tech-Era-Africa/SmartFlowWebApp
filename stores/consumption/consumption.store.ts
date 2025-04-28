@@ -56,7 +56,7 @@ export const useConsumptionStore = defineStore('consumption', {
   state: () => ({
    startDate: null as string | null,
    endDate: null as string | null,
-   collectionTarget: 8400,
+   collectionTarget: 15000,
   }),
 
   actions: {

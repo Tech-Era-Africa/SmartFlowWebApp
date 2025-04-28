@@ -28,7 +28,7 @@ const percentageOfConsumed = computed(() => {
 
 // Keeps track of the percentage of water collected against the target
 const percentageCollectedAgainstTarget = computed(() => {
-    const target = 1000000
+    const target = consumptionStore.collectionTarget;
     if(!data.value?.collection?.total || !data.value?.collection?.total) return 0;
     return Math.round((data.value?.collection?.total / target) * 100);
 });
@@ -51,13 +51,15 @@ const percentageSaved = computed(() => {
 });
 
 const savedMessage = computed(() => {
-    return `You saved ${currencyFormat(savedBill.value)} by conserving ${data.value?.saved} kL of water compared to the previous period`;
+    return `You saved ${currencyFormat(savedBill.value)} by conserving ${formatNumber(data.value?.saved ?? 0)} kL of water compared to the previous period`;
 });
 
 const currencyFormat = (number: number) => new Intl.NumberFormat('en-GH', {
     style: 'currency',
     currency: 'GHS'
 }).format(number);
+
+const formatNumber = (number: number) => new Intl.NumberFormat('en-GH').format(number);
 
 </script>
 <template>
@@ -78,7 +80,7 @@ const currencyFormat = (number: number) => new Intl.NumberFormat('en-GH', {
        </div>
        <div v-if="status == 'success'"  class="grid gap-4 md:grid-cols-2">
 
-            
+
           
            <!-- Water Collection -->
            <Card class="shadow-none transition-opacity duration-300">
@@ -90,7 +92,7 @@ const currencyFormat = (number: number) => new Intl.NumberFormat('en-GH', {
                </CardHeader>
                <CardContent>
                    <div class="text-lg font-bold">
-                       {{ data?.collection?.total }} {{ data?.unit }}
+                       {{ formatNumber(data?.collection?.total ?? 0) }} {{ data?.unit }}
                    </div>
                    <p v-if="data?.collection" class="text-xs text-muted-foreground">
                        {{ data?.collection?.percentageChange > 0 ? '+' : '' }}{{ data?.collection?.percentageChange }}% {{ data?.comparisonPeriod }}
@@ -99,7 +101,7 @@ const currencyFormat = (number: number) => new Intl.NumberFormat('en-GH', {
                        <div class="h-full bg-blue-500 rounded-full" :style="`width: ${percentageCollectedAgainstTarget}%`"></div>
                    </div>
                    <p class="text-xs text-muted-foreground mt-1">
-                       {{ percentageCollectedAgainstTarget }}% of target
+                       {{ percentageCollectedAgainstTarget }}% of target ({{ consumptionStore.collectionTarget }} kL)
                    </p>
                </CardContent>
            </Card>
@@ -114,7 +116,7 @@ const currencyFormat = (number: number) => new Intl.NumberFormat('en-GH', {
                </CardHeader>
                <CardContent>
                    <div class="text-lg font-bold">
-                       {{ data?.consumption?.total }} {{ data?.unit}}
+                       {{ formatNumber(data?.consumption?.total ?? 0) }} {{ data?.unit}}
                    </div>
                    <p v-if="data?.consumption" class="text-xs text-muted-foreground">
                     {{ data?.consumption?.percentageChange > 0 ? '+' : '' }}{{ data?.consumption?.percentageChange }}% {{ data?.comparisonPeriod }}
@@ -138,7 +140,7 @@ const currencyFormat = (number: number) => new Intl.NumberFormat('en-GH', {
                </CardHeader>
                <CardContent>
                    <div class="text-lg font-bold">
-                       {{ data?.saved}} kL
+                       {{ formatNumber(data?.saved ?? 0)}} kL
                    </div>
                    <p v-if="data?.consumption" class="text-xs text-muted-foreground">
                     {{ data?.consumption?.percentageChange > 0 ? '+' : '' }}{{ data?.consumption?.percentageChange }}% {{ data?.comparisonPeriod }}

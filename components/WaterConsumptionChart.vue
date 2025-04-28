@@ -101,13 +101,13 @@ const chartOptions = computed(() => ({
     yaxis: {
         labels: { formatter: (value: number) => `${Math.round(value)}` },
         title: {
-            text: 'Volume (L)'
+            text: 'Volume (kL)'
         }
     },
     tooltip: {
         x: { format: 'dd MMM yyyy' },
         y: {
-            formatter: (value: number) => `${Math.round(value)} L`
+            formatter: (value: number) => `${Math.round(value)} kL`
         }
     },
     fill: {

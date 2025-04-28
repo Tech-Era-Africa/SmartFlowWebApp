@@ -1,17 +1,39 @@
 <template>
  <div class="bg-white rounded-lg mb-6">
-  
+
                 <div class="p-4 pb-0">
                     <div class="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <h3 class="text-sm font-medium">How Your Clusters Compare</h3>
-                        <div class="h-4 w-4 text-indigo-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                        <div class="flex items-center">
+                            <h3 class="text-sm font-medium">How Your Clusters Compare</h3>
+                            <div v-if="isLoading" class="ml-2 h-4 w-4 text-blue-500 animate-spin">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <button @click="refreshAllData" class="mr-2 text-xs text-blue-500 hover:text-blue-700 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                            </button>
+                            <div class="h-4 w-4 text-indigo-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Loading state -->
+                <div v-if="isLoading" class="p-8 flex flex-col items-center justify-center text-center">
+                    <div class="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center mb-4 animate-pulse">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 animate-spin">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 6v6l4 2"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-medium text-gray-700 mb-2">Loading Cluster Data</h4>
+                    <p class="text-sm text-gray-500 mb-6 max-w-md">Please wait while we fetch the latest information about your clusters.</p>
+                </div>
+
                 <!-- Global empty state when no data is available at all -->
-                <div v-if="!hasRealData && highestConsumptionStatus === 'success' && lowestConsumptionStatus === 'success' && highestCollectionStatus === 'success' && lowestCollectionStatus === 'success'" class="p-8 flex flex-col items-center justify-center text-center">
+                <div v-else-if="!hasRealData && allRequestsCompleted" class="p-8 flex flex-col items-center justify-center text-center">
                     <div class="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600">
                             <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
@@ -21,7 +43,9 @@
                     </div>
                     <h4 class="text-lg font-medium text-gray-700 mb-2">No Data Available</h4>
                     <p class="text-sm text-gray-500 mb-6 max-w-md">We don't have enough data to compare your clusters.</p>
-                    
+                    <button @click="refreshAllData" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+                        Refresh Data
+                    </button>
                 </div>
 
                 <div v-else class="p-4">
@@ -52,7 +76,7 @@
                                 <div class="text-xs text-gray-600">kilo liters this month</div>
                                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mr-1"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-                                    <span>That's only {{ Math.round(clusterData.lowestConsumption.value / 3) }} toilet flushes</span>
+                                    <span>That's only {{ Math.round((lowestConsumption?.cluster?.total || clusterData.lowestConsumption.value) / 3) }} toilet flushes</span>
                                 </div>
                             </div>
                             <div v-if="!highestCollection?.cluster" class="bg-green-50 p-4 rounded-lg border border-green-100 flex flex-col items-center justify-center text-center h-full">
@@ -139,63 +163,136 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useConsumptionStore } from '~/stores/consumption/consumption.store';
 
-const props = defineProps({
-  clusterData: {
-    type: Object,
-    required: true,
-    default: () => ({
-      highestConsumption: {
-        name: 'North Campus',
-        value: 3250
-      },
-      lowestConsumption: {
-        name: 'Admin Building',
-        value: 450
-      },
-      highestCollection: {
-        name: 'Main Residence',
-        value: 4800
-      },
-      lowestCollection: {
-        name: 'Science Block',
-        value: 780
-      }
-    })
+// Default values for fallback when API data is not available
+const clusterData = {
+  highestConsumption: {
+    name: 'North Campus',
+    value: 3250
+  },
+  lowestConsumption: {
+    name: 'Admin Building',
+    value: 450
+  },
+  highestCollection: {
+    name: 'Main Residence',
+    value: 4800
+  },
+  lowestCollection: {
+    name: 'Science Block',
+    value: 780
   }
-});
+};
 
 
 
 const consumptionStore = useConsumptionStore();
 
-// Fetch water insights
+// Fetch water insights with better coordination
+const isLoading = ref(true);
+
 // Highest consumption
-const { data:highestConsumption, refresh:refreshHighestConsumption, status:highestConsumptionStatus, error } = useAsyncData('highestConsumptionCluster', async () => {
-    return await consumptionStore.getHighestConsumptionCluster();
-}, { immediate: true, lazy: true });
+const { data:highestConsumption, refresh:refreshHighestConsumption, status:highestConsumptionStatus } = useAsyncData(
+    'highestConsumptionCluster',
+    async () => {
+        try {
+            return await consumptionStore.getHighestConsumptionCluster();
+        } catch (err) {
+            console.error('Error fetching highest consumption:', err);
+            return { cluster: null };
+        }
+    },
+    { immediate: true, lazy: false }
+);
 
 //Lowest consumption
-const { data:lowestConsumption, refresh:lowestConsumptionRefresh, status:lowestConsumptionStatus, error:lowestConsumptionError } = useAsyncData('lowestConsumptionCluster', async () => {
-    return await consumptionStore.getLowestConsumptionCluster();
-}, { immediate: true, lazy: true });
+const { data:lowestConsumption, refresh:refreshLowestConsumption, status:lowestConsumptionStatus } = useAsyncData(
+    'lowestConsumptionCluster',
+    async () => {
+        try {
+            return await consumptionStore.getLowestConsumptionCluster();
+        } catch (err) {
+            console.error('Error fetching lowest consumption:', err);
+            return { cluster: null };
+        }
+    },
+    { immediate: true, lazy: false }
+);
 
 //Highest collection
-const { data:highestCollection, refresh:highestCollectionRefresh, status:highestCollectionStatus, error:highestCollectionError } = useAsyncData('highestCollectionCluster', async () => {
-    return await consumptionStore.getHighestCollectionCluster();
-}, { immediate: true, lazy: true });
+const { data:highestCollection, refresh:refreshHighestCollection, status:highestCollectionStatus } = useAsyncData(
+    'highestCollectionCluster',
+    async () => {
+        try {
+            return await consumptionStore.getHighestCollectionCluster();
+        } catch (err) {
+            console.error('Error fetching highest collection:', err);
+            return { cluster: null };
+        }
+    },
+    { immediate: true, lazy: false }
+);
 
 //Lowest collection
-const { data:lowestCollection, refresh:lowestCollectionRefresh, status:lowestCollectionStatus, error:lowestCollectionError } = useAsyncData('lowestCollectionCluster', async () => {
-    return await consumptionStore.getLowestCollectionCluster();
-}, { immediate: true, lazy: true });
+const { data:lowestCollection, refresh:refreshLowestCollection, status:lowestCollectionStatus } = useAsyncData(
+    'lowestCollectionCluster',
+    async () => {
+        try {
+            return await consumptionStore.getLowestCollectionCluster();
+        } catch (err) {
+            console.error('Error fetching lowest collection:', err);
+            return { cluster: null };
+        }
+    },
+    { immediate: true, lazy: false }
+);
+
+// Check if all requests have completed (success or error)
+const allRequestsCompleted = computed(() => {
+    return ['success', 'error'].includes(highestConsumptionStatus.value) &&
+           ['success', 'error'].includes(lowestConsumptionStatus.value) &&
+           ['success', 'error'].includes(highestCollectionStatus.value) &&
+           ['success', 'error'].includes(lowestCollectionStatus.value);
+});
 
 // Check if we have any real data from the API
 const hasRealData = computed(() => {
-  return !!(highestConsumption.value?.cluster || lowestConsumption.value?.cluster ||
-           highestCollection.value?.cluster || lowestCollection.value?.cluster);
+    return !!(highestConsumption.value?.cluster || lowestConsumption.value?.cluster ||
+             highestCollection.value?.cluster || lowestCollection.value?.cluster);
 });
+
+// Update loading state when all requests complete
+watch(allRequestsCompleted, (completed) => {
+    if (completed) {
+        // Add a small delay to ensure all data is properly processed
+        setTimeout(() => {
+            isLoading.value = false;
+        }, 300);
+    }
+}, { immediate: true });
+
+// Function to refresh all data
+const refreshAllData = async () => {
+    isLoading.value = true;
+    await Promise.all([
+        refreshHighestConsumption(),
+        refreshLowestConsumption(),
+        refreshHighestCollection(),
+        refreshLowestCollection()
+    ]);
+    // Add a small delay to ensure all data is properly processed
+    setTimeout(() => {
+        isLoading.value = false;
+    }, 300);
+};
+
+// Expose the refresh function for external use
+defineExpose({
+    refreshAllData
+});
+
+const formatNumber = (number: number) => new Intl.NumberFormat('en-GH').format(number);
 
 </script>

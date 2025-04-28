@@ -44,6 +44,7 @@ const processedChartSeries = computed(() => {
     // Add Water Used series if data is available
     if (usageChartSeries.value && usageChartSeries.value.length > 0) {
         series.push({
+            name: 'Water Volume',
             data: usageChartSeries.value.map(point => ({
                 x: new Date(point.date_bin).getTime(),
                 y: point.total_consumption_change
@@ -77,7 +78,7 @@ const chart4Options = ref({
         y: {
             formatter: function (value: any) {
                 // Round the value to two decimal places
-                return `${value.toFixed(2)} L`;
+                return `${value.toFixed(2)} kL`;
             }
         }
     },
@@ -95,7 +96,7 @@ const chart4Options = ref({
             show: false,
             formatter: function (value: number) {
                 // Round the value to two decimal places
-                return `${value.toFixed(2)} L`;
+                return `${value.toFixed(2)} kL`;
             }
         }
     },
