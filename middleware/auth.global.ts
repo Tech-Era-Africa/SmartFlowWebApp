@@ -11,6 +11,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   // Don't affect auth-related routes
   const authRoutes = [
+    '/accept-invitation',
     '/auth/login',
     '/auth/signup',
     '/auth/forgot-password',

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ApiResponseState } from '~/utils/enum/apiResponse.enum';
 import type { LoginDTO } from './dto/login.dto';
+import type { SignupDTO } from './dto/signup.dto';
 import { useUserStore } from './user/user.store';
 
 export const useAuthStore = defineStore({
@@ -9,6 +10,10 @@ export const useAuthStore = defineStore({
     // LOGIN
     loginState: ApiResponseState.NULL,
     loginFailure: { message: "" },
+
+    // SIGNUP
+    signupState: ApiResponseState.NULL,
+    signupFailure: { message: "" },
 
     // RESET PASSWORD
     resetPasswordState: ApiResponseState.NULL,
@@ -72,6 +77,41 @@ export const useAuthStore = defineStore({
 
     logoutUser() {
       useUserStore().clearUserToken()
+    },
+
+    async signUp(data: SignupDTO) {
+      try {
+        this.signupState = ApiResponseState.LOADING;
+
+        const url = `${useRuntimeConfig().public.API_BASE_URL}/auth/signup`;
+
+        const response = await $fetch<any>(url, {
+          method: 'POST',
+          body: data
+        });
+
+        this.signupState = ApiResponseState.SUCCESS;
+        return response;
+
+      } catch (error: any) {
+        console.error('Signup error:', error);
+
+        let message = 'Failed to create account. Please try again.';
+
+        if (error.status === 400) {
+          message = 'Invalid signup data. Please check your information.';
+        } else if (error.status === 409) {
+          message = 'An account with this email already exists.';
+        } else if (error.status === 500) {
+          message = 'Server error. Please try again later.';
+        } else if (!error.status) {
+          message = 'Network error. Please check your connection.';
+        }
+
+        this.signupFailure.message = message;
+        this.signupState = ApiResponseState.FAILED;
+        throw new Error(message);
+      }
     },
 
     async resetPassword(data: { email: string }) {
@@ -177,7 +217,7 @@ export const useAuthStore = defineStore({
     isLoggingUserIn: (state) => state.loginState === ApiResponseState.LOADING,
     failed_LoginUser: (state) => state.loginState === ApiResponseState.FAILED,
     success_LoginUser: (state) => state.loginState === ApiResponseState.SUCCESS,
-    
+
     isResettingPassword: (state) => state.resetPasswordState === ApiResponseState.LOADING,
     failed_ResetPassword: (state) => state.resetPasswordState === ApiResponseState.FAILED,
     success_ResetPassword: (state) => state.resetPasswordState === ApiResponseState.SUCCESS,

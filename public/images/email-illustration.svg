@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200px" height="160px" viewBox="0 0 200 160" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Email Illustration</title>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#E2E8F0" offset="0%"></stop>
+            <stop stop-color="#CBD5E1" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#3B82F6" offset="0%"></stop>
+            <stop stop-color="#2563EB" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Email-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Envelope" transform="translate(20.000000, 30.000000)">
+            <!-- Envelope Body -->
+            <rect id="Envelope-Body" fill="url(#linearGradient-1)" x="0" y="0" width="160" height="100" rx="8"></rect>
+            
+            <!-- Envelope Flap (Open) -->
+            <path d="M0,8 C0,3.581722 3.581722,0 8,0 L152,0 C156.418278,0 160,3.581722 160,8 L80,50 L0,8 Z" id="Envelope-Flap" fill="#F8FAFC"></path>
+            
+            <!-- Envelope Content -->
+            <rect id="Content" fill="white" x="20" y="20" width="120" height="60" rx="4"></rect>
+            
+            <!-- Content Lines -->
+            <rect id="Line-1" fill="#E2E8F0" x="30" y="30" width="100" height="4" rx="2"></rect>
+            <rect id="Line-2" fill="#E2E8F0" x="30" y="40" width="80" height="4" rx="2"></rect>
+            <rect id="Line-3" fill="#E2E8F0" x="30" y="50" width="100" height="4" rx="2"></rect>
+            <rect id="Line-4" fill="#E2E8F0" x="30" y="60" width="60" height="4" rx="2"></rect>
+            
+            <!-- Button -->
+            <rect id="Button" fill="url(#linearGradient-2)" x="30" y="70" width="60" height="10" rx="5"></rect>
+        </g>
+        
+        <!-- Notification Badge -->
+        <circle id="Notification" fill="#EF4444" cx="160" cy="30" r="15"></circle>
+        <text id="1" font-family="Arial-BoldMT, Arial" font-size="16" font-weight="bold" fill="#FFFFFF">
+            <tspan x="156" y="36">1</tspan>
+        </text>
+    </g>
+</svg>
