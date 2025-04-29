@@ -6,9 +6,7 @@ export default defineEventHandler(async (event) => {
   const isBot = /facebookexternalhit|twitterbot|linkedinbot|whatsapp/i.test(userAgent)
 
   const slug = event.context.params!.slug
-  const key = `${slug}` //Should be dynamic but in this case we don't need that
-
-  console.log("SLUG: " ,slug)
+  const key = `${slug}`
 
   const metaPath = join(process.cwd(), 'server/data/og-meta.json')
   const metaRaw = await readFile(metaPath, 'utf8')

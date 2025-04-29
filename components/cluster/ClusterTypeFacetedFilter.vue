@@ -6,19 +6,16 @@
 <script setup lang="ts">
 import { type Table } from '@tanstack/vue-table'
 import type { DataTableFacatedFilterOptions } from '../DataTableFacetedFilter.vue';
+import type { ICluster } from '~/stores/cluster/model/cluster.model';
 
 
-// interface TableProps {
-//     table: Table<any>
-// }
+interface TableProps {
+    table: Table<ICluster>
+}
 
-// const props = defineProps<TableProps>()
+const props = defineProps<TableProps>()
 
 const genderTypes = [
-    {
-        label: "All",
-        value: "all"
-    },
     {
         label: "Consumption",
         value: "consumption"
@@ -35,9 +32,9 @@ const handlePopoverOpen = (state: boolean) => {
 
 const handleFilter = (filteredValues: DataTableFacatedFilterOptions[]) => {
 
-    // const columnName = "gender"
-    // if (filteredValues.length == 0) return props.table?.getColumn(columnName)?.setFilterValue(undefined)
-    // props.table?.getColumn(columnName)?.setFilterValue(filteredValues.map(filterValue => filterValue.value))
+    const columnName = "type"
+    if (filteredValues.length == 0) return props.table?.getColumn(columnName)?.setFilterValue(undefined)
+    props.table?.getColumn(columnName)?.setFilterValue(filteredValues.map(filterValue => filterValue.value))
 }
 
 const genderFacetedData = computed(() => genderTypes)

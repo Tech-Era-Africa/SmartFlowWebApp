@@ -7,47 +7,45 @@
           <div class="flex flex-row justify-between gap-2 items-center">
             <div>
               <!-- <h1 class="font-bold text-lg">Clusters</h1> -->
-              <div class="my-2">
-                <ClusterTypeFacetedFilter></ClusterTypeFacetedFilter>
-              </div>
 
             </div>
-           
+
             <Button @click="handleOnClusterDialogOpen(true)" variant="outline" class="gap-2">
               Add New Cluster <PlusCircle :size="16"></PlusCircle>
             </Button>
           </div>
 
-          <!-- CLUSTERS -->
-          <template v-if="clusters">
-            <div class="flex-1 flex-grow grid-cols-2 lg:grid-cols-3 grid gap-2">
-              <NuxtLink :to="`/clusters/${cluster.id}`" v-for="cluster in clusters">
-                <DeviceClusterCard
-                  :option="cluster">
-                </DeviceClusterCard>
-              </NuxtLink>
-            </div>
-          </template>
-          <!-- end of CLUSTERS -->
+          <Suspense>
+            <template #default>
+              <template v-if="clusters?.length === 0">
+                <div class="flex flex-col items-center justify-center py-10 gap-4">
+                  <p class="text-gray-500">No clusters found</p>
+                  <Button @click="handleOnClusterDialogOpen(true)" variant="outline" class="gap-2">
+                    Create Your First Cluster
+                    <PlusCircle :size="16" />
+                  </Button>
+                </div>
+              </template>
 
-          <!-- LOADING -->
-          <template v-if="status == 'pending'">
-            <div class="grid grid-cols-3 gap-10 p-10">
-              <Skeleton class="h-[150px]" v-for="i in 6" />
-            </div>
-          </template>
-          <!-- end of LOADING -->
+              <template v-else>
+                <ClusterDataGrid :columns="columns" :data="clusters ?? []" @get-table-data="handleDataTableData">
+                  <template #dataTableFacetedFilter>
+                    <ClusterTypeFacetedFilter :table="dataTableRef!"></ClusterTypeFacetedFilter>
+                  </template>
+                </ClusterDataGrid>
+              </template>
+            </template>
 
-          <!-- NO CLUSTERS -->
-          <template v-if="clusters?.length == 0">
-            <div class="flex flex-col items-center justify-center py-10 gap-4">
-              <p class="text-gray-500">No clusters found</p>
-              <Button @click="handleOnClusterDialogOpen(true)" variant="outline" class="gap-2">
-                Create Your First Cluster <PlusCircle :size="16"></PlusCircle>
-              </Button>
-            </div>
-          </template>
-          <!-- end of NO CLUSTERS -->
+            <template #fallback>
+              <div class="grid grid-cols-2 lg:grid-cols-3 gap-10 p-10">
+                <Skeleton class="h-[150px]" v-for="i in 6" :key="i" />
+              </div>
+            </template>
+          </Suspense>
+
+
+
+
         </div>
       </div>
     </section>
@@ -92,17 +90,16 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { useClusterStore } from '../../stores/cluster/cluster.store';
-import { useDeviceStore } from '../../stores/device/device.store';
 import { type ICluster } from '~/stores/cluster/model/cluster.model';
-import {ClusterTypeFacetedFilter} from '~/components/cluster';
+import { ClusterTypeFacetedFilter } from '~/components/cluster';
+import type { ColumnDef, Table } from '@tanstack/vue-table';
 
 useHead({ title: "Clusters" })
 
-const deviceStore = useDeviceStore()
 const clusterStore = useClusterStore()
 
 // Load the devices clusters
-const {  error, data:clusters, refresh, status } = await useAsyncData<ICluster[]>('device_clusters', () => clusterStore.getClusters(), {lazy:true})
+const { error, data: clusters, refresh, status } = await useAsyncData<ICluster[]>('device_clusters', () => clusterStore.getClusters(), { lazy: true })
 
 // NEW CLUSTER DIALOG CONTROL
 const isClusterDialogueOpen = ref(false)
@@ -128,4 +125,34 @@ const onFormSubmit = handleSubmit(async (values) => {
     alert("Could not create cluster. Something went wrong.");
   }
 })
+
+// DATA GRID DATA
+const dataTableRef = ref<Table<ICluster>>()
+const handleDataTableData = (data: Table<ICluster>) => dataTableRef.value = data;
+const columns: ColumnDef<ICluster>[] = [
+
+  {
+    accessorKey: 'name',
+    filterFn: (row, id, value) => {
+      return row.original.name.toLowerCase().includes(value.toLowerCase())
+    },
+  },
+  {
+    accessorKey: 'description',
+  },
+  {
+    accessorKey: 'type',
+    filterFn: (row, id, value) => {
+
+      if (value.includes('consumption') && value.includes('collection')) return true;
+
+      if (value == 'consumption' && row.original.type.id == 2) return true
+
+      return value == 'collection' && row.original.type.id == 1;
+    },
+  }
+
+
+
+]
 </script>

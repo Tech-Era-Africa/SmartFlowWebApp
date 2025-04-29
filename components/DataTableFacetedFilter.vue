@@ -26,7 +26,7 @@
         </PopoverTrigger>
         <PopoverContent class="w-full max-w-full">
             <Command>
-                <CommandInput placeholder="Search..." />
+                <!-- <CommandInput placeholder="Search..." /> -->
                 <CommandList>
                     <div v-if="isLoading">
                         <p class="text-muted-foreground text-xs m-5">Loading {{ title }}..</p>
@@ -50,13 +50,12 @@
 </template>
 
 <script setup lang="ts" generic="TData">
-import type { Column } from '@tanstack/vue-table';
 import { PlusCircleIcon } from 'lucide-vue-next'
 
 
 export interface DataTableFacatedFilterOptions {
     label: string
-    value: string
+    value: any
     icon?: Component
 }
 export interface DataTableFacetedFilter {
