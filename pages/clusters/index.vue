@@ -1,12 +1,12 @@
 <template>
   <NuxtLayout name="dashboard">
-    <Header name="Clusters"></Header>
+    <Header name=""></Header>
     <section class="flex flex-col gap-4 absolute top-16 z-10  mx-2  lg:mx-8 left-0 right-0">
       <div class="w-full flex  p-2 gap-4">
         <div class="w-full h-full bg-white rounded-xl p-5 flex flex-col justify-between gap-2">
           <div class="flex flex-row justify-between gap-2 items-center">
             <div>
-              <!-- <h1 class="font-bold text-lg">Clusters</h1> -->
+              <h1 class="font-bold text-lg">Clusters</h1>
 
             </div>
 
@@ -29,6 +29,18 @@
 
               <template v-else>
                 <ClusterDataGrid :columns="columns" :data="clusters ?? []" @get-table-data="handleDataTableData">
+                  <template #dataTableSearch>
+                    <div class="bg-white rounded-xl p-4 w-1/2">
+
+                      <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1">
+                          <Input v-if="dataTableRef" type="search" placeholder="Search name..."
+                            :model-value="(dataTableRef.getColumn('name')?.getFilterValue() as string) ?? ''"
+                            @input="dataTableRef.getColumn('name')?.setFilterValue($event.target.value)" />
+                        </div>
+                      </div>
+                    </div>
+                  </template>
                   <template #dataTableFacetedFilter>
                     <ClusterTypeFacetedFilter :table="dataTableRef!"></ClusterTypeFacetedFilter>
                   </template>

@@ -7,10 +7,10 @@
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger>
-                            <Badge variant="outline" class="flex items-center gap-1">
-                                <FlaskConicalIcon class="h-3 w-3" />
-                                Experimental
-                            </Badge>
+                            <Badge variant="outline" class="flex items-center gap-1 border-orange-500 border-[0.5px]">
+                    <FlaskConicalIcon class="h-3 w-3" />
+                    Experimental
+                  </Badge>
                         </TooltipTrigger>
                         <TooltipContent class="max-w-xs">
                             <p>This feature is experimental and the values shown may not be accurate. Please do not use this data in any official reports until the feature is fully released and stable.</p>
@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { Building2, CalendarDays, ChevronDown, CircleCheckBig, Factory, Home } from 'lucide-vue-next';
+import { Building2, FlaskConicalIcon, ChevronDown, CircleCheckBig, Factory, Home } from 'lucide-vue-next';
 import { useBillStore } from '~/stores/bill/bill.store';
 import type { IBillOptionDTO } from '~/stores/bill/dto/billOption.dto';
 import { BillType } from '~/utils/class/billType.class';

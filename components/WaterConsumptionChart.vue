@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useAsyncData } from '#app';
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 import { ChartLine } from 'lucide-vue-next';
 import { useConsumptionStore } from '~/stores/consumption/consumption.store';
@@ -13,12 +11,12 @@ const consumptionStore = useConsumptionStore();
 
 // Fetch water usage trend data
 const { data: usageChartSeries, refresh: refreshUsage, status: usageStatus, error: usageError } = useAsyncData('usageTrend', async () => {
-    return await consumptionStore.getConsumptionTrend({ consumption_type: 1 }); // 1 for usage
+    return await consumptionStore.getConsumptionTrend(consumptionStore.trendPeriod,{ consumption_type: 1 }); // 1 for usage
 }, { immediate: true, lazy: true });
 
 // Fetch water collection trend data
 const { data: collectionChartSeries, refresh: refreshCollection, status: collectionStatus, error: collectionError } = useAsyncData('collectionTrend', async () => {
-    return await consumptionStore.getConsumptionTrend({ consumption_type: 2 }); // 2 for collection
+    return await consumptionStore.getConsumptionTrend(consumptionStore.trendPeriod,{ consumption_type: 2 }); // 2 for collection
 }, { immediate: true, lazy: true });
 
 // Combined status for loading state
@@ -70,17 +68,19 @@ const hasData = computed(() => {
 
 
 // Listen to when the dates change and refresh
-// Subscribe to changes in the store's state
-consumptionStore.$subscribe((_, state) => {
-    if (state.startDate || state.endDate) {
-        refresh();
-    }
-});
+watch(
+  () =>  
+    consumptionStore.trendPeriod,
+  async () => {
+    await refresh();
+  },
+  { immediate: true, deep:true }
+);
 
 // Update the start and end once there is a change in period
-const handleDateChange = ({ start, end }: { start: Date; end: Date }) => {
-    consumptionStore.updatePeriod(start.toISOString(), end.toISOString());
-
+const handleDateChange = ({ start, end, period }: { start: Date; end: Date, period:string }) => {
+    consumptionStore.updateTrendPeriod(start.toISOString(), end.toISOString(), period);
+    consumptionStore.updateConsumptionStatsPeriod(start.toISOString(), end.toISOString(), period);
 };
 
 

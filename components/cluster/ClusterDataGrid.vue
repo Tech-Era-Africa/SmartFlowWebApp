@@ -13,7 +13,7 @@
 
         </div>
         <div v-if="table.getRowModel().rows?.length" class="grid grid-cols-2 lg:grid-cols-3 gap-2">
-            <NuxtLink :to="`/clusters/${row.id}`" v-for="(row, index) in table.getRowModel().rows" :key="row.id">
+            <NuxtLink :to="`/clusters/${row.original.id}`" v-for="(row, index) in table.getRowModel().rows" :key="row.id">
                 <DeviceClusterCard :option="row.original" />
             </NuxtLink>
         </div>

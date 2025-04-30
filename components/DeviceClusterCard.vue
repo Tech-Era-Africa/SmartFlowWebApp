@@ -30,7 +30,7 @@ const consumptionStore = useConsumptionStore()
 const { data: usageChartSeries, refresh, status, error: usageError } = useAsyncData(
     'deviceClusterCard_' + props.option.id.toString(),
     async () => {
-        return await consumptionStore.getConsumptionTrend({
+        return await consumptionStore.getConsumptionTrend(consumptionStore.clusterPeriod,{
             clusterId: props.option.id.toString(),
         });
     },

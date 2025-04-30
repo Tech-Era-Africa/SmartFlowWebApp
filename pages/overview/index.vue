@@ -45,15 +45,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import WaterUsageInsights from '~/components/WaterUsageInsights.vue';
 import TutorialPopup from '~/components/TutorialPopup.vue';
-import { useDeviceStore } from '~/stores/device/device.store';
 import type { IWaterConsumptionChart } from '~/utils/dto/waterChart.option.dto';
 
 useHead({ title: "Overview" })
 
-const deviceStore = useDeviceStore()
 const tutorialPopupRef = ref<InstanceType<typeof TutorialPopup> | null>(null);
 
 // Tutorial steps configuration

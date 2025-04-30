@@ -9,16 +9,18 @@ const billStore = useBillStore();
 
 // Fetch water insights
 const { data, refresh, status, error } = useAsyncData('waterInsights', async () => {
-  return await consumptionStore.getInsights();
+  return await consumptionStore.getInsights(consumptionStore.consumptionStatsPeriod);
 }, { immediate: true, lazy: true });
 
 // Listen to when the dates change and refresh
-// Subscribe to changes in the store's state
-consumptionStore.$subscribe((mutation, state) => {
-    if (state.startDate || state.endDate) {
-        refresh();
-    }
-});
+watch(
+  () =>  
+    consumptionStore.consumptionStatsPeriod,
+  async () => {
+    await refresh();
+  },
+  { immediate: true, deep:true }
+);
 
 // Keeps track of the percentage of water consumed against the amount stored
 const percentageOfConsumed = computed(() => {
@@ -88,7 +90,7 @@ const formatNumber = (number: number) => new Intl.NumberFormat('en-GH').format(n
                    <CardTitle class="text-sm font-medium">
                        Water Collected
                    </CardTitle>
-                   <Droplet class="h-4 w-4 text-blue-500" />
+                   <Droplet class="h-4 w-4 text-green-500" />
                </CardHeader>
                <CardContent>
                    <div class="text-lg font-bold">
@@ -98,7 +100,7 @@ const formatNumber = (number: number) => new Intl.NumberFormat('en-GH').format(n
                        {{ data?.collection?.percentageChange > 0 ? '+' : '' }}{{ data?.collection?.percentageChange }}% {{ data?.comparisonPeriod }}
                    </p>
                    <div class="mt-4 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                       <div class="h-full bg-blue-500 rounded-full" :style="`width: ${percentageCollectedAgainstTarget}%`"></div>
+                       <div class="h-full bg-green-500 rounded-full" :style="`width: ${percentageCollectedAgainstTarget}%`"></div>
                    </div>
                    <p class="text-xs text-muted-foreground mt-1">
                        {{ percentageCollectedAgainstTarget }}% of target ({{ consumptionStore.collectionTarget }} kL)
@@ -112,7 +114,7 @@ const formatNumber = (number: number) => new Intl.NumberFormat('en-GH').format(n
                    <CardTitle class="text-sm font-medium">
                        Water Consumed
                    </CardTitle>
-                   <Gauge class="h-4 w-4 text-red-500" />
+                   <Gauge class="h-4 w-4 text-blue-500" />
                </CardHeader>
                <CardContent>
                    <div class="text-lg font-bold">
@@ -122,7 +124,7 @@ const formatNumber = (number: number) => new Intl.NumberFormat('en-GH').format(n
                     {{ data?.consumption?.percentageChange > 0 ? '+' : '' }}{{ data?.consumption?.percentageChange }}% {{ data?.comparisonPeriod }}
                    </p>
                    <div class="mt-4 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                       <div class="h-full bg-red-500 rounded-full" :style="`width: ${percentageOfConsumed}%`"></div>
+                       <div class="h-full bg-blue-500 rounded-full" :style="`width: ${percentageOfConsumed}%`"></div>
                    </div>
                    <p class="text-xs text-muted-foreground mt-1">
                        {{ percentageOfConsumed }}% of collected water
@@ -146,7 +148,7 @@ const formatNumber = (number: number) => new Intl.NumberFormat('en-GH').format(n
                     {{ data?.consumption?.percentageChange > 0 ? '+' : '' }}{{ data?.consumption?.percentageChange }}% {{ data?.comparisonPeriod }}
                    </p>
                    <div class="mt-4 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                       <div class="h-full bg-green-500 rounded-full" :style="`width: ${conservationRate}%`"></div>
+                       <div :class="{ 'bg-red-500': conservationRate < 0, 'bg-green-500': conservationRate >= 0 }" class="h-full rounded-full" :style="`width: ${conservationRate}%`"></div>
                    </div>
                    <p class="text-xs text-muted-foreground mt-1">
                        {{ conservationRate }}% conservation rate
@@ -172,19 +174,19 @@ const formatNumber = (number: number) => new Intl.NumberFormat('en-GH').format(n
                        </div>
                        <div>
                            <p class="text-sm text-muted-foreground">Savings</p>
-                           <p class="text-lg font-bold text-green-500">
+                           <p class="text-lg font-bold " :class="{ 'text-red-500': percentageSaved < 0, 'text-green-500': percentageSaved >= 0 }">
                                {{ currencyFormat(savedBill) }}
                            </p>
                        </div>
                    </div>
                    <div class="mt-4">
-                       <div class="flex justify-between text-xs mb-1">
+                       <!-- <div class="flex justify-between text-xs mb-1">
                            <span>This period</span>
                            <span>{{ data?.comparisonPeriod }}</span>
-                       </div>
-                       <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                       </div> -->
+                       <!-- <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
                            <div class="h-full bg-blue-500 rounded-full" :style="`width: ${percentageSaved}%`"></div>
-                       </div>
+                       </div> -->
                        <p class="text-xs text-muted-foreground mt-1">
                            {{ savedMessage }}
                        </p>

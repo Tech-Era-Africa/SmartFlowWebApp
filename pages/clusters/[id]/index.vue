@@ -10,11 +10,13 @@ import { useClusterStore } from '~/stores/cluster/cluster.store';
 import ClusterInsights from '~/components/ClusterInsights.vue';
 import type { ICluster } from '~/stores/cluster/model/cluster.model';
 import type { ClusterDeviceResponse } from '~/stores/device/device.store';
+import { useConsumptionStore } from '~/stores/consumption/consumption.store';
 
 useHead({ title: "Cluster" })
 
 const deviceStore = useDeviceStore()
 const clusterStore = useClusterStore()
+const consumptionStore = useConsumptionStore()
 
 const billStore = useBillStore()
 const clusterId = useRoute().params.id
@@ -26,7 +28,7 @@ const { data: clusterData, refresh: refreshClusterDetails, status: statusCluster
 const { data: clusterDevices, refresh: refreshDevices, status } = await useAsyncData<ClusterDeviceResponse[]>('clusterDevices', () => deviceStore.getClusterDevices(clusterId.toString()), { lazy: true, immediate: true })
 
 
-const billWidgetOption = ref<IBillOptionDTO>({ billTypeId: billStore.billTypes[0].id, totalConsumption: clusterStore.selectedClusterTotalConsumption } as IBillOptionDTO)
+const billWidgetOption = ref<IBillOptionDTO>({ billTypeId: billStore.billTypes[0].id } as IBillOptionDTO)
 
 // Handle adding a new device to the cluster
 const isAddDeviceDialogOpen = ref(false)
@@ -44,6 +46,23 @@ const refreshData = async () => {
     refreshDevices()
   ])
 }
+
+
+// Handle date changed
+const handleInsightsDateChange = (value:any) => {
+    consumptionStore.updateClusterInsightsPeriod(value.start.toISOString(), value.end.toISOString(), value.period)
+};
+
+
+// Listen to when the dates change and refresh
+watch(
+  () =>  
+    consumptionStore.totalWaterConsumption,
+  async () => {
+    billWidgetOption.value.totalConsumption = consumptionStore.totalWaterConsumption.total
+  },
+  { immediate: true, deep:true }
+);
 
 
 </script>
@@ -113,7 +132,7 @@ const refreshData = async () => {
                         <section class="mb-6">
                             <div class="flex gap-5 items-center  mb-5 ml-5">
                                 <h1 class="font-bold text-lg">Insights</h1>
-                                <PeriodFacetedFilter></PeriodFacetedFilter>
+                                <PeriodFacetedFilter @onDateChanged="handleInsightsDateChange"></PeriodFacetedFilter>
                             </div>
 
                             <ClusterInsights :cluster-id="clusterId.toString()" />
@@ -134,7 +153,7 @@ const refreshData = async () => {
                                     <p class="font-bold flex justify-end items-center gap-2">
                                         <span v-if="statusClusterDetails === 'pending'"
                                             class="loading loading-spinner loading-xs text-gray-400"></span>
-                                        <span>{{ clusterStore.selectedClusterTotalConsumption }}k L</span>
+                                        <span>{{ consumptionStore.totalWaterConsumption.total }}k L</span>
                                     </p>
                                 </div>
                             </TotalPayableBillWidget>

@@ -16,7 +16,7 @@ const consumptionStore = useConsumptionStore();
 const { data: usageChartSeries, refresh, status, error: usageError } = useAsyncData(
     'clusterConsumptionTrend_' + props.clusterId,
     async () => {
-        return await consumptionStore.getConsumptionTrend({
+        return await consumptionStore.getConsumptionTrend(consumptionStore.clusterPeriod,{
             clusterId: props.clusterId,
         });
     },
@@ -45,18 +45,20 @@ const hasData = computed(() => {
 });
 
 // Listen to when the dates change and refresh
-// Subscribe to changes in the store's state
-consumptionStore.$subscribe((_, state) => {
-    if (state.startDate || state.endDate) {
-        refresh();
-    }
-});
+watch(
+  () =>  
+    consumptionStore.clusterPeriod,
+  async () => {
+    await refresh();
+  },
+  { immediate: true, deep:true }
+);
 
 
 // Update the start and end once there is a change in period
-const handleDateChange = ({ start, end }: { start: Date; end: Date }) => {
+const handleDateChange = ({ start, end, period }: { start: Date; end: Date, period:string }) => {
 
-    consumptionStore.updatePeriod(start.toISOString(), end.toISOString());
+    consumptionStore.updateClusterPeriod(start.toISOString(), end.toISOString(), period);
 
 };
 

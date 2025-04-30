@@ -73,10 +73,10 @@
                                     <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">Lowest Use</span>
                                 </div>
                                 <div class="text-2xl font-bold text-blue-600 mb-1">{{ lowestConsumption?.cluster?.total}}</div>
-                                <div class="text-xs text-gray-600">kilo liters this month</div>
+                                <div class="text-xs text-gray-600">kilo liters consumed this {{ consumptionStore.clusterComparePeriod.period }}</div>
                                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mr-1"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-                                    <span>That's only {{ Math.round((lowestConsumption?.cluster?.total || clusterData.lowestConsumption.value) / 3) }} toilet flushes</span>
+                                    <span>That's only {{ Math.round((lowestConsumption?.cluster?.total ) / 3) }} toilet flushes</span>
                                 </div>
                             </div>
                             <div v-if="!highestCollection?.cluster" class="bg-green-50 p-4 rounded-lg border border-green-100 flex flex-col items-center justify-center text-center h-full">
@@ -93,11 +93,11 @@
                                     <div class="text-sm font-bold text-gray-800">{{ highestCollection?.cluster?.name }}</div>
                                     <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Most Collected</span>
                                 </div>
-                                <div class="text-2xl font-bold text-green-600 mb-1">{{ highestCollection?.cluster?.total || clusterData.highestCollection.value }}</div>
-                                <div class="text-xs text-gray-600">kilo liters collected</div>
+                                <div class="text-2xl font-bold text-green-600 mb-1">{{ highestCollection?.cluster?.total}}</div>
+                                <div class="text-xs text-gray-600">kilo liters collected this {{ consumptionStore.clusterComparePeriod.period }}</div>
                                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500 mr-1"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-                                    <span>Enough for {{ Math.round((highestCollection?.cluster?.total || clusterData.highestCollection.value) / 50) }} showers</span>
+                                    <span>Enough for {{ Math.round((highestCollection?.cluster?.total ) / 50) }} showers</span>
                                 </div>
                             </div>
                         </div>
@@ -128,11 +128,11 @@
                                     <div class="text-sm font-bold text-gray-800">{{ highestConsumption?.cluster?.name }}</div>
                                     <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">High Usage</span>
                                 </div>
-                                <div class="text-2xl font-bold text-red-600 mb-1">{{ highestConsumption?.cluster?.total || clusterData.highestConsumption.value }}</div>
-                                <div class="text-xs text-gray-600">kilo liters this month</div>
+                                <div class="text-2xl font-bold text-red-600 mb-1">{{ highestConsumption?.cluster?.total }}</div>
+                                <div class="text-xs text-gray-600">kilo liters consumed this {{ consumptionStore.clusterComparePeriod.period }}</div>
                                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500 mr-1"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                    <span>That's like {{ Math.round((highestConsumption?.cluster?.total || clusterData.highestConsumption.value) / 150) }} bathtubs full</span>
+                                    <span>That's like {{ Math.round((highestConsumption?.cluster?.total ) / 150) }} bathtubs full</span>
                                 </div>
                             </div>
                             <div v-if="!lowestCollection?.cluster" class="bg-amber-50 p-4 rounded-lg border border-amber-100 flex flex-col items-center justify-center text-center h-full">
@@ -149,11 +149,11 @@
                                     <div class="text-sm font-bold text-gray-800">{{ lowestCollection?.cluster?.name }}</div>
                                     <span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">Low Collection</span>
                                 </div>
-                                <div class="text-2xl font-bold text-amber-600 mb-1">{{ lowestCollection?.cluster?.total || clusterData.lowestCollection.value }}</div>
-                                <div class="text-xs text-gray-600">kilo liters collected</div>
+                                <div class="text-2xl font-bold text-amber-600 mb-1">{{ lowestCollection?.cluster?.total}}</div>
+                                <div class="text-xs text-gray-600">kilo liters collected this {{ consumptionStore.clusterComparePeriod.period }}</div>
                                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500 mr-1"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                    <span>Only {{ Math.round((lowestCollection?.cluster?.total || clusterData.lowestCollection.value) / 10) }} water bottles</span>
+                                    <span>Only {{ Math.round((lowestCollection?.cluster?.total) / 10) }} water bottles</span>
                                 </div>
                             </div>
                         </div>
@@ -166,27 +166,6 @@
 import { computed, ref, watch } from 'vue';
 import { useConsumptionStore } from '~/stores/consumption/consumption.store';
 
-// Default values for fallback when API data is not available
-const clusterData = {
-  highestConsumption: {
-    name: 'North Campus',
-    value: 3250
-  },
-  lowestConsumption: {
-    name: 'Admin Building',
-    value: 450
-  },
-  highestCollection: {
-    name: 'Main Residence',
-    value: 4800
-  },
-  lowestCollection: {
-    name: 'Science Block',
-    value: 780
-  }
-};
-
-
 
 const consumptionStore = useConsumptionStore();
 
@@ -198,7 +177,7 @@ const { data:highestConsumption, refresh:refreshHighestConsumption, status:highe
     'highestConsumptionCluster',
     async () => {
         try {
-            return await consumptionStore.getHighestConsumptionCluster();
+            return await consumptionStore.getHighestConsumptionCluster(consumptionStore.clusterComparePeriod);
         } catch (err) {
             console.error('Error fetching highest consumption:', err);
             return { cluster: null };
@@ -212,7 +191,7 @@ const { data:lowestConsumption, refresh:refreshLowestConsumption, status:lowestC
     'lowestConsumptionCluster',
     async () => {
         try {
-            return await consumptionStore.getLowestConsumptionCluster();
+            return await consumptionStore.getLowestConsumptionCluster(consumptionStore.clusterComparePeriod);
         } catch (err) {
             console.error('Error fetching lowest consumption:', err);
             return { cluster: null };
@@ -226,7 +205,7 @@ const { data:highestCollection, refresh:refreshHighestCollection, status:highest
     'highestCollectionCluster',
     async () => {
         try {
-            return await consumptionStore.getHighestCollectionCluster();
+            return await consumptionStore.getHighestCollectionCluster(consumptionStore.clusterComparePeriod);
         } catch (err) {
             console.error('Error fetching highest collection:', err);
             return { cluster: null };
@@ -240,7 +219,7 @@ const { data:lowestCollection, refresh:refreshLowestCollection, status:lowestCol
     'lowestCollectionCluster',
     async () => {
         try {
-            return await consumptionStore.getLowestCollectionCluster();
+            return await consumptionStore.getLowestCollectionCluster(consumptionStore.clusterComparePeriod);
         } catch (err) {
             console.error('Error fetching lowest collection:', err);
             return { cluster: null };
@@ -288,11 +267,15 @@ const refreshAllData = async () => {
     }, 300);
 };
 
-// Expose the refresh function for external use
-defineExpose({
-    refreshAllData
-});
-
-const formatNumber = (number: number) => new Intl.NumberFormat('en-GH').format(number);
+// Listen to when the dates change and refresh
+watch(
+  () =>  
+    consumptionStore.clusterComparePeriod,
+  
+  async () => {
+    await refreshAllData();
+  },
+  { immediate: true, deep:true }
+);
 
 </script>

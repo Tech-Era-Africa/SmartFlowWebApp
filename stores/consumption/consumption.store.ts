@@ -16,13 +16,13 @@ interface TotalWaterStats {
 }
 
 interface AverageDailyConsumptionStats {
-  period:{
-    startDate:string;
-    endDate:string;
-    days : number;
+  period: {
+    startDate: string;
+    endDate: string;
+    days: number;
   };
-  averageDailyConsumption : number;
-  unit : string;
+  averageDailyConsumption: number;
+  unit: string;
 }
 
 interface ConsumptionData {
@@ -40,34 +40,65 @@ interface ConsumptionInsightResponse {
 }
 
 interface ConsumptionInsightHighestConsumptionByCluster {
-  period:{
+  period: {
     startDate: string;
     endDate: string;
   },
   cluster: {
     clusterId: string;
     total: number;
-    name:string;
+    name: string;
   }
 }
 
 
 export const useConsumptionStore = defineStore('consumption', {
   state: () => ({
-   startDate: null as string | null,
-   endDate: null as string | null,
-   collectionTarget: 15000,
+    collectionTarget: 15000,
+    totalWaterConsumption: {} as TotalWaterStats,
+    trendPeriod: {
+      startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
+      endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0],
+      period: 'month'
+    },
+    clusterPeriod: {
+      startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
+      endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0],
+      period: 'month'
+    },
+    clusterComparePeriod: {
+      startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
+      endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0],
+      period: 'month'
+    },
+    consumptionStatsPeriod: {
+      startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
+      endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0],
+      period: 'month'
+    },
+    insightsPeriod: {
+      startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
+      endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0],
+      period: 'month'
+    },
+    dailyPeriod: {
+      startDate: new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 1)).toISOString().split('T')[0],
+      endDate: new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 7)).toISOString().split('T')[0],
+      period: 'weekly'
+    }
   }),
 
   actions: {
 
     async getConsumptionTrend(
+      period:{
+        startDate: string,
+        endDate: string
+      },
       options: {
         clusterId?: string,
         deviceId?: string,
         consumption_type?: 1 | 2, // 1 for usage and 2 for collection
-        startDate?: string,
-        endDate?: string
       } = {}): Promise<ConsumptionTrend[]> {
 
       try {
@@ -83,8 +114,8 @@ export const useConsumptionStore = defineStore('consumption', {
             orgId,
             clusterId: options.clusterId,
             consumption_type: options.consumption_type,
-            startDate: options.startDate || this.startDate || new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
-            endDate: options.endDate || this.endDate || new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0],
+            startDate:  period.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate:  period.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0],
           },
           headers: {
             "Authorization": `Bearer ${useUserStore().token}`
@@ -104,6 +135,10 @@ export const useConsumptionStore = defineStore('consumption', {
     },
 
     async getTotalWaterConsumption(
+      period:{
+        startDate: string,
+        endDate: string
+      },
       options: {
         clusterId?: string,
         deviceId?: string
@@ -119,8 +154,8 @@ export const useConsumptionStore = defineStore('consumption', {
           query: {
             orgId,
             clusterId: options.clusterId,
-            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
-            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+            startDate: period.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: period.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
           },
           headers: {
             "Authorization": `Bearer ${useUserStore().token}`
@@ -131,6 +166,9 @@ export const useConsumptionStore = defineStore('consumption', {
           throw new Error(error.value.data?.error || 'Failed to fetch total water consumption')
         }
 
+        // Update the store with that state
+        this.totalWaterConsumption = data.value;
+
         return data.value;
 
       } catch (error: any) {
@@ -139,6 +177,10 @@ export const useConsumptionStore = defineStore('consumption', {
     },
 
     async getAverageDailyConsumption(
+      period:{
+        startDate: string,
+        endDate: string
+      },
       options: {
         clusterId?: string,
         deviceId?: string
@@ -154,8 +196,8 @@ export const useConsumptionStore = defineStore('consumption', {
           query: {
             orgId,
             clusterId: options.clusterId,
-            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
-            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+            startDate: period.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: period.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
           },
           headers: {
             "Authorization": `Bearer ${useUserStore().token}`
@@ -174,6 +216,10 @@ export const useConsumptionStore = defineStore('consumption', {
     },
 
     async getInsights(
+      period:{
+        startDate: string,
+        endDate: string
+      },
       options: {
         clusterId?: string,
         deviceId?: string
@@ -189,8 +235,8 @@ export const useConsumptionStore = defineStore('consumption', {
           method: 'GET',
           query: {
             orgId,
-            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
-            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+            startDate: period.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: period.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
           },
           headers: {
             "Authorization": `Bearer ${useUserStore().token}`
@@ -209,6 +255,10 @@ export const useConsumptionStore = defineStore('consumption', {
     },
 
     async getHighestConsumptionCluster(
+      period:{
+        startDate: string,
+        endDate: string
+      },
       options: {
         clusterId?: string,
         deviceId?: string
@@ -224,8 +274,8 @@ export const useConsumptionStore = defineStore('consumption', {
           method: 'GET',
           query: {
             orgId,
-            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
-            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+            startDate: period.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: period.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
           },
           headers: {
             "Authorization": `Bearer ${useUserStore().token}`
@@ -244,6 +294,10 @@ export const useConsumptionStore = defineStore('consumption', {
     },
 
     async getLowestConsumptionCluster(
+      period:{
+        startDate: string,
+        endDate: string
+      },
       options: {
         clusterId?: string,
         deviceId?: string
@@ -259,8 +313,8 @@ export const useConsumptionStore = defineStore('consumption', {
           method: 'GET',
           query: {
             orgId,
-            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
-            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+            startDate: period.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: period.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
           },
           headers: {
             "Authorization": `Bearer ${useUserStore().token}`
@@ -279,6 +333,10 @@ export const useConsumptionStore = defineStore('consumption', {
     },
 
     async getLowestCollectionCluster(
+      period:{
+        startDate: string,
+        endDate: string
+      },
       options: {
         clusterId?: string,
         deviceId?: string
@@ -294,8 +352,8 @@ export const useConsumptionStore = defineStore('consumption', {
           method: 'GET',
           query: {
             orgId,
-            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
-            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+            startDate: period.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: period.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
           },
           headers: {
             "Authorization": `Bearer ${useUserStore().token}`
@@ -314,6 +372,10 @@ export const useConsumptionStore = defineStore('consumption', {
     },
 
     async getHighestCollectionCluster(
+      period:{
+        startDate: string,
+        endDate: string
+      },
       options: {
         clusterId?: string,
         deviceId?: string
@@ -329,8 +391,8 @@ export const useConsumptionStore = defineStore('consumption', {
           method: 'GET',
           query: {
             orgId,
-            startDate: this.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
-            endDate: this.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
+            startDate: period.startDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0],
+            endDate: period.endDate ?? new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0]
           },
           headers: {
             "Authorization": `Bearer ${useUserStore().token}`
@@ -348,9 +410,35 @@ export const useConsumptionStore = defineStore('consumption', {
       }
     },
 
-    updatePeriod(startDate: string, endDate: string) {
-      this.startDate = startDate;
-      this.endDate = endDate;
+    updateTrendPeriod(startDate: string, endDate: string,period:string) {
+      this.trendPeriod.startDate = startDate;
+      this.trendPeriod.endDate = endDate;
+      this.trendPeriod.period = period;
+    },
+
+    updateConsumptionStatsPeriod(startDate: string, endDate: string,period:string) {
+      this.consumptionStatsPeriod.startDate = startDate;
+      this.consumptionStatsPeriod.endDate = endDate;
+      this.consumptionStatsPeriod.period = period;
+    },
+
+
+    updateClusterPeriod(startDate: string, endDate: string, period:string) {
+      this.clusterPeriod.startDate = startDate;
+      this.clusterPeriod.endDate = endDate;
+      this.clusterPeriod.period = period;
+    },
+
+    updateClusterComparePeriod(startDate: string, endDate: string, period:string) {
+      this.clusterComparePeriod.startDate = startDate;
+      this.clusterComparePeriod.endDate = endDate;
+      this.clusterComparePeriod.period = period;
+    },
+
+    updateClusterInsightsPeriod(startDate: string, endDate: string, period:string) {
+      this.insightsPeriod.startDate = startDate;
+      this.insightsPeriod.endDate = endDate;
+      this.insightsPeriod.period = period;
     }
 
 

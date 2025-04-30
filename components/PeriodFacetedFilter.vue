@@ -101,7 +101,8 @@ const handleCommandSelection = (period: string) => {
 
         emits('onDateChanged', {
             start: startDate,
-            end: endDate
+            end: endDate,
+            period : period ?? 'period'
         });
         isOpen.value = false;
     }
