@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useUserStore } from '~/stores/auth/user/user.store';
 import { useAuthStore } from '~/stores/auth/auth.store';
-import { User, LogOut, LifeBuoy, Settings, CreditCard  } from 'lucide-vue-next'
+import { useAIReportStore } from '~/stores/report/ai-report.store';
+import { User, LogOut, LifeBuoy, Settings, CreditCard, FileText } from 'lucide-vue-next'
 
 const userStore = useUserStore()
+const reportStore = useAIReportStore()
 
 // Logout modal
 const logoutModalIsOpen = ref(false)
@@ -15,6 +17,11 @@ const openLogoutModal = ()=>{
 const logout = ()=>{
     useAuthStore().logoutUser()
     useRouter().go(0)
+}
+
+// AI Report
+const openAIReport = () => {
+    reportStore.toggleSheet(true)
 }
 </script>
 
@@ -56,6 +63,11 @@ const logout = ()=>{
                 </DropdownMenuItem>
             </DropdownMenuGroup> -->
             <DropdownMenuSeparator />
+            <DropdownMenuItem class="cursor-pointer" @click="openAIReport">
+                <FileText class="mr-2 h-4 w-4 text-blue-600" />
+                <span>AI Report</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem class="cursor-pointer">
                 <LifeBuoy class="mr-2 h-4 w-4" />
                 <span>Support</span>
@@ -83,4 +95,7 @@ const logout = ()=>{
            </DialogFooter>
         </DialogContent>
     </Dialog>
+
+    <!-- AI Report Sheet -->
+    <AIReportSheet />
 </template>
