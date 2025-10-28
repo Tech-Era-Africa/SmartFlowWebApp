@@ -69,6 +69,33 @@
               </div>
             </div>
 
+            <!-- Consumer Information -->
+            <div class="border-t pt-4">
+              <p class="text-sm font-medium text-gray-700 mb-3">Consumer Information</p>
+              <div class="space-y-3">
+                <div>
+                  <label class="text-xs text-gray-600 block mb-1">Total Number of Consumers</label>
+                  <input
+                    v-model.number="totalConsumers"
+                    type="number"
+                    min="1"
+                    placeholder="e.g., 5000"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label class="text-xs text-gray-600 block mb-1">Consumer Types</label>
+                  <input
+                    v-model="consumerTypes"
+                    type="text"
+                    placeholder="e.g., Students, Staff, Visitors"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p class="text-xs text-gray-500 mt-1">Separate multiple types with commas</p>
+                </div>
+              </div>
+            </div>
+
             <!-- Generate Button -->
             <Button
               class="w-full bg-blue-600 hover:bg-blue-700 text-white"
@@ -148,6 +175,8 @@ const reportStore = useAIReportStore();
 
 const customStartDate = ref('');
 const customEndDate = ref('');
+const totalConsumers = ref<number | null>(null);
+const consumerTypes = ref('Students');
 
 // Get organization name from the report data or use default
 const organizationName = computed(() => {
@@ -221,15 +250,14 @@ const selectPreset = (preset: any) => {
 const generateReport = async () => {
   if (!isDateRangeValid.value) return;
 
-  console.log('Generating report...next');
-
   const start = new Date(customStartDate.value);
   const end = new Date(customEndDate.value);
 
-  console.log('Start:', start, 'End:', end);
-
   try {
-    await reportStore.generateReport(start, end);
+    await reportStore.generateReport(start, end, {
+      totalConsumers: totalConsumers.value || 0,
+      consumerTypes: consumerTypes.value || 'Students',
+    });
   } catch (error) {
     console.error('Failed to generate report:', error);
   }

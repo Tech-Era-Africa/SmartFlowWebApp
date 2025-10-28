@@ -7,6 +7,11 @@ export interface DateRange {
   endDate: Date | null;
 }
 
+export interface ConsumerInfo {
+  totalConsumers: number;
+  consumerTypes: string;
+}
+
 export interface WaterConsumptionReport {
   success: boolean;
   period: {
@@ -31,6 +36,9 @@ export interface AIReportState {
   // Date range
   dateRange: DateRange;
 
+  // Consumer information
+  consumerInfo: ConsumerInfo;
+
   // UI state
   isSheetOpen: boolean;
 }
@@ -45,31 +53,52 @@ export const useAIReportStore = defineStore({
       startDate: null,
       endDate: null,
     },
+    consumerInfo: {
+      totalConsumers: 0,
+      consumerTypes: 'Students',
+    },
     isSheetOpen: false,
   }),
 
   actions: {
     /**
-     * Generate AI report for the given date range
+     * Generate AI report for the given date range and consumer information
      */
-    async generateReport(startDate: Date, endDate: Date) {
-      console.log('Generating report...');
+    async generateReport(startDate: Date, endDate: Date, consumerInfo?: ConsumerInfo) {
+
       try {
         this.reportApiState = ApiResponseState.LOADING;
         this.reportApiFailure = { message: '' };
         this.reportMarkdown = '';
 
+        // Store consumer info if provided
+        if (consumerInfo) {
+          this.consumerInfo = consumerInfo;
+        }
+
         // Format dates as ISO strings
         const formattedStartDate = startDate.toISOString().split('T')[0];
         const formattedEndDate = endDate.toISOString().split('T')[0];
 
-        // Make API call to generate report
-        const { data, error } = await useFetch<WaterConsumptionReport>(`${useRuntimeConfig().public.API_BASE_URL}/ai/consumption-report?startDate=${formattedStartDate}&endDate=${formattedEndDate}&orgId=1`, {
-          method: 'GET',
-          headers: {
-            "Authorization": `Bearer ${useUserStore().token}`
-          }
+        // Build query parameters
+        const queryParams = new URLSearchParams({
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
+          orgId: '1',
+          totalConsumers: this.consumerInfo.totalConsumers.toString(),
+          consumerTypes: this.consumerInfo.consumerTypes,
         });
+
+        // Make API call to generate report
+        const { data, error } = await useFetch<WaterConsumptionReport>(
+          `${useRuntimeConfig().public.API_BASE_URL}/ai/consumption-report?${queryParams.toString()}`,
+          {
+            method: 'GET',
+            headers: {
+              "Authorization": `Bearer ${useUserStore().token}`
+            }
+          }
+        );
 
         if (error.value) {
           throw new Error(error.value.data?.error || 'Failed to generate report')
